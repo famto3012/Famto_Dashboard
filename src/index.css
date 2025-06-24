@@ -1,0 +1,69 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input {
+    @apply border-b-2 border-gray-300 w-full ml-3 py-4 px-4 text-gray-700 leading-tight focus:outline-none;
+  }
+
+  .input-error {
+    @apply border-b-2 border-red-500 placeholder:text-red-500;
+  }
+
+  .input1 {
+    @apply border-b-2 border-gray-300 p-2 w-full min-w-full focus:outline-none text-[14px];
+  }
+
+  .icon {
+    @apply text-[25px] text-teal-700 md:hidden;
+  }
+
+  .side {
+    @apply flex items-center pl-3 mb-1 hover:bg-white/40 hover:text-white;
+  }
+
+  .dropside {
+    @apply flex items-center justify-between text-white mt-[20px] text-[16px] px-3 cursor-pointer border-s-4 border-white;
+  }
+
+  .ul-side {
+    @apply flex flex-col gap-y-[5px] text-[14px] text-gray-300 mt-[10px] w-full;
+  }
+
+  .selected-link {
+    @apply bg-white/40 text-white;
+  }
+
+  .merchantDetail-input {
+    @apply outline-none focus:outline-none border border-[#333]/10 p-[10px] rounded overflow-ellipsis w-2/3;
+  }
+}
+
+/* ::-webkit-scrollbar {
+  display: none;
+} */
+
+.mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_polygon {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319711.png?alt=media&token=cead6e99-1bd4-492a-984c-6de4250c32ab") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 10px;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn.mapbox-gl-draw_trash {
+  background-image: url("https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2FGroup%20427319713.png?alt=media&token=89eb8ad0-7dcd-4bd3-a5f1-baf24d220786") !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 45px;
+  height: 45px;
+  margin-bottom: 10px;
+}
+
+.form-control {
+  border: none !important;
+}

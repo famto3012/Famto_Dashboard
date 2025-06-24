@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap");
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px white inset; /* Change 'white' to the desired background color */
+  box-shadow: 0 0 0 30px white inset; /* Change 'white' to the desired background color */
+  transition: background-color 5000s ease-in-out 0s; /* Prevents color change */
+}
