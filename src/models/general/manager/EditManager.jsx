@@ -27,7 +27,7 @@ const EditManager = ({ isOpen, onClose, managerId, geofenceOptions }) => {
     phone: "",
     password: "",
     role: "",
-    geofenceId: "",
+    geofenceId: [],
   });
 
   const navigate = useNavigate();
@@ -82,7 +82,7 @@ const EditManager = ({ isOpen, onClose, managerId, geofenceOptions }) => {
         phone: "",
         password: "",
         role: null,
-        geofence: null,
+        geofence: [],
       });
       onClose();
       toaster.create({
@@ -203,14 +203,42 @@ const EditManager = ({ isOpen, onClose, managerId, geofenceOptions }) => {
 
               <Select
                 className="w-2/3 outline-none focus:outline-none"
-                value={geofenceOptions?.find(
-                  (option) => option.value === formData.geofenceId
+                value={geofenceOptions?.filter((option) => 
+                  formData?.geofenceId?.includes(option.value)
                 )}
-                isClearable
                 isSearchable
-                onChange={(option) => handleSelect(option, "geofenceId")}
+               onChange={(selected) => {
+                    if (
+                      selected &&
+                      selected.some((option) => option.value === "selectAll")
+                    ) {
+                      setFormData({
+                        ...formData,
+                        geofenceId: allGeofence.map((geofence) => geofence._id),
+                      });
+                    } else {
+                      setFormData({
+                        ...formData,
+                        geofenceId: selected
+                          ? selected.map((option) => option.value)
+                          : [],
+                      });
+                    }
+                  }}
                 options={geofenceOptions}
                 placeholder="Select Geofence"
+                isMulti
+                 menuPlacement="top"
+                  styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        paddingRight: "",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        padding: "10px",
+                      }),
+                    }}
               />
             </div>
           </div>

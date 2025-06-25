@@ -17,14 +17,14 @@ import { useNavigate } from "react-router-dom";
 import ModalLoader from "@/components/others/ModalLoader";
 import Error from "@/components/others/Error";
 
-const AddManager = ({ isOpen, onClose, geofenceOptions }) => {
+const AddManager = ({ isOpen, onClose, geofenceOptions, allGeofence }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phoneNumber: "",
     password: "",
     role: null,
-    geofenceId: null,
+    geofenceId: [],
   });
 
   const navigate = useNavigate();
@@ -65,7 +65,7 @@ const AddManager = ({ isOpen, onClose, geofenceOptions }) => {
         phone: "",
         password: "",
         role: null,
-        geofence: null,
+        geofenceId: [],
       });
       onClose();
       toaster.create({
@@ -186,14 +186,42 @@ const AddManager = ({ isOpen, onClose, geofenceOptions }) => {
 
               <Select
                 className="w-2/3 outline-none focus:outline-none"
-                value={geofenceOptions?.find(
-                  (option) => option.value === formData.geofence
-                )}
-                isClearable
-                isSearchable
-                onChange={(option) => handleSelect(option, "geofenceId")}
                 options={geofenceOptions}
+                value={geofenceOptions?.filter((option) => 
+                  formData?.geofenceId?.includes(option.value)
+                )}
+                isSearchable
+              onChange={(selected) => {
+                    if (
+                      selected &&
+                      selected.some((option) => option.value === "selectAll")
+                    ) {
+                      setFormData({
+                        ...formData,
+                        geofenceId: allGeofence.map((geofence) => geofence._id),
+                      });
+                    } else {
+                      setFormData({
+                        ...formData,
+                        geofenceId: selected
+                          ? selected.map((option) => option.value)
+                          : [],
+                      });
+                    }
+                  }}
+                isMulti
                 placeholder="Select Geofence"
+                  menuPlacement="top"
+                  styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        paddingRight: "",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        padding: "10px",
+                      }),
+                    }}
               />
             </div>
           </div>

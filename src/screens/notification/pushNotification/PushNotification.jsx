@@ -23,7 +23,7 @@ const PushNotification = () => {
   const [pushNotification, setPushNotification] = useState({
     title: "",
     description: "",
-    geofenceId: null,
+    geofenceId: [],
     customer: false,
     merchant: false,
     driver: false,
@@ -45,7 +45,7 @@ const PushNotification = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const { data: geofences } = useQuery({
+  const { data: allGeofence } = useQuery({
     queryKey: ["all-geofence"],
     queryFn: () => getAllGeofence(navigate),
   });
@@ -65,7 +65,7 @@ const PushNotification = () => {
       setPushNotification({
         title: "",
         description: "",
-        geofenceId: null,
+        geofenceId: [],
         customer: false,
         merchant: false,
         driver: false,
@@ -86,10 +86,15 @@ const PushNotification = () => {
     },
   });
 
-  const geofenceOptions = geofences?.map((geofence) => ({
-    label: geofence.name,
-    value: geofence._id,
-  }));
+  const geofenceOptions = [
+    { label: "Select All", value: "selectAll" },
+    ...(Array.isArray(allGeofence)
+      ? allGeofence?.map((geofence) => ({
+          label: geofence.name,
+          value: geofence._id,
+        }))
+      : []),
+  ];
 
   const handleInputChange = (e) => {
     setPushNotification({
@@ -137,9 +142,20 @@ const PushNotification = () => {
   const handleSave = () => {
     const formDataObject = new FormData();
 
+     function appendFormData(value, key) {
+      if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          appendFormData(item, `${key}[${index}]`);
+        });
+      } else if (value !== undefined && value !== null) {
+        formDataObject.append(key, value);
+      }
+    }
+
     Object.entries(pushNotification).forEach(([key, value]) => {
-      formDataObject.append(key, value);
+      appendFormData(value, key);
     });
+  
     croppedFile && formDataObject.append("pushNotificationImage", croppedFile);
 
     handleAddPushNotification.mutate({ pushNotification: formDataObject });
@@ -343,19 +359,42 @@ const PushNotification = () => {
               </label>
               <Select
                 options={geofenceOptions}
-                value={geofenceOptions?.find(
-                  (option) => option.value === pushNotification?.geofenceId
-                )}
-                onChange={(option) =>
-                  setPushNotification({
-                    ...pushNotification,
-                    geofenceId: option.value,
-                  })
-                }
+                 value={geofenceOptions?.filter((option) =>
+                    pushNotification?.geofenceId?.includes(option.value)
+                  )}
+                  onChange={(selected) => {
+                    if (
+                      selected &&
+                      selected.some((option) => option.value === "selectAll")
+                    ) {
+                      setPushNotification({
+                        ...pushNotification,
+                        geofenceId: allGeofence.map((geofence) => geofence._id),
+                      });
+                    } else {
+                      setPushNotification({
+                        ...pushNotification,
+                        geofenceId: selected
+                          ? selected.map((option) => option.value)
+                          : [],
+                      });
+                    }
+                  }}
                 className="rounded mt-5 lg:mt-10 ml-5 lg:ml-52 w-full lg:w-96 focus:outline-none"
                 placeholder="Select geofence"
-                isSearchable={true}
-                isMulti={false}
+                isSearchable
+                isMulti
+                menuPlacement="top"
+                  styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        paddingRight: "",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        padding: "10px",
+                      }),
+                    }}
               />
             </div>
 

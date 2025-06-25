@@ -19,7 +19,7 @@ import Select from "react-select";
 
 const AllManager = () => {
   const [filter, setFilter] = useState({
-    geofence: null,
+    geofence: [],
     name: "",
   });
   const [modal, setModal] = useState({
@@ -70,10 +70,15 @@ const AllManager = () => {
     return () => clearTimeout(timeOut);
   }, [debounceName]);
 
-  const geofenceOptions = allGeofence?.map((geofence) => ({
-    label: geofence.name,
-    value: geofence._id,
-  }));
+  const geofenceOptions = [
+    { label: "Select All", value: "selectAll" },
+    ...(Array.isArray(allGeofence)
+      ? allGeofence?.map((geofence) => ({
+          label: geofence.name,
+          value: geofence._id,
+        }))
+      : []),
+  ];
 
   const allGeofenceOptions = [
     { label: "All", value: "all" },
@@ -208,7 +213,12 @@ const AllManager = () => {
                     <Table.Cell textAlign="center">{manager.phone}</Table.Cell>
                     <Table.Cell textAlign="center">{manager.role}</Table.Cell>
                     <Table.Cell textAlign="center">
-                      {manager.geofence}
+                      {manager?.geofence?.map((geofence, index) => (
+                        <span key={index} className="flex flex-col">
+                          {geofence}
+                          {index < manager.geofence.length - 1 && ", "}
+                        </span>
+                      ))}
                     </Table.Cell>
                     <Table.Cell textAlign="center">
                       <HStack
@@ -351,12 +361,14 @@ const AllManager = () => {
         isOpen={modal.addManager}
         onClose={closeModal}
         geofenceOptions={geofenceOptions}
+        allGeofence={allGeofence}
       />
       <EditManager
         isOpen={modal.editManager}
         onClose={closeModal}
         managerId={selectedId}
         geofenceOptions={geofenceOptions}
+        allGeofence={allGeofence}
       />
       <DeleteManager
         isOpen={modal.deleteManager}
