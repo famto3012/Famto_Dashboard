@@ -47,7 +47,7 @@ const Home = () => {
   const [status, setStatus] = useState(false);
   const [selectedOption, setSelectedOption] = useState("sales");
   const [dateRange, setDateRange] = useState([
-    new Date(new Date().setDate(new Date().getDate() - 7)),
+    new Date(new Date().setDate(new Date().getDate() - 8)),
     new Date(new Date().setDate(new Date().getDate() - 1)),
   ]);
   const [merchantId, setMerchantId] = useState(null);
@@ -451,13 +451,7 @@ const Home = () => {
             withPortal
             className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none"
             placeholderText="Select Date range"
-            maxDate={new Date()}
-            excludeDateIntervals={[
-              {
-                start: newDate(new Date().setDate(new Date().getDate() - 365)),
-                end: new Date(new Date().setDate(new Date().getDate() - 1)),
-              },
-            ]}
+            maxDate={new Date(new Date().setDate(new Date().getDate() - 1))}
           />
         </div>
 
