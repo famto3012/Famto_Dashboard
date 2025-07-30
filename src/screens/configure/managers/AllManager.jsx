@@ -213,13 +213,18 @@ const AllManager = () => {
                     <Table.Cell textAlign="center">{manager.phone}</Table.Cell>
                     <Table.Cell textAlign="center">{manager.role}</Table.Cell>
                     <Table.Cell textAlign="center">
-                      {manager?.geofence?.map((geofence, index) => (
-                        <span key={index} className="flex flex-col">
-                          {geofence}
-                          {index < manager.geofence.length - 1 && ", "}
-                        </span>
-                      ))}
+                      {Array.isArray(manager?.geofence) ? (
+                        manager.geofence.map((geofence, index) => (
+                          <span key={index} className="flex flex-col">
+                            {geofence}
+                            {index < manager.geofence.length - 1 && ", "}
+                          </span>
+                        ))
+                      ) : (
+                        <span>-</span>
+                      )}
                     </Table.Cell>
+
                     <Table.Cell textAlign="center">
                       <HStack
                         display={"flex"}
