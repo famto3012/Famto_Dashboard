@@ -29,7 +29,6 @@ import {
   updateMerchantStatusForMerchant,
 } from "@/hooks/merchant/useMerchant";
 import { useSocket } from "@/context/SocketContext";
-import { newDate } from "react-datepicker/dist/date_utils";
 
 // Register Chart.js components
 Chart.register(

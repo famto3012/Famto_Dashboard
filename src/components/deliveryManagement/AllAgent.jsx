@@ -121,7 +121,7 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
                           className={`${
                             data?.workStructure?.tag === "Normal"
                               ? "bg-green-600"
-                              : "bg-red-600"
+                              : "bg-red-500"
                           } rounded-full h-[20px] w-[20px] flex justify-center items-center text-white`}
                         ></div>
                       </Card.Title>
