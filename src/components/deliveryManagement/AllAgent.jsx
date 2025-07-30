@@ -115,8 +115,15 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
                 <div className="flex justify-between">
                   <div className="w-2/3">
                     <Card.Header className="h-[50px]">
-                      <Card.Title className="text-[17px] font-semibold">
+                      <Card.Title className="text-[17px] font-semibold gap-5 flex items-center">
                         {data?._id}
+                        <div
+                          className={`${
+                            data?.workStructure?.tag === "Normal"
+                              ? "bg-green-600"
+                              : "bg-red-600"
+                          } rounded-full h-[20px] w-[20px] flex justify-center items-center text-white`}
+                        ></div>
                       </Card.Title>
                     </Card.Header>
                     <Card.Body>

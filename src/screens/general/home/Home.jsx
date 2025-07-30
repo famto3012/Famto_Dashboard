@@ -29,6 +29,7 @@ import {
   updateMerchantStatusForMerchant,
 } from "@/hooks/merchant/useMerchant";
 import { useSocket } from "@/context/SocketContext";
+import { newDate } from "react-datepicker/dist/date_utils";
 
 // Register Chart.js components
 Chart.register(
@@ -47,7 +48,7 @@ const Home = () => {
   const [selectedOption, setSelectedOption] = useState("sales");
   const [dateRange, setDateRange] = useState([
     new Date(new Date().setDate(new Date().getDate() - 7)),
-    new Date(),
+    new Date(new Date().setDate(new Date().getDate() - 1)),
   ]);
   const [merchantId, setMerchantId] = useState(null);
   const chartRef = useRef(null);
@@ -451,6 +452,12 @@ const Home = () => {
             className="border-2 p-2 rounded-lg cursor-pointer outline-none focus:outline-none"
             placeholderText="Select Date range"
             maxDate={new Date()}
+            excludeDateIntervals={[
+              {
+                start: newDate(new Date().setDate(new Date().getDate() - 365)),
+                end: new Date(new Date().setDate(new Date().getDate() - 1)),
+              },
+            ]}
           />
         </div>
 
