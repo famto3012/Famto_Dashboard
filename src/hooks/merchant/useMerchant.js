@@ -1,4 +1,5 @@
 import useApiClient from "@/api/apiClient";
+import { sponsorShipOptions } from "@/utils/defaultData";
 
 export const fetchMerchantsForDropDown = async (navigate) => {
   try {
@@ -25,6 +26,7 @@ export const fetchAllMerchants = async (filter, page, navigate) => {
         businessCategory: filter.businessCategory,
         geofence: filter.geofence,
         subscriptionStatus: filter.subscriptionStatus,
+        sponsorShipStatus: filter.sponsorShipStatus,
       },
     });
 

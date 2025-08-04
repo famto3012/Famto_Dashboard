@@ -123,7 +123,7 @@ const NotificationLog = () => {
         </nav>
         <div className="px-4 lg:px-11 mt-2">
           <h1 className="text-base lg:text-lg font-bold mb-4 lg:mb-[30px] flex">
-            Notification Log
+            Notification Logs
           </h1>
         </div>
 

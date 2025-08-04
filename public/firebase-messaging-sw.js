@@ -1,6 +1,8 @@
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
-importScripts("https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js");
+importScripts(
+  "https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"
+);
 
 // Initialize the Firebase app in the service worker by passing the generated config
 const firebaseConfig = {
@@ -25,7 +27,7 @@ const notificationSound = new Howl({
   preload: true,
   volume: 1.0,
   loop: false, // Adjust volume as needed
-  onplayerror: function() {
+  onplayerror: function () {
     console.log("Error playing sound.");
   },
 });
@@ -53,11 +55,13 @@ messaging.onBackgroundMessage((payload) => {
     },
   };
 
-  self.registration.showNotification(notificationTitle, notificationOptions).then(() => {
-    // Play notification sound after notification has been shown
-    console.log("Notification sound played")
-    notificationSound.play();
-  });
+  self.registration
+    .showNotification(notificationTitle, notificationOptions)
+    .then(() => {
+      // Play notification sound after notification has been shown
+      console.log("Notification sound played");
+      notificationSound.play();
+    });
 });
 
 self.addEventListener("notificationclick", (event) => {
@@ -76,7 +80,7 @@ self.addEventListener("notificationclick", (event) => {
       })
       .then((clientList) => {
         // Focus the tab if it is already open
-        for (const client of clientList) { 
+        for (const client of clientList) {
           if (client.url === targetUrl && "focus" in client) {
             return client.focus();
           }

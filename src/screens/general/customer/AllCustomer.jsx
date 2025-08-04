@@ -26,6 +26,7 @@ import CSVOperation from "@/models/general/customer/CSVOperation";
 const AllCustomer = () => {
   const [filter, setFilter] = useState({
     geofence: null,
+    walletBalance: null,
     name: "",
   });
   const [debounce, setDebounce] = useState("");
@@ -67,6 +68,8 @@ const AllCustomer = () => {
     })),
   ];
 
+  const walletOptions = [{ label: "Active", value: "true" }];
+
   const showTableLoading = geofenceLoading || isLoading;
   const showError = geofenceError || isError;
 
@@ -96,8 +99,31 @@ const AllCustomer = () => {
             onChange={(option) =>
               setFilter({ ...filter, geofence: option.value })
             }
-            className=" bg-cyan-50 min-w-[10rem]"
+            className=" bg-cyan-50 min-w-[10rem] mx-10"
             placeholder="Geofence"
+            isSearchable
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
+
+          <Select
+            options={walletOptions}
+            value={walletOptions?.find(
+              (option) => option.value === filter.walletBalance
+            )}
+            onChange={(option) =>
+              setFilter({ ...filter, walletBalance: option.value })
+            }
+            className=" bg-cyan-50 min-w-[10rem]"
+            placeholder="Wallet"
             isSearchable
             styles={{
               control: (provided) => ({

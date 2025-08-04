@@ -9,7 +9,13 @@ export const fetchCustomer = async (role, filter, page, limit, navigate) => {
 
     const api = useApiClient(navigate);
     const res = await api.get(route, {
-      params: { page, limit, geofence: filter.geofence, query: filter.name },
+      params: {
+        page,
+        limit,
+        geofence: filter.geofence,
+        walletBalance: filter.walletBalance,
+        query: filter.name,
+      },
     });
 
     return res.status === 200 ? res.data : null;

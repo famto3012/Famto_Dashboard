@@ -8,7 +8,11 @@ import RenderIcon from "@/icons/RenderIcon";
 import GlobalSearch from "@/components/others/GlobalSearch";
 import AllMerchantsTable from "@/components/merchant/AllMerchantsTable";
 
-import { serviceableOptions, subscriptionOptions } from "@/utils/defaultData";
+import {
+  serviceableOptions,
+  sponsorShipOptions,
+  subscriptionOptions,
+} from "@/utils/defaultData";
 
 import AddMerchant from "@/models/general/merchant/AddMerchant";
 
@@ -25,6 +29,7 @@ const AllMerchant = () => {
     geofence: null,
     name: "",
     subscriptionStatus: null,
+    sponsorShipStatus: null,
   });
   const [debounceName, setDebounceName] = useState("");
   const [modal, setModal] = useState({
@@ -227,6 +232,28 @@ const AllMerchant = () => {
               }),
             }}
           />
+
+          <Select
+            options={sponsorShipOptions}
+            value={sponsorShipOptions.find(
+              (option) => option.value === filter.sponsorShipOptions
+            )}
+            onChange={(option) =>
+              setFilter({ ...filter, sponsorShipStatus: option.value })
+            }
+            className=" bg-cyan-50 min-w-[10rem]"
+            placeholder="Sponsorship"
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
         </div>
 
         <div className="flex items-center justify-between lg:justify-end w-full relative">
@@ -234,7 +261,7 @@ const AllMerchant = () => {
             type="search"
             value={debounceName}
             className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
-            placeholder="Search merchant"
+            placeholder="Search merchants"
             onChange={(e) => setDebounceName(e.target.value)}
           />
 

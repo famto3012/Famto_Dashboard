@@ -126,6 +126,8 @@ const subscriptionOptions = [
   { value: "expired", label: "Expired" },
 ];
 
+const sponsorShipOptions = [{ value: "active", label: "Active" }];
+
 const addNotificationSettingsOption = [
   { label: "New Order created", value: "newOrderCreated" },
   { label: "Order accepted", value: "orderAccepted" },
@@ -644,6 +646,7 @@ export {
   mainSideBarMenuItems,
   smallSideBarMenuItems,
   subscriptionOptions,
+  sponsorShipOptions,
   templateOptions,
   appUpdateTypeOptions,
   imageDisplayTypeOptions,

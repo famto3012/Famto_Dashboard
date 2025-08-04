@@ -1,10 +1,15 @@
 import AuthContext from "@/context/AuthContext";
 import { Table } from "@chakra-ui/react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 
 const Details = ({ data }) => {
-  const { customerDetail, merchantDetail, deliveryAgentDetail } = data;
+  const {
+    customerDetail,
+    merchantDetail,
+    deliveryAgentDetail,
+    detailAddedByAgent,
+  } = data;
   const { role } = useContext(AuthContext);
 
   const agentTableHeaders = [
@@ -17,9 +22,19 @@ const Details = ({ data }) => {
     "Delayed by",
   ];
 
+  const detailAddedByAgentHeaders = ["Notes", "Signature Image", "Images"];
+
   if (role !== "Merchant") {
     agentTableHeaders.push("Earning");
   }
+
+  const [openImage, setOpenImage] = useState(null); // URL of the image to show
+
+  const handleImageClick = (url) => {
+    setOpenImage(url);
+  };
+
+  const closeModal = () => setOpenImage(null);
 
   return (
     <>
@@ -205,6 +220,81 @@ const Details = ({ data }) => {
           </Table.Root>
         </div>
       </div>
+      <div className="mt-10">
+        <h1 className="text-[18px] font-semibold ml-5 mb-5">
+          Details Added by Agent
+        </h1>
+
+        <div className=" overflow-x-auto">
+          <Table.Root size="lg">
+            <Table.Header>
+              <Table.Row className="bg-teal-700 h-[70px]" textAlign="center">
+                {detailAddedByAgentHeaders.map((header) => (
+                  <Table.ColumnHeader color="white" textAlign="center">
+                    {header}
+                  </Table.ColumnHeader>
+                ))}
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              <Table.Row className="h-[70px]">
+                <Table.Cell className="text-center align-middle">
+                  {detailAddedByAgent.notes || "-"}
+                </Table.Cell>
+
+                <Table.Cell className="text-center align-middle">
+                  {detailAddedByAgent.signatureImageURL ? (
+                    <div className="flex justify-center">
+                      <img
+                        src={detailAddedByAgent.signatureImageURL}
+                        className="w-[200px] h-[80px] object-contain"
+                        alt="Signature"
+                        onClick={() =>
+                          handleImageClick(detailAddedByAgent.signatureImageURL)
+                        }
+                      />
+                    </div>
+                  ) : (
+                    "-"
+                  )}
+                </Table.Cell>
+
+                <Table.Cell className="text-center align-middle">
+                  {detailAddedByAgent.imageURL ? (
+                    <div className="flex justify-center">
+                      <img
+                        src={detailAddedByAgent.imageURL}
+                        className="w-[200px] h-[80px] object-contain"
+                        alt="Image"
+                        onClick={() =>
+                          handleImageClick(detailAddedByAgent.imageURL)
+                        }
+                      />
+                    </div>
+                  ) : (
+                    "-"
+                  )}
+                </Table.Cell>
+              </Table.Row>
+            </Table.Body>
+          </Table.Root>
+        </div>
+      </div>
+
+      {openImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black bg-opacity-70 flex items-center justify-center"
+          onClick={closeModal}
+        >
+          <img
+            src={openImage}
+            alt="Enlarged"
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-lg"
+            onClick={(e) => e.stopPropagation()} // Prevent modal close on image click
+          />
+        </div>
+      )}
     </>
   );
 };
