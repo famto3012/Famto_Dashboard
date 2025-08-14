@@ -127,18 +127,20 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
                   </Card.Header>
                   <Card.Body>
                     <p>
-                      {data?.pickupDetail?.pickupAddress?.fullName || "N/A"}
+                      {data?.orderId?.pickups[0]?.address?.fullName || "N/A"}
                     </p>
-                    <p>{data?.pickupDetail?.pickupAddress?.area || "N/A"}</p>
+                    <p>{data?.orderId?.pickups[0]?.address?.area || "N/A"}</p>
                   </Card.Body>
                   <Card.Footer className="flex justify-between">
                     <Button
                       className="bg-gray-200 text-black text-[12px] p-4 font-semibold"
                       onClick={() =>
                         onShowShopLocationOnMap({
-                          coordinates: data?.pickupDetail?.pickupLocation,
-                          fullName: data?.pickupDetail?.pickupAddress?.fullName,
-                          Id: data?.orderId,
+                          coordinates: data?.orderId?.pickups[0]?.location,
+                          fullName:
+                            data?.orderId?.pickups[0]?.address?.fullName ||
+                            "N/A",
+                          Id: data?.orderId?.merchantId || "N/A",
                         })
                       }
                     >
