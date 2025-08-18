@@ -108,6 +108,7 @@ const taskStatusOptions = [
   { value: "Unassigned", label: "Unassigned Tasks" },
   { value: "Assigned", label: "Assigned Tasks" },
   { value: "Completed", label: "Completed Tasks" },
+  { value: "BatchOrders", label: "Batch Orders" },
 ];
 
 const promoCodeModeOptions = [
