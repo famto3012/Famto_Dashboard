@@ -30,9 +30,24 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
 
   const navigate = useNavigate();
 
+  // const { data: filteredTaskData, isLoading } = useQuery({
+  //   queryKey: ["get-all-task", taskFilter],
+  //   queryFn: () => getTaskAccordingToFilter(taskFilter, navigate),
+  //   enabled: !!taskFilter,
+  // });
+
   const { data: filteredTaskData, isLoading } = useQuery({
     queryKey: ["get-all-task", taskFilter],
-    queryFn: () => getTaskAccordingToFilter(taskFilter, navigate),
+    queryFn: () => {
+      // if batch filter is selected, fetch unassigned tasks instead
+      if (taskFilter.filter === "BatchOrders") {
+        return getTaskAccordingToFilter(
+          { ...taskFilter, filter: "Unassigned" },
+          navigate
+        );
+      }
+      return getTaskAccordingToFilter(taskFilter, navigate);
+    },
     enabled: !!taskFilter,
   });
 
@@ -92,8 +107,8 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
           <div className="mb-4">
             <p className="text-sm font-semibold mb-1">Pickup:</p>
             <p className="text-teal-700">
-              {pickupTask?.pickupDetail?.pickupAddress?.fullName} -{" "}
-              {pickupTask?.pickupDetail?.pickupAddress?.area}
+              {pickupTask?.orderId?.pickups[0]?.address?.fullName} -{" "}
+              {pickupTask?.orderId?.pickups[0]?.address?.area}
             </p>
           </div>
         )}
@@ -109,8 +124,9 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
                     D{index + 1}
                   </span>
                   {/* Step Content */}
-                  {drop?.deliveryDetail?.deliveryAddress?.area ||
+                  {drop?.orderId?.drops[0]?.address?.fullName ||
                     "Drop Location"}
+                  - {drop?.orderId?.drops[0]?.address?.area || "Area"}
                 </li>
               ))}
             </ul>
@@ -134,7 +150,14 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
           </Button>
           <Button
             className="bg-teal-800 p-3 text-white text-sm"
-            onClick={() => alert("Batch Order Assigned")}
+            onClick={() => {
+              const allTaskIds = [
+                pickupTask?._id,
+                ...batchDropOrders.map((t) => t._id),
+              ].filter(Boolean); // remove null/undefined
+
+              toggleModal("assignAgent", allTaskIds);
+            }}
           >
             Assign to Agent
           </Button>
@@ -143,7 +166,7 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
     );
   };
 
-  const renderTaskCard = (data) => {
+  const renderTaskCard = (data, isBatchMode = false) => {
     return (
       <Card.Root key={data?._id} className="bg-zinc-100 mt-3 h-[200px]">
         <Card.Header className="h-[50px]">
@@ -153,51 +176,45 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
           </Card.Title>
         </Card.Header>
         <Card.Body>
-          <p>{data?.pickupDetail?.pickupAddress?.fullName || "N/A"}</p>
-          <p>{data?.pickupDetail?.pickupAddress?.area || "N/A"}</p>
+          <p>{data?.orderId?.pickups[0]?.address?.fullName || "N/A"}</p>
+          <p>{data?.orderId?.pickups[0]?.address?.area || "N/A"}</p>
         </Card.Body>
-        <Card.Footer className="flex justify-between flex-wrap gap-2">
+        <Card.Footer className="flex justify-between">
           <Button
             className="bg-gray-200 text-black text-[12px] p-4 font-semibold"
             onClick={() =>
               onShowShopLocationOnMap({
-                coordinates: data?.pickupDetail?.pickupLocation,
-                fullName: data?.pickupDetail?.pickupAddress?.fullName,
-                Id: data?.orderId,
+                coordinates: data?.orderId?.pickups[0]?.location,
+                fullName: data?.orderId?.pickups[0]?.address?.fullName || "N/A",
+                Id: data?.orderId?.merchantId || "N/A",
               })
             }
           >
             View on Map
           </Button>
 
-          {taskFilter.filter === "Assigned" ||
-          taskFilter.filter === "Completed" ? (
+          {isBatchMode ? (
+            // Show + button instead of Assign Agent
+            <Button
+              className="bg-teal-800 text-white text-[24px] p-4 w-1/2 font-semibold"
+              onClick={() => addToBatchDrop(data)}
+            >
+              +
+            </Button>
+          ) : data?.taskStatus === "Assigned" ||
+            data?.taskStatus === "Completed" ? (
             <Button
               className="bg-teal-800 text-white text-[12px] p-4 font-semibold"
               onClick={() => toggleModal("viewDetail", data?._id)}
             >
               View Details
             </Button>
-          ) : null}
-
-          {taskFilter.filter === "Unassigned" ? (
+          ) : (
             <Button
               className="bg-teal-800 text-white text-[12px] p-4 font-semibold"
               onClick={() => toggleModal("assignAgent", data?._id)}
             >
               Assign Agent
-            </Button>
-          ) : null}
-
-          {taskFilter.filter === "BatchOrders" && (
-            <Button
-              className={`bg-teal-800 text-white text-[12px] p-4 px-14 font-semibold ${
-                isBatchStarted ? "" : "opacity-50 cursor-not-allowed"
-              }`}
-              onClick={() => (isBatchStarted ? addToBatchDrop(data) : null)}
-              disabled={!isBatchStarted}
-            >
-              <PlusIcon />
             </Button>
           )}
         </Card.Footer>
@@ -234,12 +251,13 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
             value={searchInput}
             onChange={handleSearchInputChange}
           />
-
+          {/* 
           {taskFilter.filter === "BatchOrders" && (
             <Button
               className="bg-[#D9D9D9] p-2 w-full mb-5"
               onClick={startNewBatch}
             >
+              <PlusIcon />
               Create Batch Order
             </Button>
           )}
@@ -256,20 +274,61 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
             ) : (
               taskData.map((data) => renderTaskCard(data))
             )}
-          </div>
+          </div> */}
+
+          {taskFilter.filter === "BatchOrders" ? (
+            <>
+              <Button
+                className="bg-[#D9D9D9] p-2 w-full mb-5"
+                onClick={startNewBatch}
+              >
+                <PlusIcon />
+                Create Batch Order
+              </Button>
+
+              {isBatchStarted && renderBatchPreview()}
+
+              <h2 className="font-bold mb-2 text-teal-800">
+                Available Unassigned Tasks
+              </h2>
+              <div className="bg-white max-h-[300px] overflow-y-auto">
+                {isLoading ? (
+                  <ShowSpinner />
+                ) : taskData?.length === 0 ? (
+                  <p className="text-center mt-[20px]">
+                    No Unassigned Tasks Found.
+                  </p>
+                ) : (
+                  taskData.map((data) => renderTaskCard(data, true)) // ✅ pass true for batch mode
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="bg-white max-h-[300px] overflow-y-auto">
+              {isLoading ? (
+                <ShowSpinner />
+              ) : taskData?.length === 0 ? (
+                <p className="text-center mt-[20px]">No Tasks Found.</p>
+              ) : (
+                taskData.map((data) => renderTaskCard(data)) // ✅ normal mode
+              )}
+            </div>
+          )}
         </div>
       </div>
-
-      <AssignAgent
-        isOpen={modal.assignAgent}
-        onClose={closeModal}
-        taskId={selectedTask}
-      />
-      <TaskDetails
-        isOpen={modal.viewDetail}
-        onClose={closeModal}
-        taskId={selectedTask}
-      />
+      {taskFilter.filter !== "BatchOrders"}
+      <div>
+        <AssignAgent
+          isOpen={modal.assignAgent}
+          onClose={closeModal}
+          taskId={selectedTask}
+        />
+        <TaskDetails
+          isOpen={modal.viewDetail}
+          onClose={closeModal}
+          taskId={selectedTask}
+        />
+      </div>
     </>
   );
 };

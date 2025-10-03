@@ -13,6 +13,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import {
+  assignAgentToBatch,
   assignAgentToTask,
   getAgentsAccordingToGeofence,
 } from "@/hooks/deliveryManagement/useDeliveryManagement";
@@ -67,11 +68,50 @@ const AssignAgent = ({ isOpen, onClose, taskId }) => {
     onClose();
   };
 
+  // const handleAssignAgentToTask = useMutation({
+  //   mutationKey: ["assign-agent-to-task"],
+  //   mutationFn: ({ agentId, taskId }) => {
+  //     return assignAgentToTask(agentId, taskId, navigate);
+  //   },
+  //   onSuccess: () => {
+  //     toaster.create({
+  //       title: "Success",
+  //       description: "Agent successfully assigned to the task",
+  //       type: "success",
+  //     });
+  //     onModalClose();
+  //   },
+  //   onError: (error) => {
+  //     toaster.create({
+  //       title: "Error",
+  //       description: error || "Error in assigning agent",
+  //       type: "error",
+  //     });
+  //   },
+  // });
+
+  // const handleAssignAgent = () => {
+  //   if (!selectedAgent.agentId) {
+  //     toaster.create({
+  //       title: "Error",
+  //       description: "Please select an agent before assigning",
+  //       type: "error",
+  //     });
+  //     return;
+  //   }
+
+  //   handleAssignAgentToTask.mutate({ agentId: selectedAgent.agentId, taskId });
+  // };
+
   const handleAssignAgentToTask = useMutation({
     mutationKey: ["assign-agent-to-task"],
-    mutationFn: ({ agentId, taskId }) => {
-      return assignAgentToTask(agentId, taskId, navigate);
+    mutationFn: ({ agentId, taskIds }) => {
+      if (Array.isArray(taskIds)) {
+        return assignAgentToBatch(agentId, taskIds, navigate); // new API
+      }
+      return assignAgentToTask(agentId, taskIds, navigate); // existing API
     },
+
     onSuccess: () => {
       toaster.create({
         title: "Success",
@@ -91,15 +131,14 @@ const AssignAgent = ({ isOpen, onClose, taskId }) => {
 
   const handleAssignAgent = () => {
     if (!selectedAgent.agentId) {
-      toaster.create({
-        title: "Error",
-        description: "Please select an agent before assigning",
-        type: "error",
-      });
+      toaster.create({ title: "Error", description: "Please select an agent" });
       return;
     }
 
-    handleAssignAgentToTask.mutate({ agentId: selectedAgent.agentId, taskId });
+    handleAssignAgentToTask.mutate({
+      agentId: selectedAgent.agentId,
+      taskIds: taskId, // single or array
+    });
   };
 
   return (
