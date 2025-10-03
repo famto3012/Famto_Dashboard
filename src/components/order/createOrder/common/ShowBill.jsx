@@ -30,6 +30,7 @@ const ShowBill = ({ data }) => {
       cartId: data.cartId,
       deliveryMode: data.deliveryMode,
     });
+    console.log("Data in ShowBill:", data.billDetail);
   }, [data]);
 
   const downloadBill = useMutation({
@@ -137,7 +138,7 @@ const ShowBill = ({ data }) => {
               </tr>
             </thead>
             <tbody>
-              {data?.items && (
+              {data?.billDetail && (
                 <>
                   <tr key={data.index} className="text-left align-middle">
                     <td className="p-4">ItemTotal</td>

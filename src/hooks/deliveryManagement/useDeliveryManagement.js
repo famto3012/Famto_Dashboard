@@ -149,3 +149,19 @@ export const assignAgentToTask = async (agentId, taskId, navigate) => {
     );
   }
 };
+
+export const assignAgentToBatch = async (agentId, taskIds, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(`/admin/delivery-management/batch-order`, {
+      agentId,
+      taskIds, // array of task IDs
+    });
+    return res.status === 200 ? res.data : {};
+  } catch (err) {
+    console.error(`Error in assigning agent to batch: ${err}`);
+    throw new Error(
+      err.response?.data?.message || `Failed to assign agent to batch`
+    );
+  }
+};

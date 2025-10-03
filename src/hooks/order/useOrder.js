@@ -272,21 +272,10 @@ export const downloadInvoiceBill = async (cartId, deliveryMode, navigate) => {
   }
 };
 
-export const fetchPolylineFromPickupToDelivery = async ({
-  navigate,
-  pickupLat,
-  pickupLng,
-  deliveryLat,
-  deliveryLng,
-}) => {
+export const fetchPolylineFromPickupToDelivery = async ({ navigate, path }) => {
   try {
     const api = useApiClient(navigate);
-    const res = await api.post(`/admin/map/get-polyline`, {
-      pickupLat,
-      pickupLng,
-      deliveryLat,
-      deliveryLng,
-    });
+    const res = await api.post(`/admin/map/get-polyline`, { path });
 
     return res.status === 200 ? res.data.routes[0].geometry.coordinates : [];
   } catch (err) {

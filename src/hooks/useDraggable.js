@@ -12,7 +12,7 @@ export const useDraggable = () => {
     document.body.classList.add("no-select");
   };
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = () => {  
     setIsDragging(false);
     document.body.classList.remove("no-select");
   };
