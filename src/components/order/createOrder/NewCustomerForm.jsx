@@ -107,7 +107,17 @@ const NewCustomerForm = ({ toggleNewCustomerForm, onAddCustomer }) => {
                     e.key !== "Backspace" &&
                     e.key !== "Tab" &&
                     e.key !== "ArrowLeft" &&
-                    e.key !== "ArrowRight"
+                    e.key !== "ArrowRight" &&
+                    !(e.ctrlKey && (e.key === "v" || e.key === "V")) && // allow paste
+                    !(e.metaKey && (e.key === "v" || e.key === "V")) && // allow Cmd+V on Mac
+                    !(e.ctrlKey && (e.key === "c" || e.key === "C")) && // allow paste
+                    !(e.metaKey && (e.key === "c" || e.key === "C")) && // allow Cmd+V on Mac
+                    // allow Cmd+V on Mac
+                    !(e.ctrlKey && (e.key === "x" || e.key === "X")) && // allow paste
+                    !(e.metaKey && (e.key === "x" || e.key === "X")) && // allow Cmd+V on Mac
+                    !(e.metaKey && (e.key === "v" || e.key === "V")) && // allow Cmd+V on Mac
+                    !(e.ctrlKey && (e.key === "a" || e.key === "A")) && // allow paste
+                    !(e.metaKey && (e.key === "a" || e.key === "A")) // allow Cmd+V on Mac
                   ) {
                     e.preventDefault();
                   }
