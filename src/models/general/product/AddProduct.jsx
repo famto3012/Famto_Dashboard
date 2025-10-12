@@ -82,8 +82,32 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
     setFormData({ ...formData, [name]: value });
   };
 
+  // const handleInputNumberValidation = (e) => {
+  //   if (!/^[0-9]$/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+  //     e.preventDefault();
+  //   }
+  // };
+
   const handleInputNumberValidation = (e) => {
-    if (!/^[0-9]$/.test(e.key) && e.key !== "Backspace" && e.key !== "Tab") {
+    const allowedKeys = [
+      "Backspace",
+      "Tab",
+      "ArrowLeft",
+      "ArrowRight",
+      "Delete",
+    ];
+
+    // Allow control keys
+    if (allowedKeys.includes(e.key)) return;
+
+    // Allow digits and one dot for decimal values
+    if (!/^[0-9.]$/.test(e.key)) {
+      e.preventDefault();
+      return;
+    }
+
+    // Prevent multiple dots in the same number
+    if (e.key === "." && e.target.value.includes(".")) {
       e.preventDefault();
     }
   };

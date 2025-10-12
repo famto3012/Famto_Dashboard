@@ -27,16 +27,35 @@ const EditAddress = ({ isOpen, onClose, type, address, onNewAddress }) => {
     address && isOpen && setFormData({ ...address, type });
   }, [address]);
 
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+
+  //   if (name === "latitude" || name === "longitude") {
+  //     const regex = /^\d*\.?\d*$/;
+  //     if (!regex.test(value)) return;
+
+  //     const index = name === "latitude" ? 0 : 1;
+  //     const updatedCoords = [...formData.coordinates];
+  //     updatedCoords[index] = value;
+  //     setFormData({ ...formData, coordinates: updatedCoords });
+  //   } else {
+  //     setFormData({ ...formData, [name]: value });
+  //   }
+  // };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "latitude" || name === "longitude") {
-      const regex = /^\d*\.?\d*$/;
-      if (!regex.test(value)) return;
+      // Allow optional minus sign and decimals, and trim pasted spaces
+      const trimmed = value.trim();
+      const regex = /^-?\d*\.?\d*$/;
+
+      if (!regex.test(trimmed) && trimmed !== "") return;
 
       const index = name === "latitude" ? 0 : 1;
       const updatedCoords = [...formData.coordinates];
-      updatedCoords[index] = value;
+      updatedCoords[index] = trimmed;
       setFormData({ ...formData, coordinates: updatedCoords });
     } else {
       setFormData({ ...formData, [name]: value });
