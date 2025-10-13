@@ -173,9 +173,7 @@ const AddTax = ({ isOpen, onClose }) => {
                   variant="solid"
                 >
                   <HStack gap="8" direction="row">
-                    <Radio value="Fixed-amount" disabled>
-                      Fixed-amount
-                    </Radio>
+                    <Radio value="Fixed-amount">Fixed-amount</Radio>
                     <Radio value="Percentage">Percentage</Radio>
                   </HStack>
                 </RadioGroup>
