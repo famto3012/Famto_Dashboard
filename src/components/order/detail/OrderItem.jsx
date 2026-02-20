@@ -3,7 +3,12 @@ import { Table } from "@chakra-ui/react";
 const OrderItems = ({ data }) => {
   const { deliveryMode, items, customerDetail } = data;
   const pickupAddresses = customerDetail?.pickAddress || [];
-  const dropAddresses = customerDetail?.dropAddress || [];
+  const dropAddresses = Array.isArray(customerDetail?.dropAddress)
+  ? customerDetail.dropAddress
+  : customerDetail?.dropAddress
+  ? [customerDetail.dropAddress]
+  : [];
+
   return (
     <>
       <h1 className="text-[18px] font-semibold m-5">Order Details</h1>
@@ -161,7 +166,7 @@ const OrderItems = ({ data }) => {
           <Table.Root size="lg">
             <Table.Header>
               <Table.Row className="bg-teal-700 h-[70px]" textAlign="center">
-                {["Items", "Quantity", "Image"].map((header) => (
+                {["Items","Variant", "Quantity", "Image"].map((header) => (
                   <Table.ColumnHeader color="white" textAlign="center">
                     {header}
                   </Table.ColumnHeader>
@@ -177,8 +182,8 @@ const OrderItems = ({ data }) => {
                     className="h-[70px]"
                   >
                     <Table.Cell textAlign="center">{item.itemName}</Table.Cell>
+                    <Table.Cell textAlign="center">{item.variantTypeName}</Table.Cell>
                     <Table.Cell textAlign="center">{item.quantity}</Table.Cell>
-                    {/* <Table.Cell textAlign="center">{item.unit}</Table.Cell> */}
                     <Table.Cell
                       textAlign="center"
                       className="flex items-center justify-center"

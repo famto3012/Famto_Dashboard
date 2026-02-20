@@ -12,6 +12,8 @@ const Details = ({ data }) => {
   } = data;
   const { role } = useContext(AuthContext);
 
+  console.log("Data",data);
+
   const agentTableHeaders = [
     "Agent Id",
     "Name",
@@ -148,7 +150,7 @@ const Details = ({ data }) => {
                   {merchantDetail.name}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {merchantDetail.instructionsByCustomer || "-"}
+                  {customerDetail?.pickInstructions[0]?.instruction || "-"}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {merchantDetail.merchantEarnings}
@@ -196,7 +198,7 @@ const Details = ({ data }) => {
                   {deliveryAgentDetail.team}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {deliveryAgentDetail.instructionsByCustomer}
+                  {customerDetail?.dropInstructions[0]?.instruction}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {deliveryAgentDetail.timeTaken}
