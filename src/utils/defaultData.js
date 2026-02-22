@@ -16,6 +16,7 @@ const itemTypes = [
 
 const unitOptions = [
   { value: "nos", label: "nos" },
+  { value: "gm", label: "gm" },
   { value: "kg", label: "kg" },
   { value: "gm", label: "gm" },
   { value: "ltr", label: "ltr" },
