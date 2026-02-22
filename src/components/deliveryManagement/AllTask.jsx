@@ -11,6 +11,7 @@ import { Card } from "@chakra-ui/react";
 import ShowSpinner from "@/components/others/ShowSpinner";
 import TaskDetails from "@/models/general/deliveryManagement/TaskDetails";
 import { PlusIcon } from "@/icons/Icons";
+import { toaster } from "../ui/toaster";
 
 const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
   const [taskFilter, setTaskFilter] = useState({
@@ -151,6 +152,8 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
           <Button
             className="bg-teal-800 p-3 text-white text-sm"
             onClick={() => {
+
+              if (!validateBatchModes()) return;
               const allTaskIds = [
                 pickupTask?._id,
                 ...batchDropOrders.map((t) => t._id),
@@ -165,6 +168,54 @@ const AllTask = ({ onShowShopLocationOnMap, onDate }) => {
       </div>
     );
   };
+
+  const validateBatchModes = () => {
+    // ✅ Check pickup selected
+    if (!pickupTask) {
+      toaster.create({
+        title: "Pickup Missing",
+        description: "Please select a pickup task to create batch order.",
+        type: "error",
+      });
+      return false;
+    }
+
+    // ✅ Check at least one drop selected
+    if (batchDropOrders.length === 0) {
+      toaster.create({
+        title: "Drop Orders Missing",
+        description: "Please select at least one drop order.",
+        type: "error",
+      });
+      return false;
+    }
+
+    const allTasks = [pickupTask, ...batchDropOrders];
+
+    const firstPickupMode = allTasks[0]?.orderId?.pickupMode;
+    const firstDeliveryMode = allTasks[0]?.orderId?.deliveryMode;
+
+    const isValid = allTasks.every((task) => {
+      return (
+        task?.orderId?.pickupMode === firstPickupMode &&
+        task?.orderId?.deliveryMode === firstDeliveryMode
+      );
+    });
+
+    if (!isValid) {
+      toaster.create({
+        title: "Mode Mismatch",
+        description:
+          "All tasks must have the same Pickup Mode and Delivery Mode.",
+        type: "error",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+
 
   const renderTaskCard = (data, isBatchMode = false) => {
     return (
