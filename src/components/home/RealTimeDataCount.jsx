@@ -8,10 +8,13 @@ const RealTimeDataCount = () => {
   const { socket } = useContext(SocketContext);
 
   useEffect(() => {
+    console.log("RealTimeDataCount component mounted");
     socket?.on("realTimeDataCount", (dataCount) => {
       setTimeout(() => {
         setRealTimeDataCount(dataCount);
       }, 1000);
+
+      console.log("Real-time data count received:", dataCount);
     });
 
     if (role !== "Merchant") {
@@ -29,17 +32,17 @@ const RealTimeDataCount = () => {
     };
   }, [token, socket, userId, role]);
 
-  useEffect(() => {
-    if (role !== "Merchant") {
-      socket?.emit("getRealTimeDataOnRefresh", "");
-    } else if (role === "Merchant") {
-      const data = {
-        id: userId,
-        role: role,
-      };
-      socket?.emit("getRealTimeDataOnRefreshMerchant", data);
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (role !== "Merchant") {
+  //     socket?.emit("getRealTimeDataOnRefresh", "");
+  //   } else if (role === "Merchant") {
+  //     const data = {
+  //       id: userId,
+  //       role: role,
+  //     };
+  //     socket?.emit("getRealTimeDataOnRefreshMerchant", data);
+  //   }
+  // }, []);
 
   return (
     <>

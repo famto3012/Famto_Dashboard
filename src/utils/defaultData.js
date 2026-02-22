@@ -18,6 +18,7 @@ const unitOptions = [
   { value: "nos", label: "nos" },
   { value: "gm", label: "gm" },
   { value: "kg", label: "kg" },
+  { value: "gm", label: "gm" },
   { value: "ltr", label: "ltr" },
   { value: "m", label: "m" },
   { value: "cm", label: "cm" },
@@ -109,6 +110,7 @@ const taskStatusOptions = [
   { value: "Unassigned", label: "Unassigned Tasks" },
   { value: "Assigned", label: "Assigned Tasks" },
   { value: "Completed", label: "Completed Tasks" },
+  { value: "BatchOrders", label: "Batch Orders" },
 ];
 
 const promoCodeModeOptions = [

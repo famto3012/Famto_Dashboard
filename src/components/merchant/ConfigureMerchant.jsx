@@ -348,7 +348,7 @@ const ConfigureMerchant = ({ detail, onDataChange }) => {
             <input
               type="text"
               name="servingRadius"
-              value={detail?.merchantDetail?.servingRadius || 1}
+              value={detail?.merchantDetail?.servingRadius}
               onChange={handleInputChange}
               onKeyDown={(e) => {
                 if (

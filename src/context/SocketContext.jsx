@@ -31,7 +31,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (userId && fcmToken) {
-      const newSocket = io("https://development.famto.in", {
+      const newSocket = io("https://api.famto.in", {
         query: {
           userId: userId && userId,
           fcmToken: fcmToken && fcmToken,

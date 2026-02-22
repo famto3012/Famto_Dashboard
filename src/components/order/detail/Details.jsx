@@ -12,6 +12,8 @@ const Details = ({ data }) => {
   } = data;
   const { role } = useContext(AuthContext);
 
+  console.log("Data",data);
+
   const agentTableHeaders = [
     "Agent Id",
     "Name",
@@ -84,18 +86,18 @@ const Details = ({ data }) => {
                   {customerDetail.phone}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  <p> {customerDetail?.pickAddress?.fullName}</p>
-                  <p> {customerDetail?.pickAddress?.flat}</p>
-                  <p> {customerDetail?.pickAddress?.area}</p>
-                  <p> {customerDetail?.pickAddress?.landmark}</p>
-                  <p> {customerDetail?.pickAddress?.phoneNumber}</p>
+                  <p> {customerDetail?.pickAddress[0]?.fullName}</p>
+                  <p> {customerDetail?.pickAddress[0]?.flat}</p>
+                  <p> {customerDetail?.pickAddress[0]?.area}</p>
+                  <p> {customerDetail?.pickAddress[0]?.landmark}</p>
+                  <p> {customerDetail?.pickAddress[0]?.phoneNumber}</p>
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  <p> {customerDetail?.dropAddress?.fullName}</p>
-                  <p> {customerDetail?.dropAddress?.flat}</p>
-                  <p> {customerDetail?.dropAddress?.area}</p>
-                  <p> {customerDetail?.dropAddress?.landmark}</p>
-                  <p> {customerDetail?.dropAddress?.phoneNumber}</p>
+                  <p> {customerDetail?.dropAddress[0]?.fullName}</p>
+                  <p> {customerDetail?.dropAddress[0]?.flat}</p>
+                  <p> {customerDetail?.dropAddress[0]?.area}</p>
+                  <p> {customerDetail?.dropAddress[0]?.landmark}</p>
+                  <p> {customerDetail?.dropAddress[0]?.phoneNumber}</p>
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   <p> {customerDetail.ratingsToDeliveryAgent.rating}</p>
@@ -148,7 +150,7 @@ const Details = ({ data }) => {
                   {merchantDetail.name}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {merchantDetail.instructionsByCustomer || "-"}
+                  {customerDetail?.pickInstructions[0]?.instruction || "-"}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {merchantDetail.merchantEarnings}
@@ -196,7 +198,7 @@ const Details = ({ data }) => {
                   {deliveryAgentDetail.team}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {deliveryAgentDetail.instructionsByCustomer}
+                  {customerDetail?.dropInstructions[0]?.instruction}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {deliveryAgentDetail.timeTaken}
