@@ -107,6 +107,8 @@ const CustomerPricing = () => {
                 "Purchase Fare per hour",
                 "Waiting Fare",
                 "Waiting Time",
+                "Return Base Distance",
+                "Fare After Return Base Distance",
                 "Geofence",
                 "Status",
               ].map((header, idx) => (
@@ -160,6 +162,12 @@ const CustomerPricing = () => {
                   </Table.Cell>
                   <Table.Cell textAlign="center">
                     {price.waitingTime}
+                  </Table.Cell>
+                   <Table.Cell textAlign="center">
+                    {price.returnBaseDistance}
+                  </Table.Cell>
+                   <Table.Cell textAlign="center">
+                    {price.fareAfterBaseReturnDistance}
                   </Table.Cell>
                   <Table.Cell textAlign="center">
                     {price?.geofenceId?.map((geofence, index) => (
