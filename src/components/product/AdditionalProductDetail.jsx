@@ -236,7 +236,7 @@ const AdditionalProductDetail = ({ data }) => {
         <input
           type="text"
           name="price"
-          value={role !== "Merchant" ? data?.price : data?.costPrice}
+          value={data?.costPrice || ""}
           readOnly
           className="bg-gray-200 rounded-md outline-none focus:outline-none w-2/3 p-2"
         />

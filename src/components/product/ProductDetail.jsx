@@ -198,7 +198,7 @@ const ProductDetail = ({ merchantId }) => {
                     {data?.productName}
                   </p>
                   <p className="text-teal-800 font-bold">
-                    ₹ {role === "Merchant" ? data?.costPrice : data?.price}
+                    ₹ {data?.costPrice}
                   </p>
                 </div>
               </div>

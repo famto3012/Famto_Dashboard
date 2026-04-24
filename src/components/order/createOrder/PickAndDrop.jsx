@@ -607,6 +607,29 @@ const PickAndDrop = ({ data, address }) => {
             </div>
           )}
 
+          {role !== "Merchant" && (
+            <div className="flex flex-col md:flex-row md:items-start gap-[20px] md:gap-0">
+              <label
+                className="md:w-1/3 md:px-6"
+                htmlFor="dropData.instructions"
+              >
+                Select merchant address as drop address
+              </label>
+              <Select
+                className="w-[200px] outline-none focus:outline-none"
+                value={merchantOptions?.find(
+                  (option) => option.value === merchantId
+                )}
+                isSearchable
+                onChange={(option) =>
+                  setMerchantId(option ? option.value : null)
+                }
+                options={merchantOptions}
+                placeholder="Select a merchant"
+              />
+            </div>
+          )}
+
           {data?.deliveryTime && (
             <div className="flex flex-col md:flex-row md:items-start gap-[20px] md:gap-0">
               <label className="md:w-1/3 md:px-6" htmlFor="deliveryTime">
