@@ -39,6 +39,8 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
     waitingTime: "",
     waitingFare: "",
     purchaseFarePerHour: "",
+    returnBaseDistance: "",
+    fareAfterBaseReturnDistance: "",
     geofenceId: [],
     deliveryMode: "Home Delivery",
     businessCategoryId: null,
@@ -84,6 +86,8 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
         waitingTime: "",
         waitingFare: "",
         purchaseFarePerHour: "",
+        returnBaseDistance: "",
+        fareAfterBaseReturnDistance: "",
         geofenceId: [],
         deliveryMode: "Home Delivery",
         businessCategoryId: null,
@@ -107,7 +111,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
           .map(
             (id) =>
               allMerchants?.find((merchant) => merchant._id === id)
-                ?.merchantName
+                ?.merchantName,
           )
           .filter(Boolean);
 
@@ -338,7 +342,40 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                     onChange={handleInputChange}
                   />
                 </div>
-
+                <div className="flex items-center">
+                  <label
+                    className="w-1/3 text-gray-500"
+                    htmlFor="returnBaseDistance"
+                  >
+                    Return Base Distance
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Return Base Distance"
+                    value={formData.returnBaseDistance}
+                    id="returnBaseDistance"
+                    name="returnBaseDistance"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="flex items-center">
+                  <label
+                    className="w-1/3 text-gray-500"
+                    htmlFor="fareAfterBaseReturnDistance"
+                  >
+                    Fare After Base Return Distance
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Fare After Base Return Distance"
+                    value={formData.fareAfterBaseReturnDistance}
+                    id="fareAfterBaseReturnDistance"
+                    name="fareAfterBaseReturnDistance"
+                    onChange={handleInputChange}
+                  />
+                </div>
                 <div className="flex items-center mt-1 flex-col sm:flex-row sm:space-x-4">
                   <label className="w-full sm:w-1/3 text-gray-500 text-left">
                     Select Delivery Mode <span className="text-red-500">*</span>
@@ -373,7 +410,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                       options={businessOptions}
                       value={businessOptions?.find(
                         (option) =>
-                          option.value === formData?.businessCategoryId
+                          option.value === formData?.businessCategoryId,
                       )}
                       onChange={(option) =>
                         setFormData({
@@ -410,7 +447,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                     <Select
                       options={vehicleTypeOptions}
                       value={vehicleTypeOptions?.find(
-                        (option) => option.value === formData?.vehicleType
+                        (option) => option.value === formData?.vehicleType,
                       )}
                       onChange={(option) =>
                         setFormData({
@@ -446,7 +483,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                     <Select
                       options={merchantOptions}
                       value={merchantOptions?.filter((option) =>
-                        formData?.merchants?.includes(option.value)
+                        formData?.merchants?.includes(option.value),
                       )}
                       onChange={handleSelectChange}
                       className="rounded outline-none focus:outline-none w-2/3"
@@ -476,7 +513,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                   <Select
                     options={geofenceOptions}
                     value={geofenceOptions?.filter((option) =>
-                      formData?.geofenceId?.includes(option.value)
+                      formData?.geofenceId?.includes(option.value),
                     )}
                     onChange={(selected) => {
                       if (
@@ -486,7 +523,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                         setFormData({
                           ...formData,
                           geofenceId: allGeofence.map(
-                            (geofence) => geofence._id
+                            (geofence) => geofence._id,
                           ),
                         });
                       } else {

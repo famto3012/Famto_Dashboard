@@ -111,24 +111,43 @@ const ShowTakeAwayBill = ({ data }) => {
           <table className="border-2 border-teal-700 w-full text-left ">
             <thead>
               <tr>
-                {["Item", " Quantity", "Amount"].map((header, index) => (
-                  <th
-                    key={index}
-                    className="bg-teal-700 text-white p-4 border-[#eee]/50"
-                  >
-                    {header}
-                  </th>
-                ))}
+                {["Item", " Quantity", "Price", "Total Price", "Tax"].map(
+                  (header, index) => (
+                    <th
+                      key={index}
+                      className="bg-teal-700 text-white p-4 border-[#eee]/50"
+                    >
+                      {header}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
-              {data?.items?.map((data) => (
-                <tr key={data.index} className="text-left align-middle">
-                  <td className="p-4">{data.itemName}</td>
-                  <td className="p-4">{data.quantity}</td>
-                  <td className="p-4">{data.price}</td>
-                </tr>
-              ))}
+              {data?.items?.map((item, index) => {
+                const itemTotal = item.quantity * item.price;
+                return (
+                  <tr key={index} className="text-left align-middle">
+                    <td className="p-4">{item.itemName}</td>
+                    <td className="p-4">{item.quantity}</td>
+                    <td className="p-4">{item.price}</td>
+                    <td className="p-4">{itemTotal}</td>
+                    <td className="p-4">{data?.billDetail?.taxAmount}</td>
+                  </tr>
+                );
+              })}
+              <tr className="bg-teal-700 text-white font-semibold">
+                <td className="p-4" colSpan={4}>
+                  Grand Total
+                </td>
+
+                <td className="p-4">
+                  ₹{" "}
+                  {data?.billDetail?.discountedGrandTotal ||
+                    data?.billDetail?.originalGrandTotal ||
+                    0}
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

@@ -42,6 +42,8 @@ const EditCustomerPricing = ({ isOpen, onClose, pricingId }) => {
     waitingTime: "",
     waitingFare: "",
     purchaseFarePerHour: "",
+    returnBaseDistance: "",
+    fareAfterBaseReturnDistance: "",
     geofenceId: [],
     deliveryMode: "Home Delivery",
     businessCategoryId: null,
@@ -109,6 +111,8 @@ const EditCustomerPricing = ({ isOpen, onClose, pricingId }) => {
         waitingTime: "",
         waitingFare: "",
         purchaseFarePerHour: "",
+        returnBaseDistance: "",
+        fareAfterBaseReturnDistance: "",
         geofenceId: [],
         deliveryMode: "Home Delivery",
         businessCategoryId: null,
@@ -365,7 +369,34 @@ const EditCustomerPricing = ({ isOpen, onClose, pricingId }) => {
                     onChange={handleInputChange}
                   />
                 </div>
-
+                      <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500" htmlFor="returnBaseDistance">
+                    Return Base Distance
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Return Base Distance"
+                    value={formData.returnBaseDistance}
+                    id="returnBaseDistance"
+                    name="returnBaseDistance"
+                    onChange={handleInputChange}
+                  />
+                </div>
+                      <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500" htmlFor="fareAfterBaseReturnDistance">
+                    Fare After Base Return Distance
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Fare After Base Return Distance"
+                    value={formData.fareAfterBaseReturnDistance}
+                    id="fareAfterBaseReturnDistance"
+                    name="fareAfterBaseReturnDistance"
+                    onChange={handleInputChange}
+                  />
+                </div>
                 <div className="flex items-center mt-1 flex-col sm:flex-row sm:space-x-4">
                   <label className="w-full sm:w-1/3 text-gray-500 text-left">
                     Select Delivery Mode <span className="text-red-500">*</span>
