@@ -21,6 +21,8 @@ import CropImage from "@/components/others/CropImage";
 import ModalLoader from "@/components/others/ModalLoader";
 import Error from "@/components/others/Error";
 
+import { Switch } from "@/components/ui/switch";
+
 import { getAllGeofence } from "@/hooks/geofence/useGeofence";
 import {
   fetchSingleBusinessCategory,
@@ -37,6 +39,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
     merchantFilters: ["All"],
     productFilters: ["All"],
     imageDisplayType: "",
+    hasFoodType: false,
   });
   const [selectedFile, setSelectedFile] = useState(null);
   const [croppedFile, setCroppedFile] = useState(null);
@@ -385,6 +388,23 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
                   }
                   options={imageDisplayTypeOptions}
                 />
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="w-1/2 text-gray-500">
+                  Has Food Type
+                </label>
+                <div className="w-2/3">
+                  <Switch
+                    checked={formData.hasFoodType}
+                    onCheckedChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        hasFoodType: e.checked,
+                      }))
+                    }
+                  />
+                </div>
               </div>
 
               <div className="flex items-start">

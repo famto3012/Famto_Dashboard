@@ -232,6 +232,7 @@ const AddAgentSurge = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   onClick={() => handelAddSurge.mutate(formData)}
+                  disabled={handelAddSurge.isPending}
                   className="bg-teal-700 text-white py-2 px-4 rounded-md"
                 >
                   {handelAddSurge.isPending ? `Saving...` : `Save`}

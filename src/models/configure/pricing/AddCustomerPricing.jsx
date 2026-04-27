@@ -525,6 +525,7 @@ const AddCustomerPricing = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   onClick={() => handleAddPricing.mutate(formData)}
+                  disabled={handleAddPricing.isPending}
                   className="bg-teal-700 text-white py-2 px-4 rounded-md"
                 >
                   {handleAddPricing.isPending ? `Saving...` : `Save`}

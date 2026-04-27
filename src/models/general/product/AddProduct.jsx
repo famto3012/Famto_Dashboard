@@ -501,6 +501,7 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="photos">
                 Photos
+                <br /> (1024px x 1024px)
               </label>
 
               <div className=" flex items-center gap-[30px]">

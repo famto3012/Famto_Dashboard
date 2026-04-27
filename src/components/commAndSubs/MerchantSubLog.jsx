@@ -91,16 +91,25 @@ const MerchantSubLog = ({ selected, filter }) => {
                 <Table.Cell textAlign="center">{item.paymentMode}</Table.Cell>
                 <Table.Cell textAlign="center">{item.startDate}</Table.Cell>
                 <Table.Cell textAlign="center">
-                  {item.status === "Unpaid" && role !== "Merchant" ? (
-                    <button
-                      onClick={() => toggleModal(item.logId)}
-                      className="bg-teal-700 text-white p-3 rounded-md"
+                  <div className="flex flex-col items-center gap-1">
+                    <p
+                      className={
+                        item.status === "Active"
+                          ? "text-green-600 font-medium"
+                          : "text-red-500 font-medium"
+                      }
                     >
-                      Set as paid
-                    </button>
-                  ) : (
-                    <p className="text-green-600">{item.status}</p>
-                  )}
+                      {item.status}
+                    </p>
+                    {item.paymentStatus === "Unpaid" && role !== "Merchant" && (
+                      <button
+                        onClick={() => toggleModal(item.logId)}
+                        className="bg-teal-700 text-white px-2 py-1 rounded-md text-xs"
+                      >
+                        Set as paid
+                      </button>
+                    )}
+                  </div>
                 </Table.Cell>
               </Table.Row>
             ))

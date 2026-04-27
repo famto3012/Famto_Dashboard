@@ -67,6 +67,7 @@ const DeleteAgentSurge = ({ isOpen, onClose, surgeId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeletePricing.mutate(surgeId)}
+            disabled={handleDeletePricing.isPending}
           >
             {handleDeletePricing.isPending ? `Deleting...` : `Delete`}
           </Button>

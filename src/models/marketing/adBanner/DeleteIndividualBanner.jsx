@@ -67,6 +67,7 @@ const DeleteIndividualBanner = ({ isOpen, onClose, bannerId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteBanner.mutate(bannerId)}
+            disabled={handleDeleteBanner.isPending}
           >
             {handleDeleteBanner.isPending ? `Deleting...` : `Delete`}
           </Button>

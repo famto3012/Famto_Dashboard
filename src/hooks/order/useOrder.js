@@ -371,3 +371,14 @@ export const markPaymentReceived = async (orderId, navigate) => {
     );
   }
 };
+
+export const getOrderChat = async (orderId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/orders/admin/order-chat/${orderId}`);
+    return res.data;
+  } catch (err) {
+    console.error("Error fetching order chat:", err);
+    throw err.response?.data?.message || "Error fetching order chat";
+  }
+};

@@ -400,6 +400,7 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
                 <button
                   className="bg-teal-700 text-white py-2 px-4 rounded-md"
                   onClick={() => handleAddPricing.mutate(formData)}
+                  disabled={handleAddPricing.isPending}
                 >
                   {handleAddPricing.isPending ? `Saving...` : `Save`}
                 </button>

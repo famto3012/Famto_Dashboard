@@ -67,6 +67,7 @@ const DeleteService = ({ isOpen, onClose, serviceId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteService.mutate()}
+            disabled={handleDeleteService.isPending}
           >
             {handleDeleteService.isPending ? `Deleting...` : `Delete`}
           </Button>

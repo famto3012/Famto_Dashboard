@@ -188,8 +188,8 @@ const NotificationLog = () => {
                         {notification?.title}
                       </span>
                       <span className="block">
-                        {notification?.description?.length > 30
-                          ? `${notification?.description.substring(0, 30)}...`
+                        {notification?.description?.length > 60
+                          ? `${notification?.description.substring(0, 60)}...`
                           : notification?.description}
                       </span>
                     </Table.Cell>

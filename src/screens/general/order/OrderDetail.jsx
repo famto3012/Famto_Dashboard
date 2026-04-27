@@ -15,6 +15,8 @@ import Details from "@/components/order/detail/Details";
 import OrderItems from "@/components/order/detail/OrderItem";
 import OrderBill from "@/components/order/detail/OrderBill";
 import OrderActivity from "@/components/order/detail/OrderActivity";
+import AgentChat from "@/components/order/detail/AgentChat";
+import PrintBill from "@/components/order/detail/PrintBill";
 
 import RenderIcon from "@/icons/RenderIcon";
 
@@ -172,8 +174,9 @@ const OrderDetail = () => {
               <Button
                 className="bg-teal-700 text-white p-2 rounded-md"
                 onClick={() => markOrderAsCompleted.mutate()}
+                disabled={markOrderAsCompleted.isPending}
               >
-                Mark as Completed
+                {markOrderAsCompleted.isPending ? "Saving..." : "Mark as Completed"}
               </Button>
             )}
 
@@ -183,6 +186,7 @@ const OrderDetail = () => {
               <Button
                 className="bg-red-500 text-white p-2 rounded-md"
                 onClick={() => setShowCancel(true)}
+                disabled={showCancel}
               >
                 Mark as cancelled
               </Button>
@@ -193,22 +197,28 @@ const OrderDetail = () => {
             orderDetail.paymentCollectedFromCustomer === "Pending" && (
               <Button
                 onClick={() => markOrderAsPaid.mutate()}
+                disabled={markOrderAsPaid.isPending}
                 className="bg-teal-700 text-white p-2 rounded-md"
               >
-                Received Payment
+                {markOrderAsPaid.isPending ? "Saving..." : "Received Payment"}
               </Button>
             )}
 
           {orderId.charAt(0) === "O" && (
             <Button
               onClick={handleDownloadBill}
+              disabled={downloadBill.isPending}
               className="bg-blue-100 px-4 p-2 rounded-md cursor-pointer"
             >
               <span>
                 <RenderIcon iconName="DownloadIcon" size={24} loading={6} />
               </span>
-              Bill
+              {downloadBill.isPending ? "Downloading..." : "Bill"}
             </Button>
+          )}
+
+          {orderId.charAt(0) === "O" && orderDetail && (
+            <PrintBill orderDetail={orderDetail} />
           )}
         </div>
       </div>
@@ -319,6 +329,10 @@ const OrderDetail = () => {
       <OrderBill data={orderDetail} />
 
       {orderId.startsWith("O") && <OrderActivity orderDetail={orderDetail} />}
+
+      {orderId.startsWith("O") && role !== "Merchant" && (
+        <AgentChat orderId={orderId} />
+      )}
 
       <CancelOrder
         isOpen={showCancel}

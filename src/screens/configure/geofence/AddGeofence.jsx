@@ -6,61 +6,72 @@ import { toaster } from "@/components/ui/toaster";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addGeofence, getAllGeofence } from "@/hooks/geofence/useGeofence";
 import { getAuthTokenForDeliveryManagementMap } from "@/hooks/deliveryManagement/useDeliveryManagement";
-import { mappls, mappls_plugin } from "mappls-web-maps";
-
-const mapplsClassObject = new mappls();
-const mapplsPluginObject = new mappls_plugin();
-
 const PlaceSearchPlugin = ({ map }) => {
   const placeSearchRef = useRef(null);
   const markerRef = useRef(null);
 
   useEffect(() => {
-    if (map && placeSearchRef.current) {
-      mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+    if (!map || !window.mappls) return;
+
+    const initSearch = () => {
+      if (!window.mappls.search) return;
+
+      if (placeSearchRef.current) {
+        window.mappls.removeLayer({ map, layer: placeSearchRef.current });
+      }
+
+      const optional_config = {
+        location: [8.5892862, 76.8773566],
+        region: "IND",
+        height: 300,
+        hyperLocal: true,
+      };
+
+      const callback = (data) => {
+        if (data) {
+          const dt = data[0];
+          if (!dt) return false;
+          const eloc = dt.eLoc;
+          const place = `${dt.placeName}`;
+          if (markerRef.current) markerRef.current.remove();
+          window.mappls.pinMarker(
+            {
+              map: map,
+              pin: eloc,
+              popupHtml: place,
+              popupOptions: { openPopup: true },
+              zoom: 10,
+            },
+            (data) => {
+              markerRef.current = data;
+              markerRef.current.fitbounds();
+            }
+          );
+        }
+      };
+
+      placeSearchRef.current = window.mappls.search(
+        document.getElementById("auto"),
+        optional_config,
+        callback
+      );
+    };
+
+    if (window.mappls.search) {
+      initSearch();
+    } else {
+      const interval = setInterval(() => {
+        if (window.mappls.search) {
+          clearInterval(interval);
+          initSearch();
+        }
+      }, 200);
+      return () => clearInterval(interval);
     }
 
-    const optional_config = {
-      location: [8.5892862, 76.8773566], // Center of Trivandrum
-      region: "IND",
-      height: 300,
-      hyperLocal: true,
-    };
-
-    const callback = (data) => {
-      if (data) {
-        const dt = data[0];
-        if (!dt) return false;
-        const eloc = dt.eLoc;
-        const place = `${dt.placeName}`;
-        if (markerRef.current) markerRef.current.remove();
-        mapplsPluginObject.pinMarker(
-          {
-            map: map,
-            pin: eloc,
-            popupHtml: place,
-            popupOptions: {
-              openPopup: true,
-            },
-            zoom: 10,
-          },
-          (data) => {
-            markerRef.current = data;
-            markerRef.current.fitbounds();
-          }
-        );
-        markerRef.current.remove();
-      }
-    };
-    placeSearchRef.current = mapplsPluginObject.search(
-      document.getElementById("auto"),
-      optional_config,
-      callback
-    );
-
     return () => {
-      if (map && placeSearchRef.current) {
-        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
+      if (placeSearchRef.current) {
+        window.mappls.removeLayer({ map, layer: placeSearchRef.current });
       }
     };
   }, [map]);
@@ -126,7 +137,11 @@ const AddGeofence = () => {
       const script = document.createElement("script");
       script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
       script.async = true;
-      script.onload = () => console.log("Mappls script loaded successfully.");
+      script.onload = () => {
+        const pluginScript = document.createElement("script");
+        pluginScript.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk_plugins?v=3.0&libraries=search`;
+        document.body.appendChild(pluginScript);
+      };
       script.onerror = () => console.error("Error loading Mappls script.");
       document.body.appendChild(script);
 
@@ -336,6 +351,7 @@ const AddGeofence = () => {
               <button
                 type="submit"
                 onClick={() => handleAddGeofence.mutate({ newGeofence })}
+                disabled={handleAddGeofence.isPending}
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 Add
@@ -345,16 +361,18 @@ const AddGeofence = () => {
 
           {/* Map Section */}
           <div className="p-6 bg-white rounded-lg shadow-sm w-full sm:w-2/3">
-            <div
-              ref={mapContainerRef}
-              id="map"
-              className="map-container w-full h-[600px]"
-            >
+            <div className="relative">
+              <div
+                ref={mapContainerRef}
+                id="map"
+                className="map-container w-full h-[600px]"
+              />
+
               <input
                 type="text"
                 id="auto"
                 name="auto"
-                className="absolute top-0 left-0 mt-2 ms-2 p-[10px] text-[15px] outline-none focus:outline-none 
+                className="absolute top-2 left-2 z-10 p-[10px] text-[15px] outline-none focus:outline-none
              w-[170px] sm:w-[200px] md:w-[250px] lg:w-[300px]"
                 placeholder="Search places"
                 spellCheck="false"

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e ' *)",
+      "Bash(del \"C:\\\\Users\\\\sarat\\\\Projects\\\\Famto_Dashboard\\\\src\\\\components\\\\SideFilters\\\\CustomerSubscriptionLogFilters.jsx\")",
+      "Bash(xargs grep *)",
+      "Bash(grep -E \"\\\\.\\(dart|flutter\\)$\")"
+    ]
+  }
+}

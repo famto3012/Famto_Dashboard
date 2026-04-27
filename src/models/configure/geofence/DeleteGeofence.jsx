@@ -61,6 +61,7 @@ const DeleteGeofence = ({ isOpen, onClose, geofenceId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => deleteGeofenceMutation.mutate({ geofenceId })}
+            disabled={deleteGeofenceMutation.isPending}
           >
             {deleteGeofenceMutation.isPending ? `Deleting...` : `Delete`}
           </Button>
