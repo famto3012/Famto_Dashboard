@@ -30,13 +30,22 @@ const Details = ({ data }) => {
     agentTableHeaders.push("Earning");
   }
 
-  const [openImage, setOpenImage] = useState(null); // URL of the image to show
+  const [openImage, setOpenImage] = useState(null);
 
-  const handleImageClick = (url) => {
-    setOpenImage(url);
-  };
-
+  const handleImageClick = (url) => setOpenImage(url);
   const closeModal = () => setOpenImage(null);
+
+  const VoicePlayer = ({ url }) => {
+    if (!url) return <span>-</span>;
+    return (
+      <audio
+        controls
+        preload="none"
+        src={url}
+        className="h-8 w-52 mt-1"
+      />
+    );
+  };
 
   return (
     <>
@@ -150,7 +159,10 @@ const Details = ({ data }) => {
                   {merchantDetail.name}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {customerDetail?.pickInstructions[0]?.instruction || "-"}
+                  <p>{customerDetail?.pickInstructions[0]?.instruction || "-"}</p>
+                  <div className="flex justify-center mt-1">
+                    <VoicePlayer url={customerDetail?.pickInstructions[0]?.voiceInstruction} />
+                  </div>
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {merchantDetail.merchantEarnings}
@@ -198,7 +210,10 @@ const Details = ({ data }) => {
                   {deliveryAgentDetail.team}
                 </Table.Cell>
                 <Table.Cell textAlign="center">
-                  {customerDetail?.dropInstructions[0]?.instruction}
+                  <p>{customerDetail?.dropInstructions[0]?.instruction || "-"}</p>
+                  <div className="flex justify-center mt-1">
+                    <VoicePlayer url={customerDetail?.dropInstructions[0]?.voiceInstruction} />
+                  </div>
                 </Table.Cell>
                 <Table.Cell textAlign="center">
                   {deliveryAgentDetail.timeTaken}
