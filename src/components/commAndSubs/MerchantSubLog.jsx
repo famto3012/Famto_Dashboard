@@ -54,7 +54,7 @@ const MerchantSubLog = ({ selected, filter }) => {
               "Subscription Plans",
               "Total Amount",
               "Payment Mode",
-              "Start Date",
+              "End Date",
               "Status",
             ].map((header, index) => (
               <Table.ColumnHeader key={index} color="white" textAlign="center">

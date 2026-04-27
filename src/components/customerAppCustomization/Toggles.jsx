@@ -43,6 +43,9 @@ const Toggles = () => {
       endTime: "",
       taxId: null,
     },
+    takeAwayOrderCustomization: {
+      taxId: null,
+    },
     appUpdateType: "",
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -548,6 +551,31 @@ const Toggles = () => {
           isSearchable
           isMulti={false}
           className="mt-5 lg:mt-0 w-full lg:w-[20%]"
+        />
+      </div>
+
+      <div className="mt-10 flex flex-col lg:flex-row mx-5">
+        <h1 className="w-full lg:w-1/5">Manage Take Away tax</h1>
+
+        <Select
+          options={taxOptions}
+          value={taxOptions?.find(
+            (option) =>
+              option.value === formData?.takeAwayOrderCustomization?.taxId
+          )}
+          onChange={(option) => {
+            setFormData((prev) => ({
+              ...prev,
+              takeAwayOrderCustomization: {
+                ...prev.takeAwayOrderCustomization,
+                taxId: option.value,
+              },
+            }));
+          }}
+          isSearchable
+          isMulti={false}
+          className="mt-5 lg:mt-0 w-full lg:w-[20%]"
+          menuPlacement="auto"
         />
       </div>
 

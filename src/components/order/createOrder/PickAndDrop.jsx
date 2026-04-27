@@ -37,7 +37,8 @@ const PickAndDrop = ({ data, address }) => {
     addedTip: "",
     vehicleType: null,
   });
-  const [merchantId, setMerchantId] = useState(null);
+  const [pickupMerchantId, setPickupMerchantId] = useState(null);
+  const [dropMerchantId, setDropMerchantId] = useState(null);
   const [cartData, setCartData] = useState({});
   const [showBill, setShowBill] = useState(false);
   const [clearSignal, setClearSignal] = useState(false);
@@ -161,7 +162,18 @@ const PickAndDrop = ({ data, address }) => {
 
   const handleCreateInvoice = useMutation({
     mutationKey: ["pick-and-drop-invoice"],
-    mutationFn: () => createInvoice(role, pickAndDropData, navigate),
+    mutationFn: () =>
+      createInvoice(
+        role,
+        {
+          ...pickAndDropData,
+          merchantId:
+            pickupMerchantId ||
+            dropMerchantId ||
+            (role === "Merchant" ? userId : null),
+        },
+        navigate
+      ),
     onSuccess: (data) => {
       setCartData(data);
       setShowBill(true);
@@ -201,10 +213,26 @@ const PickAndDrop = ({ data, address }) => {
     enabled: role && role !== "Merchant",
   });
 
+  // For Merchant role: fetch own shop details (used by Pick from Shop / Drop to Shop)
   const { data: merchantDetailData } = useQuery({
-    queryKey: ["merchant-detail", merchantId, userId],
+    queryKey: ["merchant-detail", userId],
+    queryFn: () => fetchSingleMerchantDetail(role, userId, navigate),
+    enabled: role === "Merchant",
+  });
+
+  // For Admin role: fetch details of the selected pickup merchant
+  const { data: pickupMerchantDetailData } = useQuery({
+    queryKey: ["pickup-merchant-detail", pickupMerchantId],
     queryFn: () =>
-      fetchSingleMerchantDetail(role, merchantId ?? userId, navigate),
+      fetchSingleMerchantDetail(role, pickupMerchantId, navigate),
+    enabled: role !== "Merchant" && !!pickupMerchantId,
+  });
+
+  // For Admin role: fetch details of the selected drop merchant
+  const { data: dropMerchantDetailData } = useQuery({
+    queryKey: ["drop-merchant-detail", dropMerchantId],
+    queryFn: () => fetchSingleMerchantDetail(role, dropMerchantId, navigate),
+    enabled: role !== "Merchant" && !!dropMerchantId,
   });
 
   // useEffect(() => {
@@ -213,8 +241,9 @@ const PickAndDrop = ({ data, address }) => {
   //   }
   // }, [merchantData]);
 
+  // Merchant role: auto-fill pickup address when "Pick from Shop" is checked
   useEffect(() => {
-    if (role === "Merchant" && pickFromShop) {
+    if (role === "Merchant" && pickFromShop && merchantDetailData) {
       const pickData = {
         type: "other",
         fullName: merchantDetailData?.merchantDetail?.merchantName,
@@ -227,15 +256,18 @@ const PickAndDrop = ({ data, address }) => {
         longitude: merchantDetailData?.merchantDetail?.location?.[1],
       };
 
-      setPickAndDropData({
-        ...pickAndDropData,
+      setPickAndDropData((prev) => ({
+        ...prev,
         newPickupAddress: pickData,
         pickUpAddressType: null,
         pickUpAddressOtherAddressId: null,
-      });
+      }));
     }
+  }, [pickFromShop, merchantDetailData]);
 
-    if (role === "Merchant" && dropToShop) {
+  // Merchant role: auto-fill delivery address when "Drop to Shop" is checked
+  useEffect(() => {
+    if (role === "Merchant" && dropToShop && merchantDetailData) {
       const dropData = {
         type: "other",
         fullName: merchantDetailData?.merchantDetail?.merchantName,
@@ -248,37 +280,62 @@ const PickAndDrop = ({ data, address }) => {
         longitude: merchantDetailData?.merchantDetail?.location?.[1],
       };
 
-      setPickAndDropData({
-        ...pickAndDropData,
+      setPickAndDropData((prev) => ({
+        ...prev,
         newDeliveryAddress: dropData,
         deliveryAddressType: null,
         deliveryAddressOtherAddressId: null,
-      });
+      }));
     }
-  }, [pickFromShop, dropToShop]);
+  }, [dropToShop, merchantDetailData]);
 
+  // Admin role: auto-fill pickup address when a pickup merchant is selected
   useEffect(() => {
-    if (merchantDetailData && role !== "Merchant") {
+    if (pickupMerchantDetailData && role !== "Merchant") {
       const pickData = {
         type: "other",
-        fullName: merchantDetailData?.merchantDetail?.merchantName,
-        phoneNumber: merchantDetailData?.phoneNumber,
-        flat: merchantDetailData?.merchantDetail?.merchantName,
-        area: merchantDetailData?.merchantDetail?.displayAddress,
-        landmark: merchantDetailData?.merchantDetail?.displayAddress,
+        fullName: pickupMerchantDetailData?.merchantDetail?.merchantName,
+        phoneNumber: pickupMerchantDetailData?.phoneNumber,
+        flat: pickupMerchantDetailData?.merchantDetail?.merchantName,
+        area: pickupMerchantDetailData?.merchantDetail?.displayAddress,
+        landmark: pickupMerchantDetailData?.merchantDetail?.displayAddress,
         saveAddress: false,
-        latitude: merchantDetailData?.merchantDetail?.location?.[0],
-        longitude: merchantDetailData?.merchantDetail?.location?.[1],
+        latitude: pickupMerchantDetailData?.merchantDetail?.location?.[0],
+        longitude: pickupMerchantDetailData?.merchantDetail?.location?.[1],
       };
 
-      setPickAndDropData({
-        ...pickAndDropData,
+      setPickAndDropData((prev) => ({
+        ...prev,
         newPickupAddress: pickData,
         pickUpAddressType: null,
         pickUpAddressOtherAddressId: null,
-      });
+      }));
     }
-  }, [merchantDetailData]);
+  }, [pickupMerchantDetailData]);
+
+  // Admin role: auto-fill delivery address when a drop merchant is selected
+  useEffect(() => {
+    if (dropMerchantDetailData && role !== "Merchant") {
+      const dropData = {
+        type: "other",
+        fullName: dropMerchantDetailData?.merchantDetail?.merchantName,
+        phoneNumber: dropMerchantDetailData?.phoneNumber,
+        flat: dropMerchantDetailData?.merchantDetail?.merchantName,
+        area: dropMerchantDetailData?.merchantDetail?.displayAddress,
+        landmark: dropMerchantDetailData?.merchantDetail?.displayAddress,
+        saveAddress: false,
+        latitude: dropMerchantDetailData?.merchantDetail?.location?.[0],
+        longitude: dropMerchantDetailData?.merchantDetail?.location?.[1],
+      };
+
+      setPickAndDropData((prev) => ({
+        ...prev,
+        newDeliveryAddress: dropData,
+        deliveryAddressType: null,
+        deliveryAddressOtherAddressId: null,
+      }));
+    }
+  }, [dropMerchantDetailData]);
 
   const merchantOptions = merchantData?.map((merchant) => ({
     label: merchant.merchantName,
@@ -376,12 +433,15 @@ const PickAndDrop = ({ data, address }) => {
               </label>
               <Select
                 className="w-[200px] outline-none focus:outline-none"
-                value={merchantOptions?.find(
-                  (option) => option.value === merchantId
-                )}
+                value={
+                  merchantOptions?.find(
+                    (option) => option.value === pickupMerchantId
+                  ) || null
+                }
                 isSearchable
+                isClearable
                 onChange={(option) =>
-                  setMerchantId(option ? option.value : null)
+                  setPickupMerchantId(option ? option.value : null)
                 }
                 options={merchantOptions}
                 placeholder="Select a merchant"
@@ -617,12 +677,15 @@ const PickAndDrop = ({ data, address }) => {
               </label>
               <Select
                 className="w-[200px] outline-none focus:outline-none"
-                value={merchantOptions?.find(
-                  (option) => option.value === merchantId
-                )}
+                value={
+                  merchantOptions?.find(
+                    (option) => option.value === dropMerchantId
+                  ) || null
+                }
                 isSearchable
+                isClearable
                 onChange={(option) =>
-                  setMerchantId(option ? option.value : null)
+                  setDropMerchantId(option ? option.value : null)
                 }
                 options={merchantOptions}
                 placeholder="Select a merchant"
