@@ -306,7 +306,7 @@ const EditAppBanner = ({ isOpen, onClose, bannerId }) => {
                 <div className="flex items-center mt-5">
                   <label className="w-1/3">
                     Banner Image <span className="text-red-600 ml-2">*</span>{" "}
-                    <br /> (342px x 160px)
+                    <br /> (1536px x 1024px)
                   </label>
 
                   <div className="flex items-center gap-[30px]">

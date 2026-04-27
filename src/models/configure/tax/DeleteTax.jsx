@@ -67,6 +67,7 @@ const DeleteTax = ({ isOpen, taxId, onClose }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteTax.mutate(taxId)}
+            disabled={handleDeleteTax.isPending}
           >
             {handleDeleteTax.isPending ? `Deleting...` : `Delete`}
           </Button>

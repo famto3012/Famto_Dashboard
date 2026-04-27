@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
+import AuthContext from "@/context/AuthContext";
 
 import { Tag } from "@/components/ui/tag";
 import { toaster } from "@/components/ui/toaster";
@@ -46,6 +48,7 @@ const CustomerDetail = () => {
 
   const { customerId } = useParams();
   const navigate = useNavigate();
+  const { role } = useContext(AuthContext);
   const {
     handleMouseDown,
     handleMouseLeave,
@@ -546,10 +549,12 @@ const CustomerDetail = () => {
           </div>
         </div>
 
-        <WalletTransaction
-          data={customer?.walletDetails}
-          customerId={customer?._id}
-        />
+        {role !== "Merchant" && (
+          <WalletTransaction
+            data={customer?.walletDetails}
+            customerId={customer?._id}
+          />
+        )}
 
         <OrderDetails data={customer?.orderDetails} />
       </div>

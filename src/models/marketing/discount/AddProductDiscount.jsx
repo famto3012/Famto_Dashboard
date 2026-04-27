@@ -391,6 +391,7 @@ const AddProductDiscount = ({ isOpen, onClose, selectedMerchant }) => {
                   <button
                     className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
                     onClick={() => handelAddDiscount.mutate({ role, formData })}
+                    disabled={handelAddDiscount.isPending}
                   >
                     {handelAddDiscount.isPending ? `Saving...` : `Save`}
                   </button>

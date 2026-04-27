@@ -79,6 +79,7 @@ const DeleteCategory = ({ isOpen, onClose, merchantId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteCategory.mutate()}
+            disabled={handleDeleteCategory.isPending}
           >
             {handleDeleteCategory.isPending ? `Deleting...` : `Delete`}
           </Button>

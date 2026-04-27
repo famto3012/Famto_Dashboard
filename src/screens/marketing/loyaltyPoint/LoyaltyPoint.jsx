@@ -516,6 +516,7 @@ const LoyaltyPoint = () => {
               <button
                 className="bg-teal-700 text-white py-2 px-10 rounded-md outline-none focus:outline-none"
                 onClick={() => handleUpdateLoyaltyPoint.mutate(formData)}
+                disabled={handleUpdateLoyaltyPoint.isPending}
               >
                 {handleUpdateLoyaltyPoint.isPending ? `Saving...` : `Save`}
               </button>

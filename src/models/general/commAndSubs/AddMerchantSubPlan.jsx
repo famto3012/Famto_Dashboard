@@ -20,6 +20,7 @@ import Error from "@/components/others/Error";
 
 import { fetchAllTax } from "@/hooks/tax/useTax";
 import { createMerchantSubscriptionPlan } from "@/hooks/commAndSubs/useSubscription";
+import { getAllBusinessCategory } from "@/hooks/customerAppCustomization/useBusinessCategory";
 
 const AddMerchantSubPlan = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,7 @@ const AddMerchantSubPlan = ({ isOpen, onClose }) => {
     amount: "",
     duration: "",
     taxId: null,
+    businessCategoryId: null,
     renewalReminder: "",
     description: "",
   });
@@ -44,9 +46,24 @@ const AddMerchantSubPlan = ({ isOpen, onClose }) => {
     enabled: isOpen,
   });
 
+  const {
+    data: allBusinessCategory,
+    isLoading: categoryLoading,
+    isError: categoryError,
+  } = useQuery({
+    queryKey: ["all-businessCategory"],
+    queryFn: () => getAllBusinessCategory(navigate),
+    enabled: isOpen,
+  });
+
   const taxOptions = allTax?.map((tax) => ({
     label: tax.taxName,
     value: tax.taxId,
+  }));
+
+  const categoryOptions = allBusinessCategory?.map((cat) => ({
+    label: cat.title,
+    value: cat._id,
   }));
 
   const handleInputChange = (e) => {
@@ -64,6 +81,7 @@ const AddMerchantSubPlan = ({ isOpen, onClose }) => {
         amount: "",
         duration: "",
         taxId: null,
+        businessCategoryId: null,
         renewalReminder: "",
         description: "",
       });
@@ -99,9 +117,9 @@ const AddMerchantSubPlan = ({ isOpen, onClose }) => {
         </DialogHeader>
 
         <DialogBody>
-          {taxLoading ? (
+          {taxLoading || categoryLoading ? (
             <ModalLoader />
-          ) : taxError ? (
+          ) : taxError || categoryError ? (
             <Error />
           ) : (
             <div className="max-h-[30rem] overflow-y-auto flex flex-col gap-4">
@@ -166,6 +184,28 @@ const AddMerchantSubPlan = ({ isOpen, onClose }) => {
                   options={taxOptions}
                   placeholder="Select Tax"
                   menuPlacement="auto"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId">
+                  Business Category
+                </label>
+                <Select
+                  className="rounded w-2/3 focus:outline-none"
+                  value={
+                    categoryOptions?.find(
+                      (option) => option.value === formData.businessCategoryId
+                    ) || null
+                  }
+                  isSearchable={true}
+                  onChange={(option) =>
+                    setFormData({ ...formData, businessCategoryId: option ? option.value : null })
+                  }
+                  options={categoryOptions}
+                  placeholder="Select Business Category"
+                  menuPlacement="auto"
+                  isClearable={true}
                 />
               </div>
 

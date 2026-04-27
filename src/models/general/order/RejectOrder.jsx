@@ -63,6 +63,7 @@ const RejectOrder = ({ isOpen, onClose, orderId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => rejectOrderMutation.mutate()}
+            disabled={rejectOrderMutation.isPending}
           >
             {rejectOrderMutation.isPending ? `Rejecting...` : `Reject`}
           </Button>

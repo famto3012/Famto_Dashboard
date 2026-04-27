@@ -264,6 +264,13 @@ const MerchantSubscriptionPlans = () => {
                             </span>
                           </p>
 
+                          <p>
+                            Business Category:{" "}
+                            <span className="font-[700]">
+                              {plan?.businessCategoryName || "-"}
+                            </span>
+                          </p>
+
                           <p className="">{plan.description}</p>
                         </>
                       )}

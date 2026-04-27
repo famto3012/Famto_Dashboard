@@ -307,6 +307,7 @@ const AddMerchantDiscount = ({ isOpen, onClose, selectedMerchant }) => {
                 <button
                   className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
                   onClick={() => handleAddDiscount.mutate({ role, formData })}
+                  disabled={handleAddDiscount.isPending}
                 >
                   {handleAddDiscount.isPending ? `Saving...` : `Save`}
                 </button>

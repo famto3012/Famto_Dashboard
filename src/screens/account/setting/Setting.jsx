@@ -162,6 +162,7 @@ const Setting = () => {
               <button
                 className="bg-teal-700 text-white py-2 px-10 rounded-md"
                 onClick={() => updateSettings.mutate(settingsData)}
+                disabled={updateSettings.isPending}
               >
                 {updateSettings.isPending ? `Saving...` : `Save`}
               </button>

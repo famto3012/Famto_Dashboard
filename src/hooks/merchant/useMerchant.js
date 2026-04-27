@@ -404,3 +404,18 @@ export const initiateSponsorshipPayment = async (
     );
   }
 };
+
+export const adminAddSponsorship = async (data, merchantId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(
+      `/merchants/admin-add-sponsorship/${merchantId}`,
+      data
+    );
+    return res.status === 200 ? res.data : null;
+  } catch (err) {
+    throw new Error(
+      err.response?.data?.message || "Failed to activate sponsorship"
+    );
+  }
+};

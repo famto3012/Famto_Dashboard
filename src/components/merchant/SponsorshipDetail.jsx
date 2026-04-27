@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toaster } from "@/components/ui/toaster";
 
 import { Switch } from "@/components/ui/switch";
 
@@ -12,7 +13,10 @@ import { RadioCardItem, RadioCardRoot } from "@/components/ui/radio-card";
 
 import { formatDate } from "@/utils/formatter";
 
-import { initiateSponsorshipPayment } from "@/hooks/merchant/useMerchant";
+import {
+  initiateSponsorshipPayment,
+  adminAddSponsorship,
+} from "@/hooks/merchant/useMerchant";
 
 const SponsorshipDetail = ({ detail, merchantId }) => {
   const [haveSponsorship, setHaveSponsorship] = useState(false);
@@ -29,11 +33,34 @@ const SponsorshipDetail = ({ detail, merchantId }) => {
 
   const id = role === "Merchant" ? userId : merchantId;
 
+  // --- Admin / Manager flow: no Razorpay, direct activation ---
+  const handleAdminPayment = useMutation({
+    mutationKey: ["admin-sponsor-payment"],
+    mutationFn: () =>
+      adminAddSponsorship({ currentPlan: selectedPlan?.value || selectedPlan }, id, navigate),
+    onSuccess: () => {
+      queryClient.invalidateQueries(["merchant-detail", id]);
+      toaster.create({
+        title: "Success",
+        description: "Sponsorship activated successfully.",
+        type: "success",
+      });
+    },
+    onError: (err) => {
+      toaster.create({
+        title: "Error",
+        description: err.message || "Failed to activate sponsorship",
+        type: "error",
+      });
+    },
+  });
+
+  // --- Merchant flow: Razorpay ---
   const handlePayment = useMutation({
     mutationKey: ["merchant-sponsor-payment"],
     mutationFn: () =>
       initiateSponsorshipPayment(
-        { sponsorshipStatus: true, currentPlan: selectedPlan.value },
+        { sponsorshipStatus: true, currentPlan: selectedPlan?.value || selectedPlan },
         id,
         navigate
       ),
@@ -50,8 +77,6 @@ const SponsorshipDetail = ({ detail, merchantId }) => {
         handler: async function (response) {
           const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
             response;
-
-          console.log({ response });
 
           const api = useApiClient(navigate);
           const res = await api.post(`/merchants/verify-payment/${id}`, {
@@ -158,13 +183,27 @@ const SponsorshipDetail = ({ detail, merchantId }) => {
             <div className="flex flex-col gap-3">
               <button
                 type="button"
-                className="bg-teal-700 text-white p-2 rounded-md w-[20rem] mt-4"
+                className="bg-teal-700 text-white p-2 rounded-md w-[20rem] mt-4 disabled:opacity-50"
+                disabled={
+                  role === "Merchant"
+                    ? handlePayment.isPending
+                    : handleAdminPayment.isPending
+                }
                 onClick={() => {
-                  console.log({ selectedPlan });
-                  handlePayment.mutate();
+                  if (role === "Merchant") {
+                    handlePayment.mutate();
+                  } else {
+                    handleAdminPayment.mutate();
+                  }
                 }}
               >
-                Pay
+                {role === "Merchant"
+                  ? handlePayment.isPending
+                    ? "Processing..."
+                    : "Pay"
+                  : handleAdminPayment.isPending
+                  ? "Activating..."
+                  : "Activate Sponsorship"}
               </button>
 
               <p className="md:w-[25rem] text-[14px] text-gray-700">

@@ -77,14 +77,14 @@ const MerchantDocument = ({ detail, onDataChange }) => {
 
           <div className="flex items-center gap-[30px]">
             {!previewURL?.pancardImage &&
-            !detail?.merchantDetail?.pancardImage ? (
+              !detail?.merchantDetail?.pancardImage ? (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             ) : (
               <figure
                 onClick={() =>
                   toggleModal(
                     previewURL?.pancardImage ||
-                      detail?.merchantDetail?.pancardImage
+                    detail?.merchantDetail?.pancardImage
                   )
                 }
                 className="w-[65px] h-[65px] rounded relative cursor-pointer"
@@ -247,14 +247,14 @@ const MerchantDocument = ({ detail, onDataChange }) => {
 
           <div className=" flex items-center gap-[30px]">
             {!previewURL?.aadharImage &&
-            !detail?.merchantDetail?.aadharImage ? (
+              !detail?.merchantDetail?.aadharImage ? (
               <div className="bg-gray-400 w-[65px] h-[65px] rounded-md" />
             ) : (
               <figure
                 onClick={() =>
                   toggleModal(
                     previewURL?.aadharImage ||
-                      detail?.merchantDetail?.aadharImage
+                    detail?.merchantDetail?.aadharImage
                   )
                 }
                 className="w-[65px] h-[65px] rounded relative cursor-pointer"
@@ -303,11 +303,18 @@ const MerchantDocument = ({ detail, onDataChange }) => {
             value={detail?.merchantDetail?.bankDetail?.accountHolderName}
             onChange={handleInputChange}
             onKeyDown={(e) => {
-              if (
-                !/^[A-z]$/.test(e.key) &&
-                e.key !== "Backspace" &&
-                e.key !== "Tab"
-              ) {
+              const allowedKeys = [
+                "Backspace",
+                "Tab",
+                "ArrowLeft",
+                "ArrowRight",
+                "Delete",
+                "Home",
+                "End",
+                " "
+              ];
+
+              if (!/^[A-Za-z]$/.test(e.key) && !allowedKeys.includes(e.key)) {
                 e.preventDefault();
               }
             }}

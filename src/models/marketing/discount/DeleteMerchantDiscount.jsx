@@ -82,6 +82,7 @@ const DeleteMerchantDiscount = ({
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteDiscount.mutate({ role, discountId })}
+            disabled={handleDeleteDiscount.isPending}
           >
             {handleDeleteDiscount.isPending ? `Deleting...` : `Delete`}
           </Button>

@@ -231,6 +231,7 @@ const AddTax = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   onClick={() => handleAddTax.mutate(formData)}
+                  disabled={handleAddTax.isPending}
                   className="bg-teal-800 rounded-lg px-6 py-2 text-white font-semibold justify-end"
                 >
                   {handleAddTax.isPending ? `Saving...` : `Save`}
