@@ -82,83 +82,119 @@ const OrderItems = ({ data }) => {
 
         {/* Custom Order */}
         {deliveryMode === "Custom Order" && (
-          <Table.Root size="lg">
-            <Table.Header>
-              <Table.Row className="bg-teal-700 h-[70px]" textAlign="center">
-                {["Item Name", "Quantity", "Unit", "Num of Units", "Image"].map(
-                  (header, idx) => (
-                    <Table.ColumnHeader
-                      key={idx}
-                      color="white"
+          <>
+            {/* Purchased items from merchant catalog */}
+            {items?.length > 0 && (
+              <>
+                <h2 className="text-[15px] font-semibold mx-1 mt-4 mb-2">
+                  Purchased Items
+                </h2>
+                <Table.Root size="lg">
+                  <Table.Header>
+                    <Table.Row
+                      className="bg-teal-700 h-[70px]"
                       textAlign="center"
                     >
-                      {header}
-                    </Table.ColumnHeader>
-                  )
-                )}
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {/* 1️⃣ Items from root order.items */}
-              {items?.map((item, index) => (
-                <Table.Row key={`root-${index}`} className="h-[70px]">
-                  <Table.Cell textAlign="center">-</Table.Cell>
-                  <Table.Cell textAlign="center">{item.itemName}</Table.Cell>
-                  <Table.Cell textAlign="center">{item.quantity}</Table.Cell>
-                  <Table.Cell textAlign="center">{item.unit}</Table.Cell>
-                  <Table.Cell textAlign="center">
-                    {item.numOfUnits || "-"}
-                  </Table.Cell>
-                  <Table.Cell
-                    textAlign="center"
-                    className="flex items-center justify-center"
-                  >
-                    {!item?.itemImageURL ? (
-                      <span>-</span>
-                    ) : (
-                      <img
-                        src={item.itemImageURL}
-                        alt={item.itemName}
-                        className="h-[100px] w-[100px] object-contain"
-                      />
-                    )}
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-
-              {/* 2️⃣ Items from pickupAddresses */}
-              {pickupAddresses?.map((pickup, pIndex) =>
-                pickup.items?.map((item, iIndex) => (
-                  <Table.Row
-                    key={`pickup-${pIndex}-${iIndex}`}
-                    className="h-[70px]"
-                  >
-                    <Table.Cell textAlign="center">{item.itemName}</Table.Cell>
-                    <Table.Cell textAlign="center">{item.quantity}</Table.Cell>
-                    <Table.Cell textAlign="center">{item.unit}</Table.Cell>
-                    <Table.Cell textAlign="center">
-                      {item.numOfUnits || "-"}
-                    </Table.Cell>
-                    <Table.Cell
-                      textAlign="center"
-                      className="flex items-center justify-center"
-                    >
-                      {!item?.itemImageURL ? (
-                        <span>-</span>
-                      ) : (
-                        <img
-                          src={item.itemImageURL}
-                          alt={item.itemName}
-                          className="h-[100px] w-[100px] object-contain"
-                        />
+                      {["Product Name", "Quantity", "Price"].map(
+                        (header, idx) => (
+                          <Table.ColumnHeader
+                            key={idx}
+                            color="white"
+                            textAlign="center"
+                          >
+                            {header}
+                          </Table.ColumnHeader>
+                        )
                       )}
-                    </Table.Cell>
-                  </Table.Row>
-                ))
-              )}
-            </Table.Body>
-          </Table.Root>
+                    </Table.Row>
+                  </Table.Header>
+
+                  <Table.Body>
+                    {items.map((item, index) => (
+                      <Table.Row key={`purchased-${index}`} className="h-[70px]">
+                        <Table.Cell textAlign="center">
+                          {item.productName || "-"}
+                        </Table.Cell>
+                        <Table.Cell textAlign="center">
+                          {item.quantity ?? "-"}
+                        </Table.Cell>
+                        <Table.Cell textAlign="center">
+                          {item.price ?? "-"}
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table.Root>
+              </>
+            )}
+
+            {/* Custom items from pickup locations */}
+            {pickupAddresses?.some((p) => p.items?.length > 0) && (
+              <>
+                <h2 className="text-[15px] font-semibold mx-1 mt-6 mb-2">
+                  Custom Items
+                </h2>
+                <Table.Root size="lg">
+                  <Table.Header>
+                    <Table.Row
+                      className="bg-teal-700 h-[70px]"
+                      textAlign="center"
+                    >
+                      {["Item Name", "Quantity", "Unit", "Num of Units", "Image"].map(
+                        (header, idx) => (
+                          <Table.ColumnHeader
+                            key={idx}
+                            color="white"
+                            textAlign="center"
+                          >
+                            {header}
+                          </Table.ColumnHeader>
+                        )
+                      )}
+                    </Table.Row>
+                  </Table.Header>
+
+                  <Table.Body>
+                    {pickupAddresses.map((pickup, pIndex) =>
+                      pickup.items?.map((item, iIndex) => (
+                        <Table.Row
+                          key={`pickup-${pIndex}-${iIndex}`}
+                          className="h-[70px]"
+                        >
+                          <Table.Cell textAlign="center">
+                            {item.itemName}
+                          </Table.Cell>
+                          <Table.Cell textAlign="center">
+                            {item.quantity}
+                          </Table.Cell>
+                          <Table.Cell textAlign="center">
+                            {item.unit || "-"}
+                          </Table.Cell>
+                          <Table.Cell textAlign="center">
+                            {item.numOfUnits || "-"}
+                          </Table.Cell>
+                          <Table.Cell
+                            textAlign="center"
+                            className="flex items-center justify-center"
+                          >
+                            {!item?.itemImageURL ? (
+                              <span>-</span>
+                            ) : (
+                              <img
+                                src={item.itemImageURL}
+                                alt={item.itemName}
+                                className="h-[100px] w-[100px] object-contain"
+                              />
+                            )}
+                          </Table.Cell>
+                        </Table.Row>
+                      ))
+                    )}
+                  </Table.Body>
+                </Table.Root>
+              </>
+            )}
+          </>
         )}
 
         {/* Home Delivery and Take Away */}
