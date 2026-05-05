@@ -95,7 +95,7 @@ const OrderItems = ({ data }) => {
                       className="bg-teal-700 h-[70px]"
                       textAlign="center"
                     >
-                      {["Product Name", "Quantity", "Price"].map(
+                      {["Product Name", "Quantity", "Price", "Image"].map(
                         (header, idx) => (
                           <Table.ColumnHeader
                             key={idx}
@@ -120,6 +120,20 @@ const OrderItems = ({ data }) => {
                         </Table.Cell>
                         <Table.Cell textAlign="center">
                           {item.price ?? "-"}
+                        </Table.Cell>
+                        <Table.Cell
+                          textAlign="center"
+                          className="flex items-center justify-center"
+                        >
+                          {item?.itemImageURL ? (
+                            <img
+                              src={item.itemImageURL}
+                              alt={item.productName}
+                              className="h-[100px] w-[100px] object-contain"
+                            />
+                          ) : (
+                            <span>-</span>
+                          )}
                         </Table.Cell>
                       </Table.Row>
                     ))}
