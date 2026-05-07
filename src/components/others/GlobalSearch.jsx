@@ -203,7 +203,7 @@ import { useContext, useEffect, useState } from "react";
 import RenderIcon from "@/icons/RenderIcon";
 import Logout from "@/models/auth/Logout";
 import { useSoundContext } from "@/context/SoundContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Avatar, Button, Circle, Float } from "@chakra-ui/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchSingleMerchantDetail } from "@/hooks/merchant/useMerchant";
@@ -230,6 +230,7 @@ const GlobalSearch = () => {
   } = useSoundContext();
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { role, userId } = useContext(AuthContext);
   const queryClient = useQueryClient();
 
@@ -298,6 +299,10 @@ const GlobalSearch = () => {
   }, []);
 
   useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
     if (role === "Merchant" && userId) {
       setMerchantId(userId);
     }
@@ -335,19 +340,14 @@ const GlobalSearch = () => {
       </div>
 
       {drawerOpen && (
-        <div
-          className="fixed inset-0 bg-black opacity-50 z-40"
-          onClick={() => setDrawerOpen(false)}
-        />
+        <>
+          <div
+            className="fixed inset-0 bg-black opacity-50 z-40"
+            onClick={() => setDrawerOpen(false)}
+          />
+          <MainSideBar showClose onClick={() => setDrawerOpen(false)} />
+        </>
       )}
-
-      <div
-        className={`absolute top-0 left-[-270px] ${
-          drawerOpen ? "translate-x-[270px]" : ""
-        } transition-transform z-50`}
-      >
-        <MainSideBar showClose onClick={() => setDrawerOpen(false)} />
-      </div>
     </>
   );
 };

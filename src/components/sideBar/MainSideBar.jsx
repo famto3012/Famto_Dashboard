@@ -75,6 +75,7 @@ const MainSideBar = ({ showClose = false, onClick }) => {
     setSelectedLink(location.pathname);
   }, [location.pathname]);
 
+
   const toggleSidebar = (dropdown) => () => {
     setOpenDropdown((prevDropdown) =>
       prevDropdown === dropdown ? null : dropdown
@@ -82,7 +83,7 @@ const MainSideBar = ({ showClose = false, onClick }) => {
   };
 
   return (
- <div className="fixed top-0 left-0 w-[270px] h-screen bg-gradient-to-b from-[#016B6C] to-[#000] bg-[length:100%_150%] bg-top font-poppins overflow-y-auto overflow-x-hidden pb-[50px] z-20 scrollbar-thin">
+ <div className="fixed top-0 left-0 w-[270px] h-screen bg-gradient-to-b from-[#016B6C] to-[#000] bg-[length:100%_150%] bg-top font-poppins overflow-y-auto overflow-x-hidden pb-[50px] z-50 scrollbar-thin">
  <div className="flex items-center justify-between mx-[10px] mt-[30px]">
         <div>
           <div
