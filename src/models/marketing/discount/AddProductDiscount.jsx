@@ -127,9 +127,9 @@ const AddProductDiscount = ({ isOpen, onClose, selectedMerchant }) => {
     { label: "Select All", value: "selectAll" },
     ...(Array.isArray(allProducts)
       ? allProducts.map((product) => ({
-          label: product.productName,
-          value: product._id,
-        }))
+        label: product.productName,
+        value: product._id,
+      }))
       : []),
   ];
 
@@ -160,9 +160,9 @@ const AddProductDiscount = ({ isOpen, onClose, selectedMerchant }) => {
   return (
     <DialogRoot
       open={isOpen}
-      onInteractOutside={onClose}
-      placement="center"
-      motionPreset="slide-in-bottom"
+      onInteractOutside={(e) => {
+        e.preventDefault(); // ❗ block all outside clicks
+      }}
     >
       <DialogContent>
         <DialogCloseTrigger onClick={onClose} />
@@ -326,9 +326,9 @@ const AddProductDiscount = ({ isOpen, onClose, selectedMerchant }) => {
                       minDate={
                         formData?.validFrom
                           ? new Date(
-                              new Date(formData?.validFrom).getTime() +
-                                24 * 60 * 60 * 1000
-                            )
+                            new Date(formData?.validFrom).getTime() +
+                            24 * 60 * 60 * 1000
+                          )
                           : new Date()
                       }
                       dateFormat="yyyy-MM-dd"

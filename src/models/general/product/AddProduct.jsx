@@ -273,6 +273,7 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
                   className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
                   type="text"
                   name="price"
+                  disabled="true"
                   placeholder="Price"
                   value={formData.price}
                   onChange={handleInputChange}

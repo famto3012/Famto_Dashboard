@@ -68,3 +68,10 @@
 .form-control {
   border: none !important;
 }
+
+/* Sticky table headers */
+thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}

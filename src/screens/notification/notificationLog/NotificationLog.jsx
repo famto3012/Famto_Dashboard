@@ -14,8 +14,8 @@ import AuthContext from "@/context/AuthContext";
 import { getNotificationLog } from "@/hooks/notification/useNotification";
 import Error from "@/components/others/Error";
 import ShowSpinner from "@/components/others/ShowSpinner";
-import { initializeApp } from "firebase/app";
-import { getMessaging, onMessage } from "firebase/messaging";
+import { onMessage } from "firebase/messaging";
+import { messaging } from "@/firebase";
 import { useSoundContext } from "@/context/SoundContext";
 import { useSocket } from "@/context/SocketContext";
 
@@ -39,15 +39,6 @@ const NotificationLog = () => {
 
   const getNotification = role || page || limit;
 
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_APP_API_KEY,
-    authDomain: import.meta.env.VITE_APP_AUTH_DOMAIN,
-    projectId: import.meta.env.VITE_APP_PROJECT_ID,
-    storageBucket: import.meta.env.VITE_APP_STORAGE_BUCKET,
-    messagingSenderId: import.meta.env.VITE_APP_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_APP_APP_ID,
-    measurementId: import.meta.env.VITE_APP_MEASUREMENT_ID,
-  };
 
   const {
     data: notificationLog,
@@ -75,8 +66,6 @@ const NotificationLog = () => {
   };
 
   useEffect(() => {
-    const app = initializeApp(firebaseConfig);
-    const messaging = getMessaging(app);
     navigator.serviceWorker.addEventListener("message", (event) => {
       if (event.data && event.data.type === "NOTIFICATION_RECEIVED") {
         const payload = event.data.payload;

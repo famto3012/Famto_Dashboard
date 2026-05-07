@@ -313,15 +313,41 @@ const Home = () => {
     };
   }, [graphData, selectedOption]);
 
+  // useEffect(() => {
+  //   requestPermission();
+  //   const unsubscribe = onMessage(messaging, (payload) => {
+  //     handleNotification(payload);
+  //     const { title, body } = payload.notification;
+  //     if (Notification.permission === "granted") {
+  //       new Notification(title, { body });
+  //     }
+  //   });
+
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, []);
+
   useEffect(() => {
     requestPermission();
+
     const unsubscribe = onMessage(messaging, (payload) => {
       handleNotification(payload);
-      const { title, body } = payload.notification;
-      if (Notification.permission === "granted") {
-        new Notification(title, { body });
+    });
+
+    // ✅ LISTEN FROM SERVICE WORKER
+    navigator.serviceWorker.addEventListener("message", (event) => {
+      if (event.data?.type === "NOTIFICATION_RECEIVED") {
+        handleNotification(event.data.payload);
       }
     });
+
+    // ✅ FORCE SW UPDATE (important)
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistration().then((reg) => {
+        if (reg) reg.update();
+      });
+    }
 
     return () => {
       unsubscribe();
@@ -330,33 +356,64 @@ const Home = () => {
 
   const requestPermission = async () => {
     try {
+      if (!("serviceWorker" in navigator)) {
+        console.log("Service Worker not supported");
+        return;
+      }
+
       const permission = await Notification.requestPermission();
-      console.log("Notification permission:", permission);
-      if (permission === "granted") {
-        const token = await getToken(messaging, {
-          vapidKey: import.meta.env.VITE_APP_VAPID_KEY,
-        });
-        console.log("FCM registration token: ", token);
-        if (token) {
-          updateFcmToken(token);
-          saveFcmTokenToStorage(token);
-          // Send the token to your server and update the UI if necessary
-        } else {
-          console.log(
-            "No registration token available. Ensure your service worker is registered correctly."
-          );
-        }
+
+      if (permission !== "granted") {
+        console.log("Permission denied");
+        return;
+      }
+
+      const token = await getToken(messaging, {
+        vapidKey: import.meta.env.VITE_APP_VAPID_KEY,
+        serviceWorkerRegistration: await navigator.serviceWorker.ready,
+      });
+
+      if (token) {
+        console.log("✅ FCM Token:", token);
+        updateFcmToken(token);
+        saveFcmTokenToStorage(token);
       } else {
-        toaster.create({
-          title: "Error",
-          description: `Notification permission not granted`,
-          type: "error",
-        });
+        console.log("No token received");
       }
     } catch (err) {
-      console.error("Error retrieving token:", err);
+      console.error("❌ Token error:", err);
     }
   };
+
+  // const requestPermission = async () => {
+  //   try {
+  //     const permission = await Notification.requestPermission();
+  //     console.log("Notification permission:", permission);
+  //     if (permission === "granted") {
+  //       const token = await getToken(messaging, {
+  //         vapidKey: import.meta.env.VITE_APP_VAPID_KEY,
+  //       });
+  //       console.log("FCM registration token: ", token);
+  //       if (token) {
+  //         updateFcmToken(token);
+  //         saveFcmTokenToStorage(token);
+  //         // Send the token to your server and update the UI if necessary
+  //       } else {
+  //         console.log(
+  //           "No registration token available. Ensure your service worker is registered correctly."
+  //         );
+  //       }
+  //     } else {
+  //       toaster.create({
+  //         title: "Error",
+  //         description: `Notification permission not granted`,
+  //         type: "error",
+  //       });
+  //     }
+  //   } catch (err) {
+  //     console.error("Error retrieving token:", err);
+  //   }
+  // };
 
   useEffect(() => {
     if (merchantProfileData) {

@@ -382,3 +382,15 @@ export const getOrderChat = async (orderId, navigate) => {
     throw err.response?.data?.message || "Error fetching order chat";
   }
 };
+
+export const reassignAgent = async (orderId, newAgentId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.patch(`/orders/admin/reassign-agent/${orderId}`, {
+      newAgentId,
+    });
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    throw err.response?.data?.message || "Failed to reassign agent";
+  }
+};
