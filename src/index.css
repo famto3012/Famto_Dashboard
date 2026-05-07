@@ -69,7 +69,15 @@
   border: none !important;
 }
 
-/* Sticky table headers */
+/* Sticky table headers —
+   Give every overflow-x-auto wrapper that contains a table a fixed
+   scroll viewport so position:sticky on thead actually has something
+   to stick inside. */
+.overflow-x-auto:has(table) {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
 thead tr {
   position: sticky;
   top: 0;

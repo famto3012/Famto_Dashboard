@@ -24,7 +24,10 @@ import ModalLoader from "@/components/others/ModalLoader";
 import Error from "@/components/others/Error";
 
 // import { fetchAllProductDiscount } from "@/hooks/discount/useDiscount";
-import { createNewProduct } from "@/hooks/product/useProduct";
+import {
+  createNewProduct,
+  fetchAllProductsOfMerchant,
+} from "@/hooks/product/useProduct";
 import CropImage from "@/components/others/CropImage";
 
 const AddProduct = ({ isOpen, onClose, merchantId }) => {
@@ -51,6 +54,11 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
 
   const [showCrop, setShowCrop] = useState(false);
 
+  // Often Bought Together
+  const [obtSearch, setObtSearch] = useState("");
+  const [selectedOBTProducts, setSelectedOBTProducts] = useState([]);
+  const [showOBTDropdown, setShowOBTDropdown] = useState(false);
+
   const inputRef = useRef(null);
 
   const navigate = useNavigate();
@@ -71,6 +79,40 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
   useEffect(() => {
     setFormData({ ...formData, categoryId: selectedCategory.categoryId });
   }, [selectedCategory]);
+
+  const { data: allProducts = [] } = useQuery({
+    queryKey: ["all-products-of-merchant", merchantId],
+    queryFn: () => fetchAllProductsOfMerchant(merchantId, navigate),
+    enabled: isOpen && !!merchantId,
+  });
+
+  // Often Bought Together — products filtered by search term, excluding already selected
+  const obtSelectedIds = formData.oftenBoughtTogetherId || [];
+  const obtFilteredProducts = allProducts.filter(
+    (p) =>
+      p.productName.toLowerCase().includes(obtSearch.toLowerCase()) &&
+      !obtSelectedIds.includes(p._id)
+  );
+
+  const handleSelectOBTProduct = (product) => {
+    setSelectedOBTProducts((prev) => [...prev, product]);
+    setFormData((prev) => ({
+      ...prev,
+      oftenBoughtTogetherId: [...prev.oftenBoughtTogetherId, product._id],
+    }));
+    setObtSearch("");
+    setShowOBTDropdown(false);
+  };
+
+  const handleRemoveOBTProduct = (productId) => {
+    setSelectedOBTProducts((prev) => prev.filter((p) => p._id !== productId));
+    setFormData((prev) => ({
+      ...prev,
+      oftenBoughtTogetherId: prev.oftenBoughtTogetherId.filter(
+        (id) => id !== productId
+      ),
+    }));
+  };
 
   // const discountOptions = discountData?.map((discount) => ({
   //   label: discount.discountName,
@@ -441,6 +483,63 @@ const AddProduct = ({ isOpen, onClose, merchantId }) => {
                 />
               </div>
             </div>
+            {/* Often Bought Together */}
+            <div className="flex items-start">
+              <label className="w-1/3 text-gray-500 pt-1">
+                Often Bought Together
+              </label>
+              <div className="w-2/3 relative">
+                {selectedOBTProducts.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mb-1">
+                    {selectedOBTProducts.map((product) => (
+                      <div
+                        key={product._id}
+                        className="flex items-center bg-teal-100 text-teal-800 text-sm px-3 py-1 rounded-full"
+                      >
+                        {product.productName}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveOBTProduct(product._id)}
+                          className="ml-2 text-teal-600 hover:text-teal-800"
+                        >
+                          &times;
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <input
+                  type="text"
+                  placeholder="Search and add products..."
+                  value={obtSearch}
+                  onChange={(e) => {
+                    setObtSearch(e.target.value);
+                    setShowOBTDropdown(true);
+                  }}
+                  onFocus={() => setShowOBTDropdown(true)}
+                  onBlur={() =>
+                    setTimeout(() => setShowOBTDropdown(false), 150)
+                  }
+                  className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
+                />
+                {showOBTDropdown &&
+                  obtSearch &&
+                  obtFilteredProducts.length > 0 && (
+                    <div className="absolute z-10 w-full bg-white border border-gray-200 rounded shadow-md max-h-40 overflow-y-auto mt-1">
+                      {obtFilteredProducts.slice(0, 10).map((product) => (
+                        <div
+                          key={product._id}
+                          onMouseDown={() => handleSelectOBTProduct(product)}
+                          className="px-3 py-2 cursor-pointer hover:bg-teal-50 text-sm"
+                        >
+                          {product.productName}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            </div>
+
             <div className="flex items-center">
               <label className="w-1/3 text-gray-500" htmlFor="description">
                 Description

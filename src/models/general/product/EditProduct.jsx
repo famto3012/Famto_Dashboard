@@ -25,6 +25,7 @@ import Error from "@/components/others/Error";
 
 // import { fetchAllProductDiscount } from "@/hooks/discount/useDiscount";
 import {
+  fetchAllProductsOfMerchant,
   fetchSingleProductDetail,
   updateProductDetail,
 } from "@/hooks/product/useProduct";
@@ -55,6 +56,11 @@ const EditProduct = ({ isOpen, onClose, merchantId }) => {
 
   const [showCrop, setShowCrop] = useState(false);
 
+  // Often Bought Together
+  const [obtSearch, setObtSearch] = useState("");
+  const [selectedOBTProducts, setSelectedOBTProducts] = useState([]);
+  const [showOBTDropdown, setShowOBTDropdown] = useState(false);
+
   const inputRef = useRef(null);
 
   const navigate = useNavigate();
@@ -83,14 +89,75 @@ const EditProduct = ({ isOpen, onClose, merchantId }) => {
   //   enabled: isOpen,
   // });
 
+  const { data: allProducts = [] } = useQuery({
+    queryKey: ["all-products-of-merchant", merchantId],
+    queryFn: () => fetchAllProductsOfMerchant(merchantId, navigate),
+    enabled: isOpen && !!merchantId,
+  });
+
   useEffect(() => {
-    productData && setFormData(productData);
-  }, [productData]);
+    if (!productData) return;
+    setFormData({
+      ...productData,
+      oftenBoughtTogetherId: productData.oftenBoughtTogetherId || [],
+    });
+
+    // Always reset chips first, then re-populate from current product's data
+    const existingIds = productData.oftenBoughtTogetherId || [];
+    if (existingIds.length && allProducts.length) {
+      // IDs may be plain strings or already-populated objects
+      const ids = existingIds.map((entry) =>
+        typeof entry === "object" ? entry._id?.toString() : entry?.toString()
+      );
+      const matched = allProducts.filter((p) =>
+        ids.includes(p._id?.toString())
+      );
+      setSelectedOBTProducts(matched);
+
+      // Normalize formData to plain IDs
+      setFormData((prev) => ({
+        ...prev,
+        oftenBoughtTogetherId: matched.map((p) => p._id),
+      }));
+    } else {
+      // Product has no often-bought-together — clear any leftover chips
+      setSelectedOBTProducts([]);
+    }
+  }, [productData, allProducts]);
 
   // const discountOptions = discountData?.map((discount) => ({
   //   label: discount.discountName,
   //   value: discount._id,
   // }));
+
+  // Often Bought Together — filtered products excluding already selected and self
+  const obtSelectedIds = formData.oftenBoughtTogetherId || [];
+  const obtFilteredProducts = allProducts.filter(
+    (p) =>
+      p._id !== selectedProduct.productId &&
+      p.productName.toLowerCase().includes(obtSearch.toLowerCase()) &&
+      !obtSelectedIds.includes(p._id)
+  );
+
+  const handleSelectOBTProduct = (product) => {
+    setSelectedOBTProducts((prev) => [...prev, product]);
+    setFormData((prev) => ({
+      ...prev,
+      oftenBoughtTogetherId: [...prev.oftenBoughtTogetherId, product._id],
+    }));
+    setObtSearch("");
+    setShowOBTDropdown(false);
+  };
+
+  const handleRemoveOBTProduct = (productId) => {
+    setSelectedOBTProducts((prev) => prev.filter((p) => p._id !== productId));
+    setFormData((prev) => ({
+      ...prev,
+      oftenBoughtTogetherId: prev.oftenBoughtTogetherId.filter(
+        (id) => id !== productId
+      ),
+    }));
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -164,6 +231,8 @@ const EditProduct = ({ isOpen, onClose, merchantId }) => {
       queryClient.invalidateQueries(["all-product"]);
       setFormData({});
       setCroppedFile(null);
+      setSelectedOBTProducts([]);
+      setObtSearch("");
       onClose();
       toaster.create({
         title: "Success",
@@ -444,6 +513,63 @@ const EditProduct = ({ isOpen, onClose, merchantId }) => {
                   />
                 </div>
               </div>
+              {/* Often Bought Together */}
+              <div className="flex items-start">
+                <label className="w-1/3 text-gray-500 pt-1">
+                  Often Bought Together
+                </label>
+                <div className="w-2/3 relative">
+                  {selectedOBTProducts.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mb-1">
+                      {selectedOBTProducts.map((product) => (
+                        <div
+                          key={product._id}
+                          className="flex items-center bg-teal-100 text-teal-800 text-sm px-3 py-1 rounded-full"
+                        >
+                          {product.productName}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveOBTProduct(product._id)}
+                            className="ml-2 text-teal-600 hover:text-teal-800"
+                          >
+                            &times;
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <input
+                    type="text"
+                    placeholder="Search and add products..."
+                    value={obtSearch}
+                    onChange={(e) => {
+                      setObtSearch(e.target.value);
+                      setShowOBTDropdown(true);
+                    }}
+                    onFocus={() => setShowOBTDropdown(true)}
+                    onBlur={() =>
+                      setTimeout(() => setShowOBTDropdown(false), 150)
+                    }
+                    className="w-full border-2 border-gray-100 rounded p-2 focus:outline-none"
+                  />
+                  {showOBTDropdown &&
+                    obtSearch &&
+                    obtFilteredProducts.length > 0 && (
+                      <div className="absolute z-10 w-full bg-white border border-gray-200 rounded shadow-md max-h-40 overflow-y-auto mt-1">
+                        {obtFilteredProducts.slice(0, 10).map((product) => (
+                          <div
+                            key={product._id}
+                            onMouseDown={() => handleSelectOBTProduct(product)}
+                            className="px-3 py-2 cursor-pointer hover:bg-teal-50 text-sm"
+                          >
+                            {product.productName}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                </div>
+              </div>
+
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="description">
                   Description

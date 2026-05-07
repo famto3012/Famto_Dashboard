@@ -25,8 +25,10 @@ import { appUpdateTypeOptions } from "@/utils/defaultData";
 const Toggles = () => {
   const [formData, setFormData] = useState({
     splashScreenUrl: "",
+    statusImageUrl: "",
     phoneNumber: false,
     emailVerification: false,
+    status:false,
     email: false,
     otpVerification: false,
     loginViaOtp: false,
@@ -48,9 +50,13 @@ const Toggles = () => {
     },
     appUpdateType: "",
   });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [croppedFile, setCroppedFile] = useState(null);
-  const [showCrop, setShowCrop] = useState(false);
+  const [selectedSplashFile, setSelectedSplashFile] = useState(null);
+  const [croppedSplashFile, setCroppedSplashFile] = useState(null);
+  const [showSplashCrop, setShowSplashCrop] = useState(false);
+
+  const [selectedStatusFile, setSelectedStatusFile] = useState(null);
+  const [croppedStatusFile, setCroppedStatusFile] = useState(null);
+  const [showStatusCrop, setShowStatusCrop] = useState(false);
   const [showButton, setShowButton] = useState(false);
 
   const navigate = useNavigate();
@@ -78,7 +84,8 @@ const Toggles = () => {
     mutationKey: ["update-customer-app-customization"],
     mutationFn: (data) => updateCustomizationData(data, navigate),
     onSuccess: () => {
-      setCroppedFile(null);
+      setCroppedSplashFile(null);
+      setCroppedStatusFile(null);
       queryClient.invalidateQueries(["customer-app-customization"]);
       setShowButton(false);
       toaster.create({
@@ -112,7 +119,13 @@ const Toggles = () => {
       }
     });
 
-    croppedFile && formDataObject.append("splashScreenImage", croppedFile);
+    if (croppedSplashFile) {
+      formDataObject.append("splashScreenImage", croppedSplashFile);
+    }
+
+    if (croppedStatusFile) {
+      formDataObject.append("statusImage", croppedStatusFile);
+    }
 
     handleUpdateMutation.mutate(formDataObject);
   };
@@ -122,39 +135,59 @@ const Toggles = () => {
   }, [data]);
 
   useEffect(() => {
-    if (data || croppedFile) {
+    if (data) {
       const isModified = Object.keys(formData).some(
-        (key) => formData[key] !== data[key]
+        (key) =>
+          JSON.stringify(formData[key]) !== JSON.stringify(data[key])
       );
 
-      const haveCroppedFile = !!croppedFile;
+      const haveCroppedFile =
+        !!croppedSplashFile || !!croppedStatusFile;
 
       setShowButton(isModified || haveCroppedFile);
     }
-  }, [formData, data, croppedFile]);
+  }, [
+    formData,
+    data,
+    croppedSplashFile,
+    croppedStatusFile,
+  ]);
 
   const taxOptions = allTax?.map((tax) => ({
     label: tax.taxName,
     value: tax.taxId,
   }));
 
-  const handleSelectFile = (e) => {
+  const handleSelectSplashFile = (e) => {
     const file = e.target.files[0];
+
     if (file) {
-      setSelectedFile(file);
-      setShowCrop(true);
+      setSelectedSplashFile(file);
+      setShowSplashCrop(true);
     }
   };
 
-  const handleCropImage = (file) => {
-    setCroppedFile(file);
-    cancelCrop();
+  const handleSelectStatusFile = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      setSelectedStatusFile(file);
+      setShowStatusCrop(true);
+    }
   };
 
-  const cancelCrop = () => {
-    setSelectedFile(null);
-    setShowCrop(false);
+  const handleSplashCropImage = (file) => {
+    setCroppedSplashFile(file);
+    setSelectedSplashFile(null);
+    setShowSplashCrop(false);
   };
+
+  const handleStatusCropImage = (file) => {
+    setCroppedStatusFile(file);
+    setSelectedStatusFile(null);
+    setShowStatusCrop(false);
+  };
+
 
   const toggleChange = (type) => {
     setFormData({ ...formData, [type]: !formData[type] });
@@ -181,14 +214,14 @@ const Toggles = () => {
         </div>
 
         <div className="flex w-44 gap-[30px]">
-          {!croppedFile && !formData?.splashScreenUrl ? (
+          {!croppedSplashFile && !formData?.splashScreenUrl ? (
             <div className="h-[66px] w-[66px] bg-gray-200 rounded-md"></div>
           ) : (
             <figure className="h-16 w-16 rounded-md">
               <img
                 src={
-                  croppedFile
-                    ? URL.createObjectURL(croppedFile)
+                  croppedSplashFile
+                    ? URL.createObjectURL(croppedSplashFile)
                     : formData?.splashScreenUrl
                 }
                 alt="Splash screen"
@@ -203,10 +236,62 @@ const Toggles = () => {
             id="splashScreen"
             className="hidden"
             accept="image/*"
-            onChange={handleSelectFile}
+            onChange={handleSelectSplashFile}
           />
           <label
             htmlFor="splashScreen"
+            className="flex items-center justify-center bg-teal-800 text-[30px] text-white p-4 h-16 w-16 rounded-md cursor-pointer"
+          >
+            <RenderIcon iconName="CameraIcon" size={24} loading={6} />
+          </label>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-10 mt-10 mx-5 border-b-2 border-gray-200 pb-5">
+        <div className="flex flex-col lg:flex-row items-start gap-[20px] lg:gap-0">
+          <div className="lg:w-72">App Status Image</div>
+
+          <div className="text-gray-500">
+            Note: The purpose is to turn ON or OFF the orders
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between">
+                Status
+                <Switch
+                  colorPalette="teal"
+                  checked={formData?.status}
+                  onCheckedChange={() => toggleChange("status")}
+                />
+              </div>
+
+        <div className="flex w-44 gap-[30px]">
+          {!croppedStatusFile && !formData?.statusImageUrl ? (
+            <div className="h-[66px] w-[66px] bg-gray-200 rounded-md"></div>
+          ) : (
+            <figure className="h-16 w-16 rounded-md">
+              <img
+                src={
+                  croppedStatusFile
+                    ? URL.createObjectURL(croppedStatusFile)
+                    : formData?.statusImageUrl
+                }
+                alt="Status Image"
+                className="w-full rounded h-full object-cover"
+              />
+            </figure>
+          )}
+
+          <input
+            type="file"
+            name="statusImage"
+            id="statusImage"
+            className="hidden"
+            accept="image/*"
+            onChange={handleSelectStatusFile}
+          />
+          <label
+            htmlFor="statusImage"
             className="flex items-center justify-center bg-teal-800 text-[30px] text-white p-4 h-16 w-16 rounded-md cursor-pointer"
           >
             <RenderIcon iconName="CameraIcon" size={24} loading={6} />
@@ -355,8 +440,8 @@ const Toggles = () => {
               selected={
                 formData?.customOrderCustomization?.startTime
                   ? new Date(
-                      `1970-01-01T${formData.customOrderCustomization.startTime}`
-                    )
+                    `1970-01-01T${formData.customOrderCustomization.startTime}`
+                  )
                   : null
               }
               onChange={(time) => {
@@ -389,8 +474,8 @@ const Toggles = () => {
               selected={
                 formData?.customOrderCustomization?.endTime
                   ? new Date(
-                      `1970-01-01T${formData.customOrderCustomization.endTime}`
-                    )
+                    `1970-01-01T${formData.customOrderCustomization.endTime}`
+                  )
                   : null
               }
               onChange={(time) => {
@@ -461,8 +546,8 @@ const Toggles = () => {
               selected={
                 formData?.pickAndDropOrderCustomization?.startTime
                   ? new Date(
-                      `1970-01-01T${formData.pickAndDropOrderCustomization.startTime}`
-                    )
+                    `1970-01-01T${formData.pickAndDropOrderCustomization.startTime}`
+                  )
                   : null
               }
               onChange={(time) => {
@@ -495,8 +580,8 @@ const Toggles = () => {
               selected={
                 formData?.pickAndDropOrderCustomization?.endTime
                   ? new Date(
-                      `1970-01-01T${formData.pickAndDropOrderCustomization.endTime}`
-                    )
+                    `1970-01-01T${formData.pickAndDropOrderCustomization.endTime}`
+                  )
                   : null
               }
               onChange={(time) => {
@@ -588,16 +673,26 @@ const Toggles = () => {
         </button>
       </div>
 
-      {/* Crop Modal */}
       <CropImage
-        isOpen={showCrop && selectedFile}
+        isOpen={showSplashCrop && selectedSplashFile}
         onClose={() => {
-          setSelectedFile(null);
-          setShowCrop(false);
+          setSelectedSplashFile(null);
+          setShowSplashCrop(false);
         }}
         aspectRatio={9 / 16}
-        selectedImage={selectedFile}
-        onCropComplete={handleCropImage}
+        selectedImage={selectedSplashFile}
+        onCropComplete={handleSplashCropImage}
+      />
+
+      <CropImage
+        isOpen={showStatusCrop && selectedStatusFile}
+        onClose={() => {
+          setSelectedStatusFile(null);
+          setShowStatusCrop(false);
+        }}
+        aspectRatio={1}
+        selectedImage={selectedStatusFile}
+        onCropComplete={handleStatusCropImage}
       />
     </>
   );
