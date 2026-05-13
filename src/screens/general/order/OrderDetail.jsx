@@ -254,6 +254,7 @@ return (
         <InfoRow label="Payment Status" value={orderDetail?.paymentStatus} />
         <InfoRow label="Payment Mode" value={orderDetail?.paymentMode} />
         <InfoRow label="Delivery Mode" value={orderDetail?.deliveryMode} />
+        <InfoRow label="Distance" value={orderDetail?.distance} />
       </div>
 
       {/* COLUMN 2 */}
