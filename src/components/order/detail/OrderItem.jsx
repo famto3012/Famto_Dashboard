@@ -216,7 +216,7 @@ const OrderItems = ({ data }) => {
           <Table.Root size="lg">
             <Table.Header>
               <Table.Row className="bg-teal-700 h-[70px]" textAlign="center">
-                {["Items","Variant", "Quantity", "Price"].map((header) => (
+                {["Items","Variant", "Quantity"].map((header) => (
                   <Table.ColumnHeader color="white" textAlign="center">
                     {header}
                   </Table.ColumnHeader>
@@ -235,7 +235,7 @@ const OrderItems = ({ data }) => {
                     <Table.Cell textAlign="center">{item.variantTypeName}</Table.Cell>
                     <Table.Cell textAlign="center">{item.quantity}</Table.Cell>
                 
-                    <Table.Cell textAlign="center">{item.costPrice}</Table.Cell>
+                    {/* <Table.Cell textAlign="center">{item.costPrice}</Table.Cell> */}
                   </Table.Row>
                 ))
               )}
