@@ -12,7 +12,7 @@ const Details = ({ data }) => {
   } = data;
   const { role } = useContext(AuthContext);
 
-  console.log("Data",data);
+  console.log("Data", data);
 
   const agentTableHeaders = [
     "Agent Id",

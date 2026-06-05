@@ -638,33 +638,33 @@ const OrderActivity = ({ orderDetail }) => {
   //   }
   // }, [authToken, orderDetail]);
 
-useEffect(() => {
-  if (!shouldLoadMap || !authToken) return;
+  useEffect(() => {
+    if (!shouldLoadMap || !authToken) return;
 
-  mapplsObject.initialize(authToken, async () => {
-    if (!mapContainerRef.current) return;
+    mapplsObject.initialize(authToken, async () => {
+      if (!mapContainerRef.current) return;
 
-    try {
-      const map = await mapplsObject.Map({
-        id: "map",
-        properties: {
-          center: [8.528818999999999, 76.94310683333333],
-          traffic: true,
-          zoom: 12,
-          geolocation: true,
-          clickableIcons: true,
-        },
-      });
+      try {
+        const map = await mapplsObject.Map({
+          id: "map",
+          properties: {
+            center: [8.528818999999999, 76.94310683333333],
+            traffic: true,
+            zoom: 12,
+            geolocation: true,
+            clickableIcons: true,
+          },
+        });
 
-      map.on("load", () => {
-        setMapObject(map);
-        setIsMapLoaded(true);
-      });
-    } catch (error) {
-      console.error("Map init error:", error);
-    }
-  });
-}, [shouldLoadMap, authToken]);
+        map.on("load", () => {
+          setMapObject(map);
+          setIsMapLoaded(true);
+        });
+      } catch (error) {
+        console.error("Map init error:", error);
+      }
+    });
+  }, [shouldLoadMap, authToken]);
 
   useEffect(() => {
     if (activeStepIndex > 0 && steps?.length) {
@@ -713,35 +713,35 @@ useEffect(() => {
             </StepsRoot>
           )}
         </div>
-<div className="w-full lg:w-3/4 bg-white h-[820px] order-1 lg:order-2 relative">
-  <div
-    id="map"
-    ref={mapContainerRef}
-    style={{
-      width: "99%",
-      height: "810px",
-      display: "inline-block",
-      position: "relative",
-    }}
-  >
-    {/* 🔥 BEFORE MAP LOAD */}
-    {!shouldLoadMap && (
-      <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-        <Button
-          className="bg-teal-700 text-white px-6 py-3 text-lg"
-          onClick={() => setShouldLoadMap(true)}
-        >
-          Load Map
-        </Button>
-      </div>
-    )}
+        <div className="w-full lg:w-3/4 bg-white h-[820px] order-1 lg:order-2 relative">
+          <div
+            id="map"
+            ref={mapContainerRef}
+            style={{
+              width: "99%",
+              height: "810px",
+              display: "inline-block",
+              position: "relative",
+            }}
+          >
+            {/* 🔥 BEFORE MAP LOAD */}
+            {!shouldLoadMap && (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                <Button
+                  className="bg-teal-700 text-white px-6 py-3 text-lg"
+                  onClick={() => setShouldLoadMap(true)}
+                >
+                  Load Map
+                </Button>
+              </div>
+            )}
 
-    {/* 🔥 AFTER MAP LOAD */}
-    {isMapLoaded && mapObject && (
-      <PolylineComponent map={mapObject} />
-    )}
-  </div>
-</div>
+            {/* 🔥 AFTER MAP LOAD */}
+            {isMapLoaded && mapObject && (
+              <PolylineComponent map={mapObject} />
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

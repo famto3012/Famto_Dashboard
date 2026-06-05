@@ -478,25 +478,25 @@ const MerchantData = ({ detail, onDataChange }) => {
         data={detail?.merchantDetail?.ratingByCustomers}
       />
 
-     <Map
-  isOpen={modal.map}
-  onClose={closeModal}
-  onLocationSelect={(data) => {
-    onDataChange({
-      ...detail,
-      merchantDetail: {
-        ...detail.merchantDetail,
-        location: data,
-      },
-    });
-  }}
-  // ✅ Fallback to geoLocation if location not yet set
-  oldLocation={
-    detail?.merchantDetail?.location ||
-    detail?.merchantDetail?.geoLocation?.coordinates ||
-    null
-  }
-/>
+      <Map
+        isOpen={modal.map}
+        onClose={closeModal}
+        onLocationSelect={(data) => {
+          onDataChange({
+            ...detail,
+            merchantDetail: {
+              ...detail.merchantDetail,
+              location: data,
+            },
+          });
+        }}
+        // ✅ Fallback to geoLocation if location not yet set
+        oldLocation={
+          detail?.merchantDetail?.location ||
+          detail?.merchantDetail?.geoLocation?.coordinates ||
+          null
+        }
+      />
 
       <EnlargeImage
         isOpen={modal.enlarge}
