@@ -94,8 +94,14 @@
 //   );
 // });
 
-importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
-importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
+importScripts(
+  "https://www.gstatic.com/firebasejs/11.1.0/firebase-app-compat.js"
+);
+
+importScripts(
+  "https://www.gstatic.com/firebasejs/11.1.0/firebase-messaging-compat.js"
+);
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAH0J7BtGKf3IkHsU8Pg5tFScfOwGzp3Z0",
@@ -106,7 +112,7 @@ const firebaseConfig = {
   appId: "1:773492185977:web:e425f759d3c13e8c2c2da8",
 };
 
-// firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig);
 
 const messaging = firebase.messaging();
 
