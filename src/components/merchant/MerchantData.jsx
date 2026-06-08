@@ -77,6 +77,16 @@ const MerchantData = ({ detail, onDataChange }) => {
     });
   };
 
+  const latitude =
+    detail?.merchantDetail?.location?.[0] ??
+    detail?.merchantDetail?.geoLocation?.coordinates?.[1] ??
+    "";
+
+  const longitude =
+    detail?.merchantDetail?.location?.[1] ??
+    detail?.merchantDetail?.geoLocation?.coordinates?.[0] ??
+    "";
+
   const closeModal = () => {
     setModal({
       rating: false,
@@ -335,6 +345,8 @@ const MerchantData = ({ detail, onDataChange }) => {
           )}
         </div>
 
+
+
         <div className="mb-[20px] flex items-start justify-start">
           <label className="text-gray-700 md:w-1/3">
             Location<span className="text-red-500 font-bold">*</span>
@@ -348,11 +360,7 @@ const MerchantData = ({ detail, onDataChange }) => {
                 placeholder="Latitude"
                 name="latitude"
                 // ✅ Read from location[0], fallback to geoLocation for existing saved data
-                value={
-                  detail?.merchantDetail?.location?.[0] ||
-                  detail?.merchantDetail?.geoLocation?.coordinates?.[0] ||
-                  ""
-                }
+                value={latitude}
                 onChange={(e) =>
                   onDataChange({
                     ...detail,
@@ -360,19 +368,35 @@ const MerchantData = ({ detail, onDataChange }) => {
                       ...detail.merchantDetail,
                       location: [
                         e.target.value,
-                        detail?.merchantDetail?.location?.[1] ||
-                        detail?.merchantDetail?.geoLocation?.coordinates?.[1] ||
-                        "",
-                      ],
+                        longitude,
+                      ]
                     },
                   })
                 }
                 onKeyDown={(e) => {
-                  const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight"];
-                  const isNumberKey = e.key >= "0" && e.key <= "9";
+                  const allowedKeys = [
+                    "Backspace",
+                    "Delete",
+                    "Tab",
+                    "ArrowLeft",
+                    "ArrowRight",
+                    "Home",
+                    "End",
+                  ];
+
+                  const isNumberKey = /^[0-9]$/.test(e.key);
                   const isDot = e.key === ".";
-                  const isPaste = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v";
-                  if (!isNumberKey && !allowedKeys.includes(e.key) && !isDot && !isPaste) {
+
+                  const isShortcut =
+                    (e.ctrlKey || e.metaKey) &&
+                    ["a", "c", "v", "x"].includes(e.key.toLowerCase());
+
+                  if (
+                    !isNumberKey &&
+                    !isDot &&
+                    !allowedKeys.includes(e.key) &&
+                    !isShortcut
+                  ) {
                     e.preventDefault();
                   }
                 }}
@@ -384,22 +408,16 @@ const MerchantData = ({ detail, onDataChange }) => {
                 placeholder="Longitude"
                 name="longitude"
                 // ✅ Read from location[1], fallback to geoLocation for existing saved data
-                value={
-                  detail?.merchantDetail?.location?.[1] ||
-                  detail?.merchantDetail?.geoLocation?.coordinates?.[1] ||
-                  ""
-                }
+                value={longitude}
                 onChange={(e) =>
                   onDataChange({
                     ...detail,
                     merchantDetail: {
                       ...detail.merchantDetail,
                       location: [
-                        detail?.merchantDetail?.location?.[0] ||
-                        detail?.merchantDetail?.geoLocation?.coordinates?.[0] ||
-                        "",
+                        latitude,
                         e.target.value,
-                      ],
+                      ]
                     },
                   })
                 }
@@ -492,9 +510,9 @@ const MerchantData = ({ detail, onDataChange }) => {
         }}
         // ✅ Fallback to geoLocation if location not yet set
         oldLocation={
-          detail?.merchantDetail?.location ||
-          detail?.merchantDetail?.geoLocation?.coordinates ||
-          null
+          latitude && longitude
+            ? [latitude, longitude]
+            : null
         }
       />
 

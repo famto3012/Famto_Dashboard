@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { whatsappApi } from "@/api/whatsapp/whatsappApi";
 import { WHATSAPP_QUERY_KEYS } from "@/utils/whatsapp/formatters";
+import createApiClient from "@/api/apiClient";
 
 export const useWhatsappContactTags = () => {
   const navigate = useNavigate();
@@ -66,6 +67,19 @@ export const useCreateWhatsappCampaign = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: WHATSAPP_QUERY_KEYS.campaigns });
       queryClient.invalidateQueries({ queryKey: WHATSAPP_QUERY_KEYS.analytics() });
+    },
+  });
+};
+
+export const useSendWhatsappCampaign = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (campaignId) =>
+      createApiClient(navigate).post(`/whatsapp/campaigns/${campaignId}/send`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: WHATSAPP_QUERY_KEYS.campaigns });
     },
   });
 };

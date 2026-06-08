@@ -15,6 +15,14 @@ import { useSendWhatsappMessage } from "@/hooks/whatsapp/useSendMessage";
 import { getMimeMessageType } from "@/utils/whatsapp/formatters";
 import TemplateMessageSender from "../templates/TemplateMessageSender";
 
+const whatsappQuickReplies = [
+  "Hi {{name}}! How can I help you today?",
+  "Thanks for reaching out, {{name}}. We'll get back to you shortly.",
+  "Your order is on its way, {{name}}!",
+  "Sorry for the inconvenience, {{name}}. Let us fix that for you.",
+  "Please share your order ID so we can assist you faster.",
+];
+
 const MessageInput = ({
   conversation,
   templatePanelOpen,

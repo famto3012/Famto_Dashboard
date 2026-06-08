@@ -62,11 +62,11 @@ const BusinessProfileSettings = () => {
 
           <label className="block md:col-span-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-              About
+              Description
             </span>
             <textarea
-              value={form.about || ""}
-              onChange={(event) => setValue("about", event.target.value)}
+              value={form.description || ""}
+              onChange={(event) => setValue("description", event.target.value)}
               rows={4}
               className="mt-2 w-full resize-none rounded-2xl border border-slate-200 px-3 py-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
             />
@@ -77,8 +77,10 @@ const BusinessProfileSettings = () => {
               Website
             </span>
             <input
+              type="url"
               value={form.website || ""}
               onChange={(event) => setValue("website", event.target.value)}
+              placeholder="https://example.com"
               className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
             />
           </label>

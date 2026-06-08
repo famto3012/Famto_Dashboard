@@ -1,7 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { whatsappApi } from "@/api/whatsapp/whatsappApi";
+import { whatsappApi, getWhatsappApiErrorMessage } from "@/api/whatsapp/whatsappApi";
 import { WHATSAPP_QUERY_KEYS } from "@/utils/whatsapp/formatters";
+import { toaster } from "@/components/ui/toaster";
 
 const appendMessageToInfiniteData = (data, message) => {
   if (!data?.pages?.length) {
@@ -59,13 +60,18 @@ export const useSendWhatsappMessage = (conversationId) => {
 
       return { previousMessages };
     },
-    onError: (_error, _payload, context) => {
+    onError: (error, _payload, context) => {
       if (context?.previousMessages) {
         queryClient.setQueryData(
           WHATSAPP_QUERY_KEYS.messages(conversationId),
           context.previousMessages
         );
       }
+      toaster.create({
+        type: "error",
+        title: "Message failed",
+        description: getWhatsappApiErrorMessage(error),
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({

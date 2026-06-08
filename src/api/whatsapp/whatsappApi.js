@@ -25,6 +25,7 @@ const toPaginated = (payload) => {
 // Static data that doesn't come from an API endpoint
 const defaultTags = [
   { id: "vip", label: "VIP", color: "emerald" },
+  { id: "stop", label: "STOP", color: "emerald" },
   { id: "new", label: "New", color: "sky" },
   { id: "order-issue", label: "Order Issue", color: "rose" },
   { id: "cod", label: "COD", color: "amber" },
@@ -91,9 +92,21 @@ export const whatsappApi = {
     return getPayload(response);
   },
 
+  async getNotes(navigate, conversationId) {
+    const api = createApiClient(navigate);
+    const response = await api.get(`/whatsapp/conversations/${conversationId}/notes`);
+    return getPayload(response) ?? [];
+  },
+
   async addNote(navigate, conversationId, payload) {
     const api = createApiClient(navigate);
     const response = await api.post(`/whatsapp/conversations/${conversationId}/notes`, payload);
+    return getPayload(response);
+  },
+
+  async deleteNote(navigate, conversationId, noteId) {
+    const api = createApiClient(navigate);
+    const response = await api.delete(`/whatsapp/conversations/${conversationId}/notes/${noteId}`);
     return getPayload(response);
   },
 

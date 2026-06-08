@@ -39,6 +39,20 @@ export const useWhatsappMeta = () => ({
   tags: whatsappApi.tags(),
 });
 
+// Query key factory for notes
+const notesKey = (conversationId) => ["whatsapp", "notes", conversationId];
+
+export const useConversationNotes = (conversationId) => {
+  const navigate = useNavigate();
+
+  return useQuery({
+    queryKey: notesKey(conversationId),
+    queryFn: () => whatsappApi.getNotes(navigate, conversationId),
+    enabled: !!conversationId,
+    staleTime: 30 * 1000,
+  });
+};
+
 export const useWhatsappConversationActions = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -58,15 +72,22 @@ export const useWhatsappConversationActions = () => {
     mutationFn: ({ conversationId, payload }) =>
       whatsappApi.addNote(navigate, conversationId, payload),
     onSuccess: (_, variables) => {
-      invalidateConversationData();
-      queryClient.invalidateQueries({
-        queryKey: WHATSAPP_QUERY_KEYS.messages(variables.conversationId),
-      });
+      // Refresh notes list for this conversation
+      queryClient.invalidateQueries({ queryKey: notesKey(variables.conversationId) });
+    },
+  });
+
+  const deleteNote = useMutation({
+    mutationFn: ({ conversationId, noteId }) =>
+      whatsappApi.deleteNote(navigate, conversationId, noteId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: notesKey(variables.conversationId) });
     },
   });
 
   return {
     updateConversation,
     addNote,
+    deleteNote,
   };
 };
