@@ -37,6 +37,7 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
     minOrderNumber: "",
     fareAfterMinLoginHours: "",
     fareAfterMinOrderNumber: "",
+    splitIncentive: true,
     geofenceId: [],
   });
 
@@ -67,6 +68,7 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
         minOrderNumber: "",
         fareAfterMinLoginHours: "",
         fareAfterMinOrderNumber: "",
+        splitIncentive: true,
         geofenceId: [],
       });
       onClose();
@@ -358,6 +360,41 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
                     name="fareAfterMinOrderNumber"
                     onChange={handleInputChange}
                   />
+                </div>
+
+                <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500">
+                    Split Incentive
+                  </label>
+                  <div className="w-2/3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={formData.splitIncentive}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        formData.splitIncentive ? "bg-teal-700" : "bg-gray-300"
+                      }`}
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          splitIncentive: !prev.splitIncentive,
+                        }))
+                      }
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          formData.splitIncentive
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                    <span className="text-sm text-gray-500">
+                      {formData.splitIncentive
+                        ? "ON - Incentive split per order"
+                        : "OFF - Full incentive on criteria met"}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center">

@@ -414,9 +414,17 @@ const EditGeofence = () => {
   let map, drawData, geoJSON, polyArray;
 
   useEffect(() => {
+    if (!authToken) return;
+
     const script = document.createElement("script");
-    script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
     script.async = true;
+    script.onload = () => {
+      const pluginScript = document.createElement("script");
+      pluginScript.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk_plugins?v=3.0&libraries=search`;
+      document.body.appendChild(pluginScript);
+    };
+    script.onerror = () => console.error("Error loading Mappls script.");
     document.body.appendChild(script);
 
     window.initMap = () => {
@@ -434,10 +442,7 @@ const EditGeofence = () => {
           setIsMapLoaded(true);
 
           window.mappls.polygonDraw(
-            {
-              map: map,
-              data: geoJSON,
-            },
+            { map, data: geoJSON },
             function (data) {
               drawData = data;
               drawData.control(true);
@@ -471,7 +476,7 @@ const EditGeofence = () => {
                   lat,
                   lng,
                 ]);
-              if (formattedCoordinates.length != 0) {
+              if (formattedCoordinates.length !== 0) {
                 setGeofence((prevState) => ({
                   ...prevState,
                   coordinates: formattedCoordinates,

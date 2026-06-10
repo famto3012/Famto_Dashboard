@@ -64,11 +64,19 @@ const SelectProduct = ({ merchantId, categoryId, onProductSelect }) => {
       updatedItems[existingProductIndex].quantity += 1;
       setSelectedItems(updatedItems);
     } else {
+      // Auto-select the first variant type so the <select> state matches
+      // what is visually displayed. Without this, selectedVariantId stays
+      // undefined and variantTypeId is sent as null to the backend.
+      const firstVariantTypeId = product.variants
+        ?.flatMap((v) => v.variantTypes)
+        ?.[0]?.id || null;
+
       const newProduct = {
         productName: product.productName,
         productId: product.id,
         price: product.price,
         quantity: 1,
+        selectedVariantId: firstVariantTypeId,
         variants: product.variants.map((variant) => ({
           variantName: variant.variantName,
           variantTypes: variant.variantTypes.map((type) => ({

@@ -6,18 +6,21 @@ import { toaster } from "@/components/ui/toaster";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addGeofence, getAllGeofence } from "@/hooks/geofence/useGeofence";
 import { getAuthTokenForDeliveryManagementMap } from "@/hooks/deliveryManagement/useDeliveryManagement";
+import { mappls, mappls_plugin } from "mappls-web-maps";
+
+const mapplsClassObject = new mappls();
+const mapplsPluginObject = new mappls_plugin();
+
 const PlaceSearchPlugin = ({ map }) => {
   const placeSearchRef = useRef(null);
   const markerRef = useRef(null);
 
   useEffect(() => {
-    if (!map || !window.mappls) return;
+    if (!map) return;
 
     const initSearch = () => {
-      if (!window.mappls.search) return;
-
       if (placeSearchRef.current) {
-        window.mappls.removeLayer({ map, layer: placeSearchRef.current });
+        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
       }
 
       const optional_config = {
@@ -34,7 +37,7 @@ const PlaceSearchPlugin = ({ map }) => {
           const eloc = dt.eLoc;
           const place = `${dt.placeName}`;
           if (markerRef.current) markerRef.current.remove();
-          window.mappls.pinMarker(
+          mapplsPluginObject.pinMarker(
             {
               map: map,
               pin: eloc,
@@ -50,28 +53,25 @@ const PlaceSearchPlugin = ({ map }) => {
         }
       };
 
-      placeSearchRef.current = window.mappls.search(
+      placeSearchRef.current = mapplsPluginObject.search(
         document.getElementById("auto"),
         optional_config,
         callback
       );
     };
 
-    if (window.mappls.search) {
-      initSearch();
-    } else {
-      const interval = setInterval(() => {
-        if (window.mappls.search) {
-          clearInterval(interval);
-          initSearch();
-        }
-      }, 200);
-      return () => clearInterval(interval);
-    }
+    // Poll until the search plugin is ready on window.mappls
+    const interval = setInterval(() => {
+      if (window.mappls?.search) {
+        clearInterval(interval);
+        initSearch();
+      }
+    }, 200);
 
     return () => {
-      if (placeSearchRef.current) {
-        window.mappls.removeLayer({ map, layer: placeSearchRef.current });
+      clearInterval(interval);
+      if (map && placeSearchRef.current) {
+        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
       }
     };
   }, [map]);
@@ -133,86 +133,80 @@ const AddGeofence = () => {
   let drawData, geoJSON, polyArray;
 
   useEffect(() => {
-    if (authToken) {
-      const script = document.createElement("script");
-      script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
-      script.async = true;
-      script.onload = () => {
-        const pluginScript = document.createElement("script");
-        pluginScript.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk_plugins?v=3.0&libraries=search`;
-        document.body.appendChild(pluginScript);
-      };
-      script.onerror = () => console.error("Error loading Mappls script.");
-      document.body.appendChild(script);
+    if (!authToken) return;
 
-      window.initMap = () => {
-        const map = new window.mappls.Map("map", {
-          center: [8.528818999999999, 76.94310683333333],
-          zoomControl: true,
-          geolocation: false,
-          fullscreenControl: false,
-          zoom: 12,
+    const script = document.createElement("script");
+    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+    script.async = true;
+    script.onload = () => {
+      const pluginScript = document.createElement("script");
+      pluginScript.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk_plugins?v=3.0&libraries=search`;
+      document.body.appendChild(pluginScript);
+    };
+    script.onerror = () => console.error("Error loading Mappls script.");
+    document.body.appendChild(script);
+
+    window.initMap = () => {
+      const map = new window.mappls.Map("map", {
+        center: [8.528818999999999, 76.94310683333333],
+        zoomControl: true,
+        geolocation: false,
+        fullscreenControl: false,
+        zoom: 12,
+      });
+
+      if (map && typeof map.on === "function") {
+        map.on("load", () => {
+          setMapObject(map);
+          setIsMapLoaded(true);
+
+          window.mappls.polygonDraw(
+            { map, data: geoJSON },
+            function (data) {
+              drawData = data;
+              drawData.control(true);
+              polyArray = drawData.data?.geometry.coordinates[0];
+
+              setTimeout(() => {
+                const drawPolygonButton = document.querySelector(
+                  ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_polygon"
+                );
+                const deleteButton = document.querySelector(
+                  ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_trash"
+                );
+
+                if (drawPolygonButton) {
+                  drawPolygonButton.style.width = "40px";
+                  drawPolygonButton.style.height = "40px";
+                  drawPolygonButton.style.padding = "0px";
+                  drawPolygonButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20selection.png?alt=media&token=f9084e35-d417-4211-84a3-d11220bae42b" alt="PolyDraw" style="width: 55px; height: 40px;" />`;
+                }
+
+                if (deleteButton) {
+                  deleteButton.style.width = "40px";
+                  deleteButton.style.height = "40px";
+                  deleteButton.style.padding = "0px";
+                  deleteButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20deletion.png?alt=media&token=eb4baa67-9ff6-4661-9b4b-326fd0ebeaaf" alt="Delete" style="width: 55px; height: 40px;" />`;
+                }
+              }, 1000);
+
+              const formattedCoordinates =
+                drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
+                  lat,
+                  lng,
+                ]);
+
+              setNewGeofence((prevState) => ({
+                ...prevState,
+                coordinates: formattedCoordinates,
+              }));
+            }
+          );
         });
-
-        if (map && typeof map.on === "function") {
-          map.on("load", () => {
-            setMapObject(map);
-            setIsMapLoaded(true);
-
-            window.mappls.polygonDraw(
-              {
-                map: map,
-                data: geoJSON,
-              },
-              function (data) {
-                drawData = data;
-
-                drawData.control(true);
-                polyArray = drawData.data?.geometry.coordinates[0];
-
-                // Wait for the DOM to load or the map to initialize
-                setTimeout(() => {
-                  const drawPolygonButton = document.querySelector(
-                    ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_polygon"
-                  );
-                  const deleteButton = document.querySelector(
-                    ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_trash"
-                  );
-
-                  if (drawPolygonButton) {
-                    // Adjust size and add icon
-                    drawPolygonButton.style.width = "40px";
-                    drawPolygonButton.style.height = "40px";
-                    drawPolygonButton.style.padding = "0px";
-                    drawPolygonButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20selection.png?alt=media&token=f9084e35-d417-4211-84a3-d11220bae42b" alt="PolyDraw" style="width: 55px; height: 40px;" />`;
-                  }
-
-                  if (deleteButton) {
-                    deleteButton.style.width = "40px";
-                    deleteButton.style.height = "40px";
-                    deleteButton.style.padding = "0px";
-                    deleteButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20deletion.png?alt=media&token=eb4baa67-9ff6-4661-9b4b-326fd0ebeaaf" alt="Delete" style="width: 55px; height: 40px;" />`;
-                  }
-                }, 1000);
-
-                const formattedCoordinates =
-                  drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
-                    lat,
-                    lng,
-                  ]);
-
-                setNewGeofence((prevState) => ({
-                  ...prevState,
-                  coordinates: formattedCoordinates,
-                }));
-              }
-            );
-          });
-        } else {
-          console.error("Map container not found");
-        }
-      };
-    }
+      } else {
+        console.error("Map container not found");
+      }
+    };
   }, [authToken]);
 
   const GeoJsonComponent = ({ map }) => {
