@@ -5,12 +5,13 @@
  * Aliased as "react-select" in vite.config.js so every existing
  * `import Select from "react-select"` picks this up automatically.
  *
- * Uses "react-select/base" to avoid a circular alias import.
+ * Uses "real-react-select" (a second alias pointing to the actual package)
+ * to avoid a circular alias loop.
  */
-import BaseSelect from "react-select/base";
+import RealSelect from "real-react-select";
 
 const Select = ({ styles, ...props }) => (
-  <BaseSelect
+  <RealSelect
     menuPortalTarget={typeof document !== "undefined" ? document.body : null}
     menuPosition="fixed"
     styles={{
