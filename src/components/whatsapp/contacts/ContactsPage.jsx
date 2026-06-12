@@ -4,6 +4,8 @@ import {
   ArrowPathIcon,
   ArrowUpTrayIcon,
   CheckCircleIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
   MagnifyingGlassIcon,
   UserGroupIcon,
   UsersIcon,
@@ -204,14 +206,17 @@ const CsvImportPanel = ({ onClose, onSuccess }) => {
 };
 
 // ── Main Page ─────────────────────────────────────────────
+const PAGE_SIZE_OPTIONS = [50, 100, 200];
+
 const ContactsPage = () => {
-  const [filters, setFilters] = useState({ search: "", tag: "all" });
+  const [filters, setFilters] = useState({ search: "", tag: "all", page: 1, limit: 50 });
   const [showImport, setShowImport] = useState(false);
   const [syncResult, setSyncResult] = useState(null);
   const tagsQuery = useWhatsappContactTags();
   const tags = tagsQuery.data ?? [];
   const contactsQuery = useWhatsappContacts(filters);
-  const contacts = contactsQuery.data ?? [];
+  const contacts = contactsQuery.data?.data ?? contactsQuery.data ?? [];
+  const pagination = contactsQuery.data?.pagination ?? { page: 1, limit: 50, total: 0, pages: 1 };
   const syncFamto = useSyncFromFamtoCustomers();
 
   const handleSyncFamto = () => {
@@ -290,7 +295,7 @@ const ContactsPage = () => {
             <input
               value={filters.search}
               onChange={(e) =>
-                setFilters((c) => ({ ...c, search: e.target.value }))
+                setFilters((c) => ({ ...c, search: e.target.value, page: 1 }))
               }
               placeholder="Search name, phone, email"
               className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-10 pr-3 text-sm outline-none focus:border-emerald-300 focus:bg-white focus:ring-4 focus:ring-emerald-100"
@@ -299,7 +304,7 @@ const ContactsPage = () => {
           <select
             value={filters.tag}
             onChange={(e) =>
-              setFilters((c) => ({ ...c, tag: e.target.value }))
+              setFilters((c) => ({ ...c, tag: e.target.value, page: 1 }))
             }
             className="h-11 rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
           >
@@ -320,50 +325,122 @@ const ContactsPage = () => {
             onRetry={contactsQuery.refetch}
           />
         ) : contacts.length ? (
-          <div className="grid gap-3 xl:grid-cols-2">
-            {contacts.map((contact) => (
-              <article
-                key={contact._id ?? contact.waId}
-                className="rounded-2xl border border-slate-200 p-4 transition hover:border-emerald-200 hover:shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <Avatar name={contact.name} size="lg" />
-                  <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <h3 className="truncate font-semibold text-slate-950">
-                          {contact.name || contact.waId}
-                        </h3>
-                        <p className="truncate text-sm text-slate-500">
-                          {contact.phone || `+${contact.waId}`}
-                          {contact.email ? ` · ${contact.email}` : ""}
+          <>
+            <div className="grid gap-3 xl:grid-cols-2">
+              {contacts.map((contact) => (
+                <article
+                  key={contact._id ?? contact.waId}
+                  className="rounded-2xl border border-slate-200 p-4 transition hover:border-emerald-200 hover:shadow-sm"
+                >
+                  <div className="flex items-start gap-3">
+                    <Avatar name={contact.name} size="lg" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <div className="min-w-0">
+                          <h3 className="truncate font-semibold text-slate-950">
+                            {contact.name || contact.waId}
+                          </h3>
+                          <p className="truncate text-sm text-slate-500">
+                            {contact.phone || `+${contact.waId}`}
+                            {contact.email ? ` · ${contact.email}` : ""}
+                          </p>
+                        </div>
+                        <p className="text-xs text-slate-400">
+                          {getRelativeTime(contact.createdAt)}
                         </p>
                       </div>
-                      <p className="text-xs text-slate-400">
-                        {getRelativeTime(contact.createdAt)}
-                      </p>
+
+                      {contact.notes && (
+                        <p className="mt-2 text-sm text-slate-500 line-clamp-1">
+                          {contact.notes}
+                        </p>
+                      )}
+
+                      {contact.tags?.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {contact.tags.map((tag) => (
+                            <StatusBadge key={tag} size="xs">
+                              {tag.replace(/-/g, " ")}
+                            </StatusBadge>
+                          ))}
+                        </div>
+                      )}
                     </div>
-
-                    {contact.notes && (
-                      <p className="mt-2 text-sm text-slate-500 line-clamp-1">
-                        {contact.notes}
-                      </p>
-                    )}
-
-                    {contact.tags?.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1.5">
-                        {contact.tags.map((tag) => (
-                          <StatusBadge key={tag} size="xs">
-                            {tag.replace(/-/g, " ")}
-                          </StatusBadge>
-                        ))}
-                      </div>
-                    )}
                   </div>
-                </div>
-              </article>
-            ))}
-          </div>
+                </article>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
+              <div className="flex items-center gap-2 text-sm text-slate-500">
+                <span>
+                  Showing {(pagination.page - 1) * pagination.limit + 1}–
+                  {Math.min(pagination.page * pagination.limit, pagination.total)} of{" "}
+                  <b className="text-slate-700">{pagination.total}</b> contacts
+                </span>
+                <span className="text-slate-300">·</span>
+                <select
+                  value={filters.limit}
+                  onChange={(e) =>
+                    setFilters((c) => ({ ...c, limit: parseInt(e.target.value), page: 1 }))
+                  }
+                  className="h-8 rounded-lg border border-slate-200 px-2 text-xs outline-none focus:border-emerald-300"
+                >
+                  {PAGE_SIZE_OPTIONS.map((size) => (
+                    <option key={size} value={size}>{size} / page</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={pagination.page <= 1}
+                  onClick={() => setFilters((c) => ({ ...c, page: c.page - 1 }))}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronLeftIcon className="h-4 w-4" />
+                </button>
+
+                {Array.from({ length: Math.min(pagination.pages, 5) }, (_, i) => {
+                  let pageNum;
+                  if (pagination.pages <= 5) {
+                    pageNum = i + 1;
+                  } else if (pagination.page <= 3) {
+                    pageNum = i + 1;
+                  } else if (pagination.page >= pagination.pages - 2) {
+                    pageNum = pagination.pages - 4 + i;
+                  } else {
+                    pageNum = pagination.page - 2 + i;
+                  }
+                  return (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => setFilters((c) => ({ ...c, page: pageNum }))}
+                      className={`inline-flex h-9 w-9 items-center justify-center rounded-xl text-sm font-semibold transition ${
+                        pageNum === pagination.page
+                          ? "bg-emerald-600 text-white"
+                          : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  type="button"
+                  disabled={pagination.page >= pagination.pages}
+                  onClick={() => setFilters((c) => ({ ...c, page: c.page + 1 }))}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </>
         ) : (
           <EmptyState
             icon={UserGroupIcon}

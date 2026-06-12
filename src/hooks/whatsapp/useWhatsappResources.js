@@ -21,6 +21,7 @@ export const useWhatsappContacts = (filters = {}) => {
     queryKey: WHATSAPP_QUERY_KEYS.contacts(filters),
     queryFn: () => whatsappApi.contacts(navigate, filters),
     staleTime: 60 * 1000,
+    keepPreviousData: true,
   });
 };
 

@@ -48,7 +48,7 @@ const ChatHeader = ({ conversation, onBack, onOpenTemplates }) => {
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      {/* <div className="flex shrink-0 items-center gap-2">
         <button
           type="button"
           onClick={onOpenTemplates}
@@ -85,7 +85,7 @@ const ChatHeader = ({ conversation, onBack, onOpenTemplates }) => {
         >
           <EllipsisVerticalIcon className="h-5 w-5" />
         </button>
-      </div>
+      </div> */}
     </header>
   );
 };

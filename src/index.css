@@ -108,3 +108,10 @@ thead tr {
   top: 0;
   z-index: 10;
 }
+
+/* Ensure Chakra/Ark toaster group container never blocks mouse events
+   on dropdowns when no toasts are visible */
+[data-scope="toast"][data-part="group"]:empty,
+[data-scope="toast"][data-part="group"]:not(:has([data-state="open"])) {
+  pointer-events: none !important;
+}

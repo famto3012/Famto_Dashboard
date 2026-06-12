@@ -113,7 +113,11 @@ export const whatsappApi = {
   async contacts(navigate, params = {}) {
     const api = createApiClient(navigate);
     const response = await api.get("/whatsapp/contacts", { params });
-    return getPayload(response) ?? [];
+    const raw = response?.data;
+    return {
+      data: raw?.data ?? [],
+      pagination: raw?.pagination ?? { page: 1, limit: 50, total: 0, pages: 1 },
+    };
   },
 
   async contactTags(navigate) {

@@ -25,13 +25,13 @@ const ChatSidebar = ({ filters, setFilters, selectedId, onSelect }) => {
             </p>
           </div>
 
-          <button
+          {/* <button
             type="button"
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-600 text-white shadow-sm transition hover:bg-emerald-700"
             title="Start new chat"
           >
             <PlusIcon className="h-5 w-5" />
-          </button>
+          </button> */}
         </div>
 
         <div className="mt-4">

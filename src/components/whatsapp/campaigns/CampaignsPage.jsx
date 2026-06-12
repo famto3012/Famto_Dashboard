@@ -16,14 +16,6 @@ import { formatCompactNumber, formatCurrency, getRelativeTime } from "@/utils/wh
 import createApiClient from "@/api/apiClient";
 import { useNavigate } from "react-router-dom";
 
-const AUDIENCE_OPTIONS = [
-  "All opted-in customers",
-  "VIP customers",
-  "Inactive customers",
-  "Delayed orders",
-  "CSV import segment",
-];
-
 const CampaignsPage = () => {
   const navigate = useNavigate();
   const campaignsQuery = useWhatsappCampaigns();
@@ -34,28 +26,43 @@ const CampaignsPage = () => {
     name: "",
     templateId: "",
     audience: "All opted-in customers",
+    maxRecipients: "",
     scheduleAt: "",
     sendNow: false,
   });
+  const [audienceOptions, setAudienceOptions] = useState([]);
   const [audienceCount, setAudienceCount] = useState(null);
   const [audienceLoading, setAudienceLoading] = useState(false);
   const [createError, setCreateError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  // Fetch contact count whenever audience changes
+  // Fetch audience options (built-in + custom tags) on mount
+  useEffect(() => {
+    const api = createApiClient(navigate);
+    api.get("/whatsapp/campaigns/audience-options")
+      .then((r) => {
+        const options = r?.data?.data ?? [];
+        setAudienceOptions(options);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Fetch contact count whenever audience or maxRecipients changes
   useEffect(() => {
     let cancelled = false;
     setAudienceCount(null);
     setAudienceLoading(true);
     const api = createApiClient(navigate);
-    api.get("/whatsapp/campaigns/audience-preview", { params: { audience: form.audience } })
+    const params = { audience: form.audience };
+    if (form.maxRecipients) params.maxRecipients = form.maxRecipients;
+    api.get("/whatsapp/campaigns/audience-preview", { params })
       .then((r) => {
         if (!cancelled) setAudienceCount(r?.data?.data?.count ?? 0);
       })
       .catch(() => { if (!cancelled) setAudienceCount(null); })
       .finally(() => { if (!cancelled) setAudienceLoading(false); });
     return () => { cancelled = true; };
-  }, [form.audience]);
+  }, [form.audience, form.maxRecipients]);
 
   const campaigns = useMemo(() => campaignsQuery.data ?? [], [campaignsQuery.data]);
   const stats = useMemo(
@@ -88,12 +95,13 @@ const CampaignsPage = () => {
         name: form.name,
         templateId: form.templateId,
         audience: form.audience,
+        maxRecipients: form.maxRecipients ? parseInt(form.maxRecipients) : undefined,
         scheduledAt: form.sendNow ? null : (form.scheduleAt || null),
         sendNow: form.sendNow,
       },
       {
         onSuccess: (data) => {
-          setForm({ name: "", templateId: "", audience: "All opted-in customers", scheduleAt: "", sendNow: false });
+          setForm({ name: "", templateId: "", audience: "All opted-in customers", maxRecipients: "", scheduleAt: "", sendNow: false });
           setCreateError("");
           setSuccessMsg(data?.message || "Campaign created successfully");
           setTimeout(() => setSuccessMsg(""), 5000);
@@ -237,9 +245,26 @@ const CampaignsPage = () => {
                 onChange={(event) => setValue("audience", event.target.value)}
                 className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
               >
-                {AUDIENCE_OPTIONS.map((opt) => (
-                  <option key={opt} value={opt}>{opt}</option>
-                ))}
+                {audienceOptions.length > 0 ? (
+                  <>
+                    {audienceOptions.filter((o) => o.type === "built-in").map((opt) => (
+                      <option key={opt.label} value={opt.label}>
+                        {opt.label} ({opt.count})
+                      </option>
+                    ))}
+                    {audienceOptions.some((o) => o.type === "tag") && (
+                      <optgroup label="Custom tags">
+                        {audienceOptions.filter((o) => o.type === "tag").map((opt) => (
+                          <option key={opt.label} value={opt.label}>
+                            {opt.label} ({opt.count})
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
+                  </>
+                ) : (
+                  <option value="All opted-in customers">All opted-in customers</option>
+                )}
               </select>
               <p className="mt-1.5 text-xs text-slate-500">
                 {audienceLoading ? (
@@ -250,6 +275,20 @@ const CampaignsPage = () => {
                   <span className="text-emerald-600 font-semibold">✓ {audienceCount} contacts will receive this campaign</span>
                 )}
               </p>
+            </label>
+
+            <label className="block">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Max recipients <span className="normal-case font-normal text-slate-400">(optional)</span>
+              </span>
+              <input
+                type="number"
+                min="1"
+                value={form.maxRecipients}
+                onChange={(event) => setValue("maxRecipients", event.target.value)}
+                placeholder="e.g. 100 (leave empty to send to all)"
+                className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
+              />
             </label>
 
             {/* Send Now toggle */}
