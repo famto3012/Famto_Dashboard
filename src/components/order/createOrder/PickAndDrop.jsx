@@ -252,8 +252,8 @@ const PickAndDrop = ({ data, address }) => {
         area: merchantDetailData?.merchantDetail?.displayAddress,
         landmark: merchantDetailData?.merchantDetail?.displayAddress,
         saveAddress: false,
-        latitude: merchantDetailData?.merchantDetail?.location?.[0],
-        longitude: merchantDetailData?.merchantDetail?.location?.[1],
+        latitude: merchantDetailData?.merchantDetail?.geoLocation?.coordinates[1],
+        longitude: merchantDetailData?.merchantDetail?.geoLocation?.coordinates[0],
       };
 
       setPickAndDropData((prev) => ({
@@ -276,8 +276,8 @@ const PickAndDrop = ({ data, address }) => {
         area: merchantDetailData?.merchantDetail?.displayAddress,
         landmark: merchantDetailData?.merchantDetail?.displayAddress,
         saveAddress: false,
-        latitude: merchantDetailData?.merchantDetail?.location?.[0],
-        longitude: merchantDetailData?.merchantDetail?.location?.[1],
+        latitude: merchantDetailData?.merchantDetail?.geoLocation?.coordinates[1],
+        longitude: merchantDetailData?.merchantDetail?.geoLocation?.coordinates[0],
       };
 
       setPickAndDropData((prev) => ({
@@ -300,8 +300,8 @@ const PickAndDrop = ({ data, address }) => {
         area: pickupMerchantDetailData?.merchantDetail?.displayAddress,
         landmark: pickupMerchantDetailData?.merchantDetail?.displayAddress,
         saveAddress: false,
-        latitude: pickupMerchantDetailData?.merchantDetail?.location?.[0],
-        longitude: pickupMerchantDetailData?.merchantDetail?.location?.[1],
+        latitude: pickupMerchantDetailData?.merchantDetail?.geoLocation?.coordinates[1],
+        longitude: pickupMerchantDetailData?.merchantDetail?.geoLocation?.coordinates[0],
       };
 
       setPickAndDropData((prev) => ({
@@ -324,8 +324,8 @@ const PickAndDrop = ({ data, address }) => {
         area: dropMerchantDetailData?.merchantDetail?.displayAddress,
         landmark: dropMerchantDetailData?.merchantDetail?.displayAddress,
         saveAddress: false,
-        latitude: dropMerchantDetailData?.merchantDetail?.location?.[0],
-        longitude: dropMerchantDetailData?.merchantDetail?.location?.[1],
+        latitude: dropMerchantDetailData?.merchantDetail?.geoLocation?.coordinates[1],
+        longitude: dropMerchantDetailData?.merchantDetail?.geoLocation?.coordinates[0],
       };
 
       setPickAndDropData((prev) => ({
