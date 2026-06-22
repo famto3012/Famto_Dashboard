@@ -37,6 +37,7 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
     minOrderNumber: "",
     fareAfterMinLoginHours: "",
     fareAfterMinOrderNumber: "",
+    hourlyRate: "",
     splitIncentive: true,
     geofenceId: [],
   });
@@ -68,6 +69,7 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
         minOrderNumber: "",
         fareAfterMinLoginHours: "",
         fareAfterMinOrderNumber: "",
+        hourlyRate: "",
         splitIncentive: true,
         geofenceId: [],
       });
@@ -175,6 +177,20 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
                         className="cursor-pointer"
                       >
                         Monthly Part Time
+                      </Radio>
+                    </HStack>
+                    <HStack direction="row" className="mt-[20px]">
+                      <Radio
+                        value="Hourly-Full-Time"
+                        className="cursor-pointer"
+                      >
+                        Hourly Full Time
+                      </Radio>
+                      <Radio
+                        value="Hourly-Part-Time"
+                        className="cursor-pointer"
+                      >
+                        Hourly Part Time
                       </Radio>
                     </HStack>
                   </RadioGroup>
@@ -290,6 +306,24 @@ const AddAgentPricing = ({ isOpen, onClose }) => {
                     value={formData.purchaseFarePerHour}
                     id="purchaseFarePerHour"
                     name="purchaseFarePerHour"
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <label
+                    className="w-1/3 text-gray-500"
+                    htmlFor="hourlyRate"
+                  >
+                    Hourly Rate
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Hourly Rate"
+                    value={formData.hourlyRate}
+                    id="hourlyRate"
+                    name="hourlyRate"
                     onChange={handleInputChange}
                   />
                 </div>

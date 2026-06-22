@@ -105,6 +105,7 @@ const AgentPricing = () => {
                 "Waiting Fare",
                 "Waiting Time",
                 "Purchase Fare per hour",
+                "Hourly Rate",
                 "Minimum login Hrs",
                 "Minimum order number",
                 "Fare after min login Hrs",
@@ -156,6 +157,9 @@ const AgentPricing = () => {
                   </Table.Cell>
                   <Table.Cell textAlign="center">
                     {price.purchaseFarePerHour}
+                  </Table.Cell>
+                  <Table.Cell textAlign="center">
+                    {price.hourlyRate}
                   </Table.Cell>
                   <Table.Cell textAlign="center">
                     {price.minLoginHours}
