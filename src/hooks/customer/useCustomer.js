@@ -14,6 +14,8 @@ export const fetchCustomer = async (role, filter, page, limit, navigate) => {
         limit,
         geofence: filter.geofence,
         walletBalance: filter.walletBalance,
+        loyaltyPoint: filter.loyaltyPoint,
+        subscription: filter.subscription,
         query: filter.name,
       },
     });

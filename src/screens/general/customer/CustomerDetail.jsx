@@ -549,6 +549,107 @@ const CustomerDetail = () => {
           </div>
         </div>
 
+        {/* Referral Details */}
+        <div className="bg-white mx-7 py-5 mt-5 px-6 rounded-lg">
+          <h4 className="font-bold text-[16px] mb-4">Referral Details</h4>
+
+          {/* Who referred this customer */}
+          <div className="mb-5">
+            <p className="text-sm text-gray-500 mb-2 font-semibold">
+              Referred By (Customer A)
+            </p>
+            {customer?.referredBy ? (
+              <div className="flex flex-wrap gap-6 bg-gray-50 p-3 rounded-lg">
+                <div>
+                  <span className="text-xs text-gray-400">Customer ID</span>
+                  <p className="text-sm font-medium">
+                    {customer.referredBy.customerId}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400">Name</span>
+                  <p className="text-sm font-medium">
+                    {customer.referredBy.name}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400">Phone</span>
+                  <p className="text-sm font-medium">
+                    {customer.referredBy.phoneNumber}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400">Referral Type</span>
+                  <p className="text-sm font-medium">
+                    {customer.referralType || "-"}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-xs text-gray-400">
+                    Discount Applied
+                  </span>
+                  <p
+                    className={`text-sm font-semibold ${
+                      customer.referralProcessed
+                        ? "text-green-600"
+                        : "text-orange-500"
+                    }`}
+                  >
+                    {customer.referralProcessed ? "Yes" : "No"}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">
+                This customer was not referred by anyone.
+              </p>
+            )}
+          </div>
+
+          {/* Customers this customer has referred */}
+          <div>
+            <p className="text-sm text-gray-500 mb-2 font-semibold">
+              Customers Referred by This Customer (
+              {customer?.referredCustomers?.length || 0})
+            </p>
+            {customer?.referredCustomers?.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead>
+                    <tr className="bg-teal-700 text-white">
+                      <th className="px-4 py-2 text-center">Customer ID</th>
+                      <th className="px-4 py-2 text-center">Name</th>
+                      <th className="px-4 py-2 text-center">Phone</th>
+                      <th className="px-4 py-2 text-center">Email</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {customer.referredCustomers.map((c, i) => (
+                      <tr
+                        key={c.customerId}
+                        className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}
+                      >
+                        <td className="px-4 py-2 text-center">
+                          {c.customerId}
+                        </td>
+                        <td className="px-4 py-2 text-center">{c.name}</td>
+                        <td className="px-4 py-2 text-center">
+                          {c.phoneNumber}
+                        </td>
+                        <td className="px-4 py-2 text-center">{c.email}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <p className="text-sm text-gray-400 italic">
+                This customer has not referred anyone yet.
+              </p>
+            )}
+          </div>
+        </div>
+
         {role !== "Merchant" && (
           <WalletTransaction
             data={customer?.walletDetails}

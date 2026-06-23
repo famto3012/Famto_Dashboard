@@ -107,7 +107,9 @@ const EditAgent = ({ isOpen, onClose, data }) => {
     value: manager.managerId,
   }));
 
-  const pricingOptions = allPricing?.map((pricing) => ({
+  const pricingOptions = allPricing
+  ?.filter((pricing) => pricing.status)
+  .map((pricing) => ({
     label: pricing.ruleName,
     value: pricing._id,
   }));

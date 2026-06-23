@@ -27,6 +27,8 @@ const AllCustomer = () => {
   const [filter, setFilter] = useState({
     geofence: null,
     walletBalance: null,
+    loyaltyPoint: null,
+    subscription: null,
     name: "",
   });
   const [debounce, setDebounce] = useState("");
@@ -70,6 +72,10 @@ const AllCustomer = () => {
 
   const walletOptions = [{ label: "Active", value: "true" }];
 
+  const loyaltyPointOptions = [{ label: "Has Loyalty Points", value: "true" }];
+
+  const subscriptionOptions = [{ label: "Active", value: "true" }];
+
   const showTableLoading = geofenceLoading || isLoading;
   const showError = geofenceError || isError;
 
@@ -90,7 +96,7 @@ const AllCustomer = () => {
           )}
         </div>
 
-        <div className="mx-8 rounded-lg mt-5 flex flex-col lg:flex-row p-6 gap-[20px] lg:gap-0 bg-white justify-between">
+        <div className="mx-8 rounded-lg mt-5 flex flex-col lg:flex-row p-6 gap-[20px] bg-white justify-between">
           <Select
             options={geofenceOptions}
             value={geofenceOptions?.find(
@@ -120,11 +126,58 @@ const AllCustomer = () => {
               (option) => option.value === filter.walletBalance
             )}
             onChange={(option) =>
-              setFilter({ ...filter, walletBalance: option.value })
+              setFilter({ ...filter, walletBalance: option ? option.value : null })
             }
             className=" bg-cyan-50 min-w-[10rem]"
             placeholder="Wallet"
             isSearchable
+            isClearable
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
+
+          <Select
+            options={loyaltyPointOptions}
+            value={loyaltyPointOptions?.find(
+              (option) => option.value === filter.loyaltyPoint
+            )}
+            onChange={(option) =>
+              setFilter({ ...filter, loyaltyPoint: option ? option.value : null })
+            }
+            className="bg-cyan-50 min-w-[10rem]"
+            placeholder="Loyalty Points"
+            isClearable
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
+
+          <Select
+            options={subscriptionOptions}
+            value={subscriptionOptions?.find(
+              (option) => option.value === filter.subscription
+            )}
+            onChange={(option) =>
+              setFilter({ ...filter, subscription: option ? option.value : null })
+            }
+            className="bg-cyan-50 min-w-[10rem]"
+            placeholder="Sponsorship"
+            isClearable
             styles={{
               control: (provided) => ({
                 ...provided,
