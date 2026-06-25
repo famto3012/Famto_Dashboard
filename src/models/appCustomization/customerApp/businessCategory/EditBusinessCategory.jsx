@@ -34,6 +34,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
   const [formData, setFormData] = useState({
     title: "",
     geofenceId: [],
+    serviceId: "",
     bannerImageURL: "",
     increasedPercentage: 0,
     merchantFilters: ["All"],
@@ -59,6 +60,16 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
   } = useQuery({
     queryKey: ["all-geofence"],
     queryFn: () => getAllGeofence(navigate),
+    enabled: isOpen,
+  });
+
+  const {
+    data: allService,
+    isLoading: serviceLoading,
+    isError: serviceError,
+  } = useQuery({
+    queryKey: ["all-service"],
+    queryFn: () => fetchAllService(navigate),
     enabled: isOpen,
   });
 
@@ -128,6 +139,11 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
     value: geofence._id,
   }));
 
+    const serviceOptions = allService?.map((service) => ({
+    label: service.title,
+    value: service.serviceId,
+  }));
+  
   const handleSelectFile = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -280,7 +296,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
                             setFormData({
                               ...formData,
                               merchantFilters: formData.merchantFilters.filter(
-                                (_, i) => i !== index
+                                (_, i) => i !== index,
                               ),
                             });
                           }}
@@ -323,7 +339,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
                             setFormData({
                               ...formData,
                               productFilters: formData.productFilters.filter(
-                                (_, i) => i !== index
+                                (_, i) => i !== index,
                               ),
                             });
                           }}
@@ -353,7 +369,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
                 <Select
                   className="w-2/3 outline-none focus:outline-none"
                   value={geofenceOptions?.filter((option) =>
-                    formData?.geofenceId?.includes(option.value)
+                    formData?.geofenceId?.includes(option.value),
                   )}
                   isMulti={true}
                   isSearchable={true}
@@ -371,6 +387,29 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
               </div>
 
               <div className="flex items-center justify-between">
+                <label className="w-1/2 text-gray-500">Service</label>
+
+                <Select
+                  className="w-2/3 outline-none focus:outline-none"
+                  value={
+                    serviceOptions?.find(
+                      (option) => option.value === formData.serviceId,
+                    ) || null
+                  }
+                  isSearchable={true}
+                  onChange={(selectedOption) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      serviceId: selectedOption?.value || "",
+                    }))
+                  }
+                  options={serviceOptions}
+                  placeholder="Select Service"
+                  isClearable={true}
+                />
+              </div>
+
+              <div className="flex items-center justify-between">
                 <label className="w-1/2 text-gray-500">
                   Image Display Type
                 </label>
@@ -378,7 +417,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
                 <Select
                   className="w-2/3 outline-none focus:outline-none"
                   value={imageDisplayTypeOptions?.find(
-                    (option) => option.value === formData?.imageDisplayType
+                    (option) => option.value === formData?.imageDisplayType,
                   )}
                   onChange={(option) =>
                     setFormData((prev) => ({
@@ -391,9 +430,7 @@ const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
               </div>
 
               <div className="flex items-center justify-between">
-                <label className="w-1/2 text-gray-500">
-                  Has Food Type
-                </label>
+                <label className="w-1/2 text-gray-500">Has Food Type</label>
                 <div className="w-2/3">
                   <Switch
                     checked={formData.hasFoodType}

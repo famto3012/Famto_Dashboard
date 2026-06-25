@@ -24,12 +24,14 @@ import { createNewAppBanner } from "@/hooks/adBanner/adBanner";
 import RenderIcon from "@/icons/RenderIcon";
 import { fetchBusinessCategoryOfMerchant } from "@/hooks/customerAppCustomization/useBusinessCategory";
 import { fetchMerchantsForDropDown } from "@/hooks/merchant/useMerchant";
+import { fetchAllService } from "@/hooks/customerAppCustomization/useService";
 
 const AddAppBanner = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     name: "",
     merchantId: "",
     geofenceId: [],
+    serviceId: "",
     businessCategoryId: "",
   });
   const [selectedFile, setSelectedFile] = useState(null);
@@ -44,6 +46,16 @@ const AddAppBanner = ({ isOpen, onClose }) => {
   } = useQuery({
     queryKey: ["all-geofence"],
     queryFn: () => getAllGeofence(navigate),
+    enabled: !!isOpen,
+  });
+
+  const {
+    data: allService,
+    isLoading: serviceLoading,
+    isError: serviceError,
+  } = useQuery({
+    queryKey: ["all-service"],
+    queryFn: () => fetchAllService(navigate),
     enabled: !!isOpen,
   });
 
@@ -72,6 +84,7 @@ const AddAppBanner = ({ isOpen, onClose }) => {
         name: "",
         merchantId: "",
         geofenceId: [],
+        serviceId: "",
       });
       setSelectedFile(null);
       onClose();
@@ -122,6 +135,11 @@ const AddAppBanner = ({ isOpen, onClose }) => {
         }))
       : []),
   ];
+
+  const serviceOptions = allService?.map((service) => ({
+    label: service.title,
+    value: service.serviceId,
+  }));
 
   const categoryOptions = allBusinessCategory?.map((category) => ({
     label: category.title,
@@ -194,7 +212,7 @@ const AddAppBanner = ({ isOpen, onClose }) => {
                   <Select
                     options={merchantOptions}
                     value={merchantOptions?.find(
-                      (option) => option.value === formData?.merchantId
+                      (option) => option.value === formData?.merchantId,
                     )}
                     onChange={(option) =>
                       setFormData({
@@ -221,7 +239,7 @@ const AddAppBanner = ({ isOpen, onClose }) => {
                   <Select
                     options={categoryOptions}
                     value={categoryOptions?.find(
-                      (option) => option.value === formData?.businessCategoryId
+                      (option) => option.value === formData?.businessCategoryId,
                     )}
                     onChange={(option) =>
                       setFormData({
@@ -248,7 +266,7 @@ const AddAppBanner = ({ isOpen, onClose }) => {
                   <Select
                     options={geofenceOptions}
                     value={geofenceOptions?.filter((option) =>
-                      formData?.geofenceId?.includes(option.value)
+                      formData?.geofenceId?.includes(option.value),
                     )}
                     onChange={(selected) => {
                       if (
@@ -258,7 +276,7 @@ const AddAppBanner = ({ isOpen, onClose }) => {
                         setFormData({
                           ...formData,
                           geofenceId: allGeofence.map(
-                            (geofence) => geofence._id
+                            (geofence) => geofence._id,
                           ),
                         });
                       } else {
@@ -285,6 +303,30 @@ const AddAppBanner = ({ isOpen, onClose }) => {
                         padding: "10px",
                       }),
                     }}
+                  />
+                </div>
+                 <div className="flex items-center">
+                  <label className="w-1/3">
+                    Service<span className="text-red-600 ml-2">*</span>
+                  </label>
+
+                  <Select
+                    className="w-2/3 outline-none focus:outline-none"
+                    value={
+                      serviceOptions?.find(
+                        (option) => option.value === formData.serviceId,
+                      ) || null
+                    }
+                    isSearchable={true}
+                    onChange={(selectedOption) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        serviceId: selectedOption?.value || "",
+                      }))
+                    }
+                    options={serviceOptions}
+                    placeholder="Select Service"
+                    isClearable={true}
                   />
                 </div>
 
