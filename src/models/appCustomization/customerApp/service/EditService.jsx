@@ -27,7 +27,7 @@ import {
 const EditService = ({ isOpen, onClose, serviceId }) => {
   const [formData, setFormData] = useState({
     title: "",
-    geofenceId: "",
+    geofenceId: [],
     bannerImage: "",
   });
   const [previewURL, setPreviewURL] = useState(null);
@@ -63,7 +63,7 @@ const EditService = ({ isOpen, onClose, serviceId }) => {
       queryClient.invalidateQueries(["all-service"]);
       setFormData({
         title: "",
-        geofenceId: "",
+        geofenceId: [],
       });
       setPreviewURL(null);
       setSelectedFile(null);
@@ -87,7 +87,11 @@ const EditService = ({ isOpen, onClose, serviceId }) => {
     const formDataObject = new FormData();
 
     Object.keys(formData).forEach((key) => {
-      formDataObject.append(key, formData[key]);
+      if (Array.isArray(formData[key])) {
+        formData[key].forEach((item) => formDataObject.append(key, item));
+      } else {
+        formDataObject.append(key, formData[key]);
+      }
     });
 
     selectedFile && formDataObject.append("serviceImage", selectedFile);
@@ -153,19 +157,20 @@ const EditService = ({ isOpen, onClose, serviceId }) => {
 
                 <Select
                   options={geofenceOptions}
-                  value={geofenceOptions?.find(
-                    (option) => option.value === formData.geofenceId
+                  value={geofenceOptions?.filter((option) =>
+                    formData.geofenceId?.includes(option.value)
                   )}
-                  onChange={(option) =>
+                  onChange={(selectedOptions) =>
                     setFormData({
                       ...formData,
-                      geofenceId: option.value,
+                      geofenceId:
+                        selectedOptions?.map((option) => option.value) || [],
                     })
                   }
                   className="rounded focus:outline-none w-2/3"
                   placeholder="Select geofence"
                   isSearchable
-                  isMulti={false}
+                  isMulti={true}
                   menuPlacement="bottom"
                   styles={{
                     control: (provided) => ({
