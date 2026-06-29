@@ -29,6 +29,7 @@ import {
   updateBusinessCategoryDetail,
 } from "@/hooks/customerAppCustomization/useBusinessCategory";
 import { imageDisplayTypeOptions } from "@/utils/defaultData";
+import { fetchAllService } from "@/hooks/customerAppCustomization/useService";
 
 const EditBusinessCategory = ({ isOpen, onClose, categoryId }) => {
   const [formData, setFormData] = useState({
