@@ -196,6 +196,20 @@ const CustomerSubscriptionPlans = () => {
                         <span className="font-[700]">{plan.noOfOrder}</span>
                       </p>
 
+                      {/* Delivery Benefit Display */}
+                      <p>
+                        Delivery:{" "}
+                        <span className="font-[700]">
+                          {plan.deliveryBenefitType === "free"
+                            ? plan.freeDeliveryUpToKm > 0
+                              ? `Free (up to ${plan.freeDeliveryUpToKm} km)`
+                              : "Free (any distance)"
+                            : plan.deliveryBenefitType === "percentage"
+                              ? `${plan.deliveryBenefitValue}% Off`
+                              : `₹${plan.deliveryBenefitValue} Off`}
+                        </span>
+                      </p>
+
                       <p>{plan.description}</p>
                     </div>
 
