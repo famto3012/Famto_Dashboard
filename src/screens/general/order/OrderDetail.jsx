@@ -22,6 +22,7 @@ import RenderIcon from "@/icons/RenderIcon";
 
 import {
   downloadOrderBill,
+  downloadNotesReceipt,
   getOrderDetail,
   markOrderAsCompletedForAdmin,
   markPaymentReceived,
@@ -54,6 +55,11 @@ const OrderDetail = () => {
   const downloadBill = useMutation({
     mutationKey: ["download-order-bill"],
     mutationFn: () => downloadOrderBill(orderId, navigate),
+  });
+
+  const downloadReceipt = useMutation({
+    mutationKey: ["download-notes-receipt"],
+    mutationFn: ({ format }) => downloadNotesReceipt(orderId, format, navigate),
   });
 
   const markScheduledOrderAsViewedForMerchant = useMutation({
@@ -132,6 +138,35 @@ const OrderDetail = () => {
       error: {
         title: "Download Failed",
         description: "Something went wrong while downloading the bill",
+      },
+    });
+  };
+
+  const handleDownloadReceipt = (format) => {
+    const ext = format === "image" ? "PNG" : "PDF";
+    const promise = new Promise((resolve, reject) => {
+      downloadReceipt.mutate(
+        { format },
+        {
+          onSuccess: resolve,
+          onError: (error) =>
+            reject(new Error(error.message || `Failed to download ${ext}`)),
+        }
+      );
+    });
+
+    toaster.promise(promise, {
+      loading: {
+        title: "Downloading...",
+        description: `Preparing your receipt ${ext}`,
+      },
+      success: {
+        title: "Download Successful",
+        description: `Receipt has been downloaded successfully.`,
+      },
+      error: {
+        title: "Download Failed",
+        description: `Something went wrong while downloading the receipt`,
       },
     });
   };
@@ -237,6 +272,32 @@ return (
             <RenderIcon iconName="DownloadIcon" size={18} loading={6} />
             {downloadBill.isPending ? "Downloading..." : "Bill"}
           </Button>
+        )}
+
+        {orderId.startsWith("O") && (
+          <div className="relative group">
+            <Button
+              disabled={downloadReceipt.isPending}
+              className="bg-teal-100 px-3 py-2 rounded-md flex items-center gap-2 text-sm"
+            >
+              <RenderIcon iconName="DownloadIcon" size={18} loading={6} />
+              {downloadReceipt.isPending ? "Downloading..." : "Receipt"}
+            </Button>
+            <div className="absolute right-0 top-full mt-1 z-50 hidden group-hover:flex flex-col bg-white border rounded-md shadow-lg min-w-[160px]">
+              <button
+                onClick={() => handleDownloadReceipt("pdf")}
+                className="px-4 py-2 text-sm text-left hover:bg-gray-100 rounded-t-md"
+              >
+                Download as PDF
+              </button>
+              <button
+                onClick={() => handleDownloadReceipt("image")}
+                className="px-4 py-2 text-sm text-left hover:bg-gray-100 rounded-b-md"
+              >
+                Download as Image
+              </button>
+            </div>
+          </div>
         )}
 
         {orderId.startsWith("O") && orderDetail && (

@@ -136,9 +136,7 @@ export const whatsappApi = {
     const api = createApiClient(navigate);
     const formData = new FormData();
     formData.append("csv", file);
-    const response = await api.post("/whatsapp/contacts/import-csv", formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    const response = await api.post("/whatsapp/contacts/import-csv", formData);
     return getPayload(response);
   },
 
