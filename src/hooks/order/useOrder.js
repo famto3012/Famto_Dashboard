@@ -302,6 +302,32 @@ export const downloadOrderBill = async (orderId, navigate) => {
   }
 };
 
+export const downloadNotesReceipt = async (orderId, format, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(
+      `/orders/download-notes-receipt`,
+      { orderId, format },
+      {
+        responseType: "blob",
+      }
+    );
+
+    const ext = format === "image" ? "png" : "pdf";
+    const url = window.URL.createObjectURL(new Blob([res.data]));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `Order_Notes_${orderId}.${ext}`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    return res.data;
+  } catch (err) {
+    throw err.response?.data?.message || "Failed to download notes receipt";
+  }
+};
+
 export const markScheduledOrderAsViewed = async (orderId, userId, navigate) => {
   try {
     const api = useApiClient(navigate);
