@@ -28,6 +28,7 @@ import {
 import EditMerchant from "@/models/general/merchant/EditMerchant";
 import BlockMerchant from "@/models/general/merchant/BlockMerchant";
 import DeleteMerchant from "@/models/general/merchant/DeleteMerchant";
+import MerchantQRModal from "@/models/general/merchant/MerchantQRModal";
 
 const MerchantDetail = () => {
   const [formData, setFormData] = useState({});
@@ -35,6 +36,7 @@ const MerchantDetail = () => {
     edit: false,
     delete: false,
     block: false,
+    qr: false,
   });
 
   const { merchantId } = useParams();
@@ -136,6 +138,7 @@ const MerchantDetail = () => {
       edit: false,
       delete: false,
       block: false,
+      qr: false,
     });
   };
 
@@ -158,6 +161,16 @@ const MerchantDetail = () => {
         </div>
 
         <div className="flex items-center justify-between lg:justify-end md:gap-[15px]">
+          {/* QR Code button */}
+          <button
+            onClick={() => toggleModal("qr")}
+            className="flex gap-2 items-center bg-teal-50 border border-teal-300 text-teal-700 py-2 px-4 rounded-md hover:bg-teal-100 transition-colors"
+          >
+            <RenderIcon iconName="ShareIcon" size={16} loading={6} />
+            <span className="hidden sm:block text-sm font-[500]">Share</span>
+          </button>
+
+
           {role !== "Merchant" && !formData.isBlocked && (
             <Link
               onClick={() => toggleModal("block")}
@@ -257,6 +270,13 @@ const MerchantDetail = () => {
         isOpen={modal.delete}
         onClose={closeModal}
         merchantId={merchantId}
+      />
+      <MerchantQRModal
+        isOpen={modal.qr}
+        onClose={closeModal}
+        merchantId={formData?._id}
+        businessCategoryId={formData?.merchantDetail?.businessCategoryId}
+        merchantName={formData?.merchantDetail?.merchantName}
       />
     </div>
   );

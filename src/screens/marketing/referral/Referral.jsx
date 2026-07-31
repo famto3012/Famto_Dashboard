@@ -289,6 +289,7 @@ const Referral = () => {
           <div className="flex justify-end mt-10 mb-2 gap-[15px]">
             <button
               onClick={() => updateReferralDetail.mutate(formData)}
+              disabled={updateReferralDetail.isPending}
               className="bg-teal-800 rounded-lg px-8 py-2 right-5 mb-5 text-white font-semibold justify-end"
             >
               {updateReferralDetail.isPending ? `Saving...` : `Save`}

@@ -81,6 +81,7 @@ const DeleteVariant = ({ isOpen, onClose, variantId, typeId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteVariant.mutate()}
+            disabled={handleDeleteVariant.isPending}
           >
             {handleDeleteVariant.isPending ? `Deleting...` : `Delete`}
           </Button>

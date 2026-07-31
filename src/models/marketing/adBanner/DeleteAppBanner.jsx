@@ -67,6 +67,7 @@ const DeleteAppBanner = ({ isOpen, onClose, bannerId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteAppBanner.mutate(bannerId)}
+            disabled={handleDeleteAppBanner.isPending}
           >
             {handleDeleteAppBanner.isPending ? `Deleting...` : `Delete`}
           </Button>

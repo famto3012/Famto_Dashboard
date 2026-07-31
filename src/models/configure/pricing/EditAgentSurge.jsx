@@ -253,6 +253,7 @@ const EditAgentSurge = ({ isOpen, onClose, surgeId }) => {
                 </button>
                 <button
                   onClick={() => handleEditSurge.mutate({ surgeId, formData })}
+                  disabled={handleEditSurge.isPending}
                   className="bg-teal-700 text-white py-2 px-4 rounded-md"
                 >
                   {handleEditSurge.isPending ? `Saving...` : `Save`}

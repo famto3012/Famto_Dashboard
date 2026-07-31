@@ -23,6 +23,7 @@ import {
   fetchSingleMerchantSubscriptionPlan,
   updateMerchantSubscriptionPlan,
 } from "@/hooks/commAndSubs/useSubscription";
+import { getAllBusinessCategory } from "@/hooks/customerAppCustomization/useBusinessCategory";
 
 const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
   const [formData, setFormData] = useState({
@@ -30,6 +31,7 @@ const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
     amount: "",
     duration: "",
     taxId: null,
+    businessCategoryId: null,
     renewalReminder: "",
     description: "",
   });
@@ -61,9 +63,24 @@ const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
     enabled: isOpen,
   });
 
+  const {
+    data: allBusinessCategory,
+    isLoading: categoryLoading,
+    isError: categoryError,
+  } = useQuery({
+    queryKey: ["all-businessCategory"],
+    queryFn: () => getAllBusinessCategory(navigate),
+    enabled: isOpen,
+  });
+
   const taxOptions = allTax?.map((tax) => ({
     label: tax.taxName,
     value: tax.taxId,
+  }));
+
+  const categoryOptions = allBusinessCategory?.map((cat) => ({
+    label: cat.title,
+    value: cat._id,
   }));
 
   const handleInputChange = (e) => {
@@ -82,6 +99,7 @@ const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
         amount: "",
         duration: "",
         taxId: null,
+        businessCategoryId: null,
         renewalReminder: "",
         description: "",
       });
@@ -101,8 +119,8 @@ const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
     },
   });
 
-  const isLoading = planLoading || taxLoading;
-  const isError = planError || taxError;
+  const isLoading = planLoading || taxLoading || categoryLoading;
+  const isError = planError || taxError || categoryError;
 
   return (
     <DialogRoot
@@ -187,6 +205,28 @@ const EditMerchantSubPlan = ({ isOpen, onClose, planId }) => {
                   options={taxOptions}
                   placeholder="Select Tax"
                   menuPlacement="auto"
+                />
+              </div>
+
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="businessCategoryId">
+                  Business Category
+                </label>
+                <Select
+                  className="rounded w-2/3 focus:outline-none"
+                  value={
+                    categoryOptions?.find(
+                      (option) => option.value === formData.businessCategoryId
+                    ) || null
+                  }
+                  isSearchable={true}
+                  onChange={(option) =>
+                    setFormData({ ...formData, businessCategoryId: option ? option.value : null })
+                  }
+                  options={categoryOptions}
+                  placeholder="Select Business Category"
+                  menuPlacement="auto"
+                  isClearable={true}
                 />
               </div>
 

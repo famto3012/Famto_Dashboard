@@ -399,6 +399,7 @@ const AdditionalProductDetail = ({ data }) => {
           <div className="flex justify-between gap-3 mx-3">
             <button
               onClick={() => handleAddNewVariant.mutate()}
+              disabled={handleAddNewVariant.isPending}
               className="w-1/2 bg-zinc-200 p-2 rounded-md mt-4"
             >
               {handleAddNewVariant.isPending ? `Saving...` : `Save`}
@@ -518,6 +519,7 @@ const AdditionalProductDetail = ({ data }) => {
             <div className="flex justify-between gap-3 mx-3">
               <button
                 onClick={() => handleUpdateVariant.mutate()}
+                disabled={handleUpdateVariant.isPending}
                 className="w-1/2 bg-zinc-200 p-2 rounded-md mt-4"
               >
                 {handleUpdateVariant.isPending ? `Saving...` : `Save`}

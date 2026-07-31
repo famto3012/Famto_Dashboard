@@ -66,6 +66,7 @@ const SendNotification = ({ isOpen, onClose, selectedId }) => {
               </Button>
               <Button
                 onClick={() => sendNotification.mutate({ selectedId })}
+                disabled={sendNotification.isPending}
                 className="bg-teal-800 px-5 py-1 rounded-md ml-3 text-white"
               >
                 {sendNotification.isPending ? "Sending..." : "Send"}

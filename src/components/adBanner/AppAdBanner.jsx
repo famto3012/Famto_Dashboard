@@ -95,6 +95,7 @@ const AppAdBanner = () => {
                 "Name",
                 "Merchant ID",
                 "Geofence",
+                "Service",
                 "Status",
                 "Actions",
               ].map((header, index) => (
@@ -144,13 +145,15 @@ const AppAdBanner = () => {
                   <Table.Cell textAlign="center">{item.name}</Table.Cell>
                   <Table.Cell textAlign="center">{item.merchantId}</Table.Cell>
                   <Table.Cell textAlign="center">
-                     {item?.geofenceId?.map((geofence, index) => (
+                    {item?.geofenceId?.map((geofence, index) => (
                       <span key={index} className="flex flex-col">
                         {geofence.name}
                         {index < item.geofenceId.length - 1 && ", "}
                       </span>
-                    ))
-                    }
+                    ))}
+                  </Table.Cell>
+                  <Table.Cell textAlign="center">
+                    {item?.serviceId?.title || "-"}
                   </Table.Cell>
                   <Table.Cell textAlign="center">
                     <HStack direction="row" gap="4" justify="center">

@@ -65,6 +65,7 @@ const AcceptOrder = ({ isOpen, onClose, orderId }) => {
           <Button
             className="bg-teal-700 p-2 text-white"
             onClick={() => handleAcceptOrder.mutate(orderId)}
+            disabled={handleAcceptOrder.isPending}
           >
             {handleAcceptOrder.isPending ? `Accepting...` : `Accept`}
           </Button>

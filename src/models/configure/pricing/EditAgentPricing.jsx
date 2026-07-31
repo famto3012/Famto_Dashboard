@@ -40,6 +40,8 @@ const EditAgentPricing = ({ isOpen, onClose, pricingId }) => {
     minOrderNumber: "",
     fareAfterMinLoginHours: "",
     fareAfterMinOrderNumber: "",
+    hourlyRate: "",
+    splitIncentive: true,
     geofenceId: [],
   });
 
@@ -80,6 +82,8 @@ const EditAgentPricing = ({ isOpen, onClose, pricingId }) => {
         minOrderNumber: "",
         fareAfterMinLoginHours: "",
         fareAfterMinOrderNumber: "",
+        hourlyRate: "",
+        splitIncentive: true,
         geofenceId: [],
       });
       onClose();
@@ -192,6 +196,20 @@ const EditAgentPricing = ({ isOpen, onClose, pricingId }) => {
                         className="cursor-pointer"
                       >
                         Monthly Part Time
+                      </Radio>
+                    </HStack>
+                    <HStack direction="row" className="mt-[20px]">
+                      <Radio
+                        value="Hourly-Full-Time"
+                        className="cursor-pointer"
+                      >
+                        Hourly Full Time
+                      </Radio>
+                      <Radio
+                        value="Hourly-Part-Time"
+                        className="cursor-pointer"
+                      >
+                        Hourly Part Time
                       </Radio>
                     </HStack>
                   </RadioGroup>
@@ -314,6 +332,24 @@ const EditAgentPricing = ({ isOpen, onClose, pricingId }) => {
                 <div className="flex items-center">
                   <label
                     className="w-1/3 text-gray-500"
+                    htmlFor="hourlyRate"
+                  >
+                    Hourly Rate
+                  </label>
+                  <input
+                    className="border-2 border-gray-300 rounded p-2 w-2/3 outline-none focus:outline-none"
+                    type="text"
+                    placeholder="Hourly Rate"
+                    value={formData.hourlyRate}
+                    id="hourlyRate"
+                    name="hourlyRate"
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="flex items-center">
+                  <label
+                    className="w-1/3 text-gray-500"
                     htmlFor="purchaseFarePerHour"
                   >
                     Minimum login hours <span className="text-red-500">*</span>
@@ -377,6 +413,41 @@ const EditAgentPricing = ({ isOpen, onClose, pricingId }) => {
                     name="fareAfterMinOrderNumber"
                     onChange={handleInputChange}
                   />
+                </div>
+
+                <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500">
+                    Split Incentive
+                  </label>
+                  <div className="w-2/3 flex items-center gap-3">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={formData.splitIncentive}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        formData.splitIncentive ? "bg-teal-700" : "bg-gray-300"
+                      }`}
+                      onClick={() =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          splitIncentive: !prev.splitIncentive,
+                        }))
+                      }
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          formData.splitIncentive
+                            ? "translate-x-6"
+                            : "translate-x-1"
+                        }`}
+                      />
+                    </button>
+                    <span className="text-sm text-gray-500">
+                      {formData.splitIncentive
+                        ? "ON - Incentive split per order"
+                        : "OFF - Full incentive on criteria met"}
+                    </span>
+                  </div>
                 </div>
 
                 <div className="flex items-center">

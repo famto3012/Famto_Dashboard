@@ -4,6 +4,8 @@ import { agentDeliveryManagementStatusOptions } from "@/utils/defaultData";
 import { Card } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
+import { FaMotorcycle } from "react-icons/fa";
+import { GiScooter } from "react-icons/gi";
 import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 
@@ -63,7 +65,7 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
         <Select
           options={agentDeliveryManagementStatusOptions}
           value={agentDeliveryManagementStatusOptions.find(
-            (option) => option.value === agentFilter.filter
+            (option) => option.value === agentFilter.filter,
           )}
           onChange={selectChange}
           className="rounded-lg w-full focus:outline-none mt-4 outline-none"
@@ -130,9 +132,11 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
                       <Card.Title className="text-[17px]">
                         {data?.fullName}
                       </Card.Title>
-
                       <Card.Title className="text-[16px]">
                         {data?.phoneNumber}
+                      </Card.Title>
+                      <Card.Title className="text-[17px]">
+                        {data?.vehicleDetail?.[0]?.type || "-"}
                       </Card.Title>
                     </Card.Body>
                   </div>
@@ -140,6 +144,15 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
                   <div className="w-1/3 flex justify-center items-center">
                     <div className="bg-teal-800 rounded-full h-[40px] w-[40px] flex justify-center items-center text-white">
                       {data?.taskCompleted}
+                    </div>
+                    <div className=" rounded-full h-[40px] w-[40px] flex justify-center items-center text-white mx-2">
+                      {data?.vehicleDetail?.[0]?.type?.toLowerCase() ===
+                      "bike" ? (
+                        <FaMotorcycle className=" text-[80px] text-teal-800" />
+                      ) : data?.vehicleDetail?.[0]?.type?.toLowerCase() ===
+                        "scooter" ? (
+                        <GiScooter className="text-[80px] text-teal-800" />
+                      ) : null}
                     </div>
                   </div>
                 </div>

@@ -82,7 +82,7 @@ const AllMerchantsTable = ({ filter }) => {
   };
 
   return (
-    <div className="mt-[20px] w-full overflow-y-auto">
+    <div className="mt-[20px] w-full overflow-x-auto">
       <Table.Root striped interactive>
         <Table.Header>
           <Table.Row className="bg-teal-700 h-14">

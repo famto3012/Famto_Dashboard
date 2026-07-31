@@ -200,6 +200,7 @@ const AutoAllocation = ({ isOpen, onClose }) => {
           </button>
           <button
             onClick={() => handleAddAutoAllocation.mutate(formData)}
+            disabled={handleAddAutoAllocation.isPending}
             className="bg-teal-800 text-white p-3 w-1/2 rounded-lg"
           >
             {handleAddAutoAllocation.isPending

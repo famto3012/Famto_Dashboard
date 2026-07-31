@@ -54,7 +54,7 @@ const MerchantSubLog = ({ selected, filter }) => {
               "Subscription Plans",
               "Total Amount",
               "Payment Mode",
-              "Start Date",
+              "End Date",
               "Status",
             ].map((header, index) => (
               <Table.ColumnHeader key={index} color="white" textAlign="center">
@@ -91,16 +91,31 @@ const MerchantSubLog = ({ selected, filter }) => {
                 <Table.Cell textAlign="center">{item.paymentMode}</Table.Cell>
                 <Table.Cell textAlign="center">{item.startDate}</Table.Cell>
                 <Table.Cell textAlign="center">
-                  {item.status === "Unpaid" && role !== "Merchant" ? (
-                    <button
-                      onClick={() => toggleModal(item.logId)}
-                      className="bg-teal-700 text-white p-3 rounded-md"
-                    >
-                      Set as paid
-                    </button>
-                  ) : (
-                    <p className="text-green-600">{item.status}</p>
-                  )}
+                  <div className="flex flex-col items-center gap-1">
+                    {item.paymentStatus === "Unpaid" ? (
+                      <>
+                        <p className="text-orange-500 font-medium">Unpaid</p>
+                        {role !== "Merchant" && (
+                          <button
+                            onClick={() => toggleModal(item.logId)}
+                            className="bg-teal-700 text-white px-2 py-1 rounded-md text-xs"
+                          >
+                            Set as paid
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      <p
+                        className={
+                          item.status === "Active"
+                            ? "text-green-600 font-medium"
+                            : "text-red-500 font-medium"
+                        }
+                      >
+                        {item.status}
+                      </p>
+                    )}
+                  </div>
                 </Table.Cell>
               </Table.Row>
             ))

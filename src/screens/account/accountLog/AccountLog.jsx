@@ -256,6 +256,7 @@ const AccountLog = () => {
                   <Table.Cell textAlign="center" flexDirection="column">
                     <Button
                       onClick={() => toggleStatus.mutate(item.logId)}
+                      disabled={toggleStatus.isPending}
                       className="bg-teal-700 text-white p-3"
                     >
                       Unblock

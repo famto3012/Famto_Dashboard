@@ -187,6 +187,7 @@ const AddCategory = ({ isOpen, onClose, merchantId }) => {
           <Button
             className="bg-teal-700 p-2 text-white"
             onClick={() => handleAddCategory.mutate()}
+            disabled={handleAddCategory.isPending}
           >
             {handleAddCategory.isPending ? `Saving...` : `Save`}
           </Button>

@@ -46,6 +46,12 @@ const OrderBill = ({ data }) => {
                 {billDetail?.taxAmount?.toFixed(2) || 0}
               </Table.Cell>
             </Table.Row>
+            <Table.Row className="h-[70px]">
+              <Table.Cell textAlign="left">Surge Price</Table.Cell>
+              <Table.Cell textAlign="right">
+                {billDetail?.surgePrice?.toFixed(2) || 0}
+              </Table.Cell>
+            </Table.Row>
 
             <Table.Row className="h-[70px]" bg="teal.700">
               <Table.Cell textAlign="left" color="white">

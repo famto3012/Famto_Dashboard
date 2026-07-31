@@ -67,6 +67,7 @@ const DeleteCustomerPricing = ({ isOpen, onClose, pricingId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeletePricing.mutate(pricingId)}
+            disabled={handleDeletePricing.isPending}
           >
             {handleDeletePricing.isPending ? `Deleting...` : `Delete`}
           </Button>

@@ -231,6 +231,7 @@ const EditCategory = ({ isOpen, onClose, merchantId }) => {
           <Button
             className="bg-teal-700 p-2 text-white"
             onClick={() => handleEditCategory.mutate()}
+            disabled={handleEditCategory.isPending}
           >
             {handleEditCategory.isPending ? `Saving...` : `Save`}
           </Button>

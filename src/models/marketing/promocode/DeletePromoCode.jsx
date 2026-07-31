@@ -67,6 +67,7 @@ const DeletePromoCode = ({ isOpen, onClose, promoCodeId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeletePromoCode.mutate(promoCodeId)}
+            disabled={handleDeletePromoCode.isPending}
           >
             {handleDeletePromoCode.isPending ? `Deleting...` : `Delete`}
           </Button>

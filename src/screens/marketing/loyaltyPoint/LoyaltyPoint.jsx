@@ -456,7 +456,7 @@ const LoyaltyPoint = () => {
               />
             </div>
           </div>
-
+{/* 
           <div className="flex items-center">
             <label
               className="w-full sm:w-1/3 text-gray-500"
@@ -473,7 +473,7 @@ const LoyaltyPoint = () => {
               name="minOrderAmountForRedemption"
               onChange={handleInputChange}
             />
-          </div>
+          </div> */}
 
           <div className="flex items-center">
             <label
@@ -516,6 +516,7 @@ const LoyaltyPoint = () => {
               <button
                 className="bg-teal-700 text-white py-2 px-10 rounded-md outline-none focus:outline-none"
                 onClick={() => handleUpdateLoyaltyPoint.mutate(formData)}
+                disabled={handleUpdateLoyaltyPoint.isPending}
               >
                 {handleUpdateLoyaltyPoint.isPending ? `Saving...` : `Save`}
               </button>

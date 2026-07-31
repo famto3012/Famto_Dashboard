@@ -66,23 +66,10 @@ const ConfigureMerchant = ({ detail, onDataChange }) => {
     if (!allBusinessCategory || !detail?.merchantDetail?.businessCategoryId)
       return;
 
-    // Define the titles you want to check
-    const titlesSet = new Set([
-      "Food",
-      "Home Chef",
-      "Home Bakers",
-      "Pet Supplies",
-    ]);
-
-    // Find all matching categories
-    const foodCategories = allBusinessCategory.filter((category) =>
-      titlesSet.has(category.title)
-    );
-
-    // Collect their IDs as strings
-    const foodCategoryIds = foodCategories.map((category) =>
-      category._id?.toString()
-    );
+    // Find all categories that have hasFoodType enabled
+    const foodCategoryIds = allBusinessCategory
+      .filter((category) => category.hasFoodType)
+      .map((category) => category._id?.toString());
 
     // Check if any of the foodCategoryIds are in merchant's selected businessCategoryId
     const hasFoodCategory = detail.merchantDetail.businessCategoryId.some(

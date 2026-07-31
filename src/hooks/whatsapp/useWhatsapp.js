@@ -1,45 +1,93 @@
-import useApiClient from "@/api/apiClient";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { whatsappApi } from "@/api/whatsapp/whatsappApi";
+import {
+  WHATSAPP_QUERY_KEYS,
+  normalizeLegacyConversation,
+  normalizeLegacyMessage,
+} from "@/utils/whatsapp/formatters";
 
 export const fetchAllWhatsappConversation = async (navigate) => {
-  try {
-    const api = useApiClient(navigate);
-    const res = await api.get(`/whatsapp/message`);
-
-    return res.status === 200 ? res.data.data : [];
-  } catch (err) {
-    console.error(`Error in fetching all whatsapp conversation: ${err}`);
-    throw new Error(
-      err.response?.data?.message ||
-        "Failed to fetch all whatsapp conversation."
-    );
-  }
+  const conversations = await whatsappApi.legacyConversations(navigate);
+  return conversations.map(normalizeLegacyConversation);
 };
 
 export const fetchAllWhatsappMessagesById = async (waId, navigate) => {
-  try {
-    const api = useApiClient(navigate);
-    const res = await api.get(`/whatsapp/message/${waId}`);
-
-    return res.status === 200 ? res.data.data : {};
-  } catch (err) {
-    console.error(`Error in fetching all whatsapp messages by id: ${err}`);
-    throw new Error(
-      err.response?.data?.message ||
-        "Failed to fetch all whatsapp messages by id."
-    );
-  }
+  const messages = await whatsappApi.legacyMessages(navigate, waId);
+  return messages.map(normalizeLegacyMessage);
 };
 
 export const sendWhatsappMessage = async (data, navigate) => {
-  try {
-    const api = useApiClient(navigate);
-    const res = await api.post(`/whatsapp/send-message`, data);
+  const conversationId =
+    data?.get?.("conversationId") || data?.conversationId || data?.get?.("to");
 
-    return res.status === 200 ? res.data.data : {};
-  } catch (err) {
-    console.error(`Error in sending whatsapp messages: ${err}`);
-    throw new Error(
-      err.response?.data?.message || "Failed to send whatsapp messages."
-    );
-  }
+  return whatsappApi.sendMessage(navigate, conversationId, data);
+};
+
+export const useWhatsappOverview = () => {
+  const navigate = useNavigate();
+
+  return useQuery({
+    queryKey: WHATSAPP_QUERY_KEYS.overview,
+    queryFn: () => whatsappApi.overview(navigate),
+    staleTime: 60 * 1000,
+  });
+};
+
+export const useWhatsappMeta = () => ({
+  agents: whatsappApi.agents(),
+  tags: whatsappApi.tags(),
+});
+
+// Query key factory for notes
+const notesKey = (conversationId) => ["whatsapp", "notes", conversationId];
+
+export const useConversationNotes = (conversationId) => {
+  const navigate = useNavigate();
+
+  return useQuery({
+    queryKey: notesKey(conversationId),
+    queryFn: () => whatsappApi.getNotes(navigate, conversationId),
+    enabled: !!conversationId,
+    staleTime: 30 * 1000,
+  });
+};
+
+export const useWhatsappConversationActions = () => {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const invalidateConversationData = () => {
+    queryClient.invalidateQueries({ queryKey: ["whatsapp", "conversations"] });
+    queryClient.invalidateQueries({ queryKey: WHATSAPP_QUERY_KEYS.overview });
+  };
+
+  const updateConversation = useMutation({
+    mutationFn: ({ conversationId, payload }) =>
+      whatsappApi.updateConversation(navigate, conversationId, payload),
+    onSuccess: invalidateConversationData,
+  });
+
+  const addNote = useMutation({
+    mutationFn: ({ conversationId, payload }) =>
+      whatsappApi.addNote(navigate, conversationId, payload),
+    onSuccess: (_, variables) => {
+      // Refresh notes list for this conversation
+      queryClient.invalidateQueries({ queryKey: notesKey(variables.conversationId) });
+    },
+  });
+
+  const deleteNote = useMutation({
+    mutationFn: ({ conversationId, noteId }) =>
+      whatsappApi.deleteNote(navigate, conversationId, noteId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: notesKey(variables.conversationId) });
+    },
+  });
+
+  return {
+    updateConversation,
+    addNote,
+    deleteNote,
+  };
 };

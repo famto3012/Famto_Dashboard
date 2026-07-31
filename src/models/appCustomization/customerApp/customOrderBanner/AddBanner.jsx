@@ -119,7 +119,7 @@ const AddBanner = ({ isOpen, onClose }) => {
             </div>
             <div className="flex items-center justify-between">
               <label className="w-1/2 text-gray-500">
-                Image (342px x 160px)
+                Image (1536px x 1024px)
               </label>
               <div className="flex items-center justify-start w-2/3 gap-[30px]">
                 {!previewURL ? (

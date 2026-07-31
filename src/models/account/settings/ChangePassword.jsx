@@ -102,6 +102,7 @@ const ChangePassword = ({ isOpen, onClose }) => {
               </button>
               <button
                 onClick={() => changePassword.mutate(formData)}
+                disabled={changePassword.isPending}
                 className="bg-teal-700 text-white py-2 px-4 rounded-md"
               >
                 {changePassword.isPending ? `Saving...` : `Save`}

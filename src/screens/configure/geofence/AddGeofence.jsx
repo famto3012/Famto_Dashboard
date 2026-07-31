@@ -16,49 +16,60 @@ const PlaceSearchPlugin = ({ map }) => {
   const markerRef = useRef(null);
 
   useEffect(() => {
-    if (map && placeSearchRef.current) {
-      mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
-    }
+    if (!map) return;
 
-    const optional_config = {
-      location: [8.5892862, 76.8773566], // Center of Trivandrum
-      region: "IND",
-      height: 300,
-      hyperLocal: true,
-    };
-
-    const callback = (data) => {
-      if (data) {
-        const dt = data[0];
-        if (!dt) return false;
-        const eloc = dt.eLoc;
-        const place = `${dt.placeName}`;
-        if (markerRef.current) markerRef.current.remove();
-        mapplsPluginObject.pinMarker(
-          {
-            map: map,
-            pin: eloc,
-            popupHtml: place,
-            popupOptions: {
-              openPopup: true,
-            },
-            zoom: 10,
-          },
-          (data) => {
-            markerRef.current = data;
-            markerRef.current.fitbounds();
-          }
-        );
-        markerRef.current.remove();
+    const initSearch = () => {
+      if (placeSearchRef.current) {
+        mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
       }
+
+      const optional_config = {
+        location: [8.5892862, 76.8773566],
+        region: "IND",
+        height: 300,
+        hyperLocal: true,
+      };
+
+      const callback = (data) => {
+        if (data) {
+          const dt = data[0];
+          if (!dt) return false;
+          const eloc = dt.eLoc;
+          const place = `${dt.placeName}`;
+          if (markerRef.current) markerRef.current.remove();
+          mapplsPluginObject.pinMarker(
+            {
+              map: map,
+              pin: eloc,
+              popupHtml: place,
+              popupOptions: { openPopup: true },
+              zoom: 10,
+            },
+            (data) => {
+              markerRef.current = data;
+              markerRef.current.fitbounds();
+            }
+          );
+        }
+      };
+
+      placeSearchRef.current = mapplsPluginObject.search(
+        document.getElementById("auto"),
+        optional_config,
+        callback
+      );
     };
-    placeSearchRef.current = mapplsPluginObject.search(
-      document.getElementById("auto"),
-      optional_config,
-      callback
-    );
+
+    // Poll until the search plugin is ready on window.mappls
+    const interval = setInterval(() => {
+      if (window.mappls?.search) {
+        clearInterval(interval);
+        initSearch();
+      }
+    }, 200);
 
     return () => {
+      clearInterval(interval);
       if (map && placeSearchRef.current) {
         mapplsClassObject.removeLayer({ map, layer: placeSearchRef.current });
       }
@@ -122,82 +133,80 @@ const AddGeofence = () => {
   let drawData, geoJSON, polyArray;
 
   useEffect(() => {
-    if (authToken) {
-      const script = document.createElement("script");
-      script.src = `https://apis.mappls.com/advancedmaps/api/9a632cda78b871b3a6eb69bddc470fef/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
-      script.async = true;
-      script.onload = () => console.log("Mappls script loaded successfully.");
-      script.onerror = () => console.error("Error loading Mappls script.");
-      document.body.appendChild(script);
+    if (!authToken) return;
 
-      window.initMap = () => {
-        const map = new window.mappls.Map("map", {
-          center: [8.528818999999999, 76.94310683333333],
-          zoomControl: true,
-          geolocation: false,
-          fullscreenControl: false,
-          zoom: 12,
+    const script = document.createElement("script");
+    script.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk?layer=vector&v=3.0&polydraw&callback=initMap`;
+    script.async = true;
+    script.onload = () => {
+      const pluginScript = document.createElement("script");
+      pluginScript.src = `https://apis.mappls.com/advancedmaps/api/${authToken}/map_sdk_plugins?v=3.0&libraries=search`;
+      document.body.appendChild(pluginScript);
+    };
+    script.onerror = () => console.error("Error loading Mappls script.");
+    document.body.appendChild(script);
+
+    window.initMap = () => {
+      const map = new window.mappls.Map("map", {
+        center: [8.528818999999999, 76.94310683333333],
+        zoomControl: true,
+        geolocation: false,
+        fullscreenControl: false,
+        zoom: 12,
+      });
+
+      if (map && typeof map.on === "function") {
+        map.on("load", () => {
+          setMapObject(map);
+          setIsMapLoaded(true);
+
+          window.mappls.polygonDraw(
+            { map, data: geoJSON },
+            function (data) {
+              drawData = data;
+              drawData.control(true);
+              polyArray = drawData.data?.geometry.coordinates[0];
+
+              setTimeout(() => {
+                const drawPolygonButton = document.querySelector(
+                  ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_polygon"
+                );
+                const deleteButton = document.querySelector(
+                  ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_trash"
+                );
+
+                if (drawPolygonButton) {
+                  drawPolygonButton.style.width = "40px";
+                  drawPolygonButton.style.height = "40px";
+                  drawPolygonButton.style.padding = "0px";
+                  drawPolygonButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20selection.png?alt=media&token=f9084e35-d417-4211-84a3-d11220bae42b" alt="PolyDraw" style="width: 55px; height: 40px;" />`;
+                }
+
+                if (deleteButton) {
+                  deleteButton.style.width = "40px";
+                  deleteButton.style.height = "40px";
+                  deleteButton.style.padding = "0px";
+                  deleteButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20deletion.png?alt=media&token=eb4baa67-9ff6-4661-9b4b-326fd0ebeaaf" alt="Delete" style="width: 55px; height: 40px;" />`;
+                }
+              }, 1000);
+
+              const formattedCoordinates =
+                drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
+                  lat,
+                  lng,
+                ]);
+
+              setNewGeofence((prevState) => ({
+                ...prevState,
+                coordinates: formattedCoordinates,
+              }));
+            }
+          );
         });
-
-        if (map && typeof map.on === "function") {
-          map.on("load", () => {
-            setMapObject(map);
-            setIsMapLoaded(true);
-
-            window.mappls.polygonDraw(
-              {
-                map: map,
-                data: geoJSON,
-              },
-              function (data) {
-                drawData = data;
-
-                drawData.control(true);
-                polyArray = drawData.data?.geometry.coordinates[0];
-
-                // Wait for the DOM to load or the map to initialize
-                setTimeout(() => {
-                  const drawPolygonButton = document.querySelector(
-                    ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_polygon"
-                  );
-                  const deleteButton = document.querySelector(
-                    ".mappls-gl-draw_ctrl-draw-btn.mappls-gl-draw_trash"
-                  );
-
-                  if (drawPolygonButton) {
-                    // Adjust size and add icon
-                    drawPolygonButton.style.width = "40px";
-                    drawPolygonButton.style.height = "40px";
-                    drawPolygonButton.style.padding = "0px";
-                    drawPolygonButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20selection.png?alt=media&token=f9084e35-d417-4211-84a3-d11220bae42b" alt="PolyDraw" style="width: 55px; height: 40px;" />`;
-                  }
-
-                  if (deleteButton) {
-                    deleteButton.style.width = "40px";
-                    deleteButton.style.height = "40px";
-                    deleteButton.style.padding = "0px";
-                    deleteButton.innerHTML = `<img src="https://firebasestorage.googleapis.com/v0/b/famto-aa73e.appspot.com/o/admin_panel_assets%2Fmap%20deletion.png?alt=media&token=eb4baa67-9ff6-4661-9b4b-326fd0ebeaaf" alt="Delete" style="width: 55px; height: 40px;" />`;
-                  }
-                }, 1000);
-
-                const formattedCoordinates =
-                  drawData?.data?.geometry?.coordinates[0].map(([lng, lat]) => [
-                    lat,
-                    lng,
-                  ]);
-
-                setNewGeofence((prevState) => ({
-                  ...prevState,
-                  coordinates: formattedCoordinates,
-                }));
-              }
-            );
-          });
-        } else {
-          console.error("Map container not found");
-        }
-      };
-    }
+      } else {
+        console.error("Map container not found");
+      }
+    };
   }, [authToken]);
 
   const GeoJsonComponent = ({ map }) => {
@@ -336,6 +345,7 @@ const AddGeofence = () => {
               <button
                 type="submit"
                 onClick={() => handleAddGeofence.mutate({ newGeofence })}
+                disabled={handleAddGeofence.isPending}
                 className="w-1/2 bg-teal-600 text-white px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
               >
                 Add
@@ -345,16 +355,18 @@ const AddGeofence = () => {
 
           {/* Map Section */}
           <div className="p-6 bg-white rounded-lg shadow-sm w-full sm:w-2/3">
-            <div
-              ref={mapContainerRef}
-              id="map"
-              className="map-container w-full h-[600px]"
-            >
+            <div className="relative">
+              <div
+                ref={mapContainerRef}
+                id="map"
+                className="map-container w-full h-[600px]"
+              />
+
               <input
                 type="text"
                 id="auto"
                 name="auto"
-                className="absolute top-0 left-0 mt-2 ms-2 p-[10px] text-[15px] outline-none focus:outline-none 
+                className="absolute top-2 left-2 z-10 p-[10px] text-[15px] outline-none focus:outline-none
              w-[170px] sm:w-[200px] md:w-[250px] lg:w-[300px]"
                 placeholder="Search places"
                 spellCheck="false"

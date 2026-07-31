@@ -18,10 +18,10 @@ const unitOptions = [
   { value: "nos", label: "nos" },
   { value: "gm", label: "gm" },
   { value: "kg", label: "kg" },
-  { value: "gm", label: "gm" },
+  { value: "ml", label: "ml" },
   { value: "ltr", label: "ltr" },
-  { value: "m", label: "m" },
   { value: "cm", label: "cm" },
+  { value: "m", label: "m" },
 ];
 
 const orderStatusOption = [

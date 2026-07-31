@@ -93,9 +93,9 @@ const CustomerPricing = () => {
           </button>
         </div>
       </div>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto max-h-[1000px] overflow-y-auto">
         <Table.Root className="mt-5 z-10 max-h-[30rem]" striped interactive>
-          <Table.Header>
+          <Table.Header className="sticky top-0 z-20">
             <Table.Row className="bg-teal-700 h-14">
               {[
                 "Rule Name",
@@ -112,7 +112,7 @@ const CustomerPricing = () => {
                 "Geofence",
                 "Status",
               ].map((header, idx) => (
-                <Table.ColumnHeader key={idx} color="white" textAlign="center">
+                <Table.ColumnHeader key={idx} color="white" textAlign="center" className="sticky top-0 bg-teal-700">
                   {header}
                 </Table.ColumnHeader>
               ))}
@@ -163,10 +163,10 @@ const CustomerPricing = () => {
                   <Table.Cell textAlign="center">
                     {price.waitingTime}
                   </Table.Cell>
-                   <Table.Cell textAlign="center">
+                  <Table.Cell textAlign="center">
                     {price.returnBaseDistance}
                   </Table.Cell>
-                   <Table.Cell textAlign="center">
+                  <Table.Cell textAlign="center">
                     {price.fareAfterBaseReturnDistance}
                   </Table.Cell>
                   <Table.Cell textAlign="center">

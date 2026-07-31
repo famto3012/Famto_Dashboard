@@ -1,4 +1,4 @@
-import { serviceableOptions, subscriptionOptions } from "@/utils/defaultData";
+import { serviceableOptions, sponsorShipOptions, subscriptionOptions } from "@/utils/defaultData";
 import Select from "react-select";
 
 const MerchantFIlters = ({
@@ -80,6 +80,29 @@ const MerchantFIlters = ({
         className=" bg-cyan-50 min-w-[10rem]"
         placeholder="Subscription"
         styles={{
+          control: (provided) => ({
+            ...provided,
+            paddingRight: "",
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            padding: "10px",
+          }),
+        }}
+      />
+
+        {/* Sponsorship Added */}
+      <Select
+        options={sponsorShipOptions}
+        value={sponsorShipOptions.find(
+          (option) => option.value === currentValue.sponsorShipStatus
+        )}
+        onChange={(option) =>
+          onFilterChange("sponsorShipStatus", option.value)
+        }
+        className="bg-cyan-50 min-w-[10rem]"
+        placeholder="Sponsorship"
+   styles={{
           control: (provided) => ({
             ...provided,
             paddingRight: "",

@@ -48,7 +48,7 @@ const Messages = () => {
     return () => {
       socket.off("newMessage", handleNewMessage);
     };
-  }, [socket, waId]);
+  }, [queryClient, socket, waId]);
 
   const { data } = useQuery({
     queryKey: ["all-whatsapp-message-by-id", waId],

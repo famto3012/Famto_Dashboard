@@ -29,3 +29,31 @@ export const updateCustomizationData = async (data, navigate) => {
     );
   }
 };
+
+export const fetchOfferPopup = async (navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/admin/app-customization/offer-popup`);
+
+    return res.status === 200 ? res.data : { status: false, imageUrl: "" };
+  } catch (err) {
+    console.error(`Error in fetching offer popup: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch offer popup"
+    );
+  }
+};
+
+export const updateOfferPopup = async (data, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(`/admin/app-customization/offer-popup`, data);
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in updating offer popup: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to update offer popup"
+    );
+  }
+};

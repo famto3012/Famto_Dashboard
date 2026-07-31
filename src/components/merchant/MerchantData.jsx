@@ -77,6 +77,16 @@ const MerchantData = ({ detail, onDataChange }) => {
     });
   };
 
+  const latitude =
+    detail?.merchantDetail?.location?.[0] ??
+    detail?.merchantDetail?.geoLocation?.coordinates?.[1] ??
+    "";
+
+  const longitude =
+    detail?.merchantDetail?.location?.[1] ??
+    detail?.merchantDetail?.geoLocation?.coordinates?.[0] ??
+    "";
+
   const closeModal = () => {
     setModal({
       rating: false,
@@ -255,13 +265,12 @@ const MerchantData = ({ detail, onDataChange }) => {
               </label>
               <input
                 type="text"
-                className={`${
-                  detail?.isApproved === "Approved"
-                    ? "text-green-600"
-                    : detail?.isApproved === "Pending"
-                      ? " text-orange-600"
-                      : ""
-                } outline-none focus:outline-none p-[10px] bg-transparent rounded w-2/3`}
+                className={`${detail?.isApproved === "Approved"
+                  ? "text-green-600"
+                  : detail?.isApproved === "Pending"
+                    ? " text-orange-600"
+                    : ""
+                  } outline-none focus:outline-none p-[10px] bg-transparent rounded w-2/3`}
                 disabled
                 value={detail.isApproved}
               />
@@ -336,6 +345,8 @@ const MerchantData = ({ detail, onDataChange }) => {
           )}
         </div>
 
+
+
         <div className="mb-[20px] flex items-start justify-start">
           <label className="text-gray-700 md:w-1/3">
             Location<span className="text-red-500 font-bold">*</span>
@@ -348,36 +359,43 @@ const MerchantData = ({ detail, onDataChange }) => {
                 className="h-10 ps-3 py-2 text-sm border-2 outline-none focus:outline-none rounded-md flex-1"
                 placeholder="Latitude"
                 name="latitude"
-                value={detail?.merchantDetail?.location?.[0] || ""}
+                // ✅ Read from location[0], fallback to geoLocation for existing saved data
+                value={latitude}
                 onChange={(e) =>
                   onDataChange({
                     ...detail,
                     merchantDetail: {
                       ...detail.merchantDetail,
                       location: [
-                        e.target.value, // Update latitude (index 0)
-                        detail?.merchantDetail?.location?.[1] || "", // Keep longitude (index 1) unchanged
-                      ],
+                        e.target.value,
+                        longitude,
+                      ]
                     },
                   })
                 }
                 onKeyDown={(e) => {
                   const allowedKeys = [
                     "Backspace",
+                    "Delete",
                     "Tab",
                     "ArrowLeft",
                     "ArrowRight",
+                    "Home",
+                    "End",
                   ];
-                  const isNumberKey = e.key >= "0" && e.key <= "9";
+
+                  const isNumberKey = /^[0-9]$/.test(e.key);
                   const isDot = e.key === ".";
-                  const isPaste =
-                    (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v";
+
+                  const isShortcut =
+                    (e.ctrlKey || e.metaKey) &&
+                    ["a", "c", "v", "x"].includes(e.key.toLowerCase());
 
                   if (
                     !isNumberKey &&
-                    !allowedKeys.includes(e.key) &&
                     !isDot &&
-                    !isPaste
+                    !allowedKeys.includes(e.key) &&
+                    !isShortcut
                   ) {
                     e.preventDefault();
                   }
@@ -389,37 +407,26 @@ const MerchantData = ({ detail, onDataChange }) => {
                 className="h-10 ps-3 py-2 text-sm border-2 outline-none focus:outline-none rounded-md flex-1"
                 placeholder="Longitude"
                 name="longitude"
-                value={detail?.merchantDetail?.location?.[1] || ""}
+                // ✅ Read from location[1], fallback to geoLocation for existing saved data
+                value={longitude}
                 onChange={(e) =>
                   onDataChange({
                     ...detail,
                     merchantDetail: {
                       ...detail.merchantDetail,
                       location: [
-                        detail?.merchantDetail?.location?.[0] || "", // Keep latitude (index 0) unchanged
-                        e.target.value, // Update longitude (index 1)
-                      ],
+                        latitude,
+                        e.target.value,
+                      ]
                     },
                   })
                 }
                 onKeyDown={(e) => {
-                  const allowedKeys = [
-                    "Backspace",
-                    "Tab",
-                    "ArrowLeft",
-                    "ArrowRight",
-                  ];
+                  const allowedKeys = ["Backspace", "Tab", "ArrowLeft", "ArrowRight"];
                   const isNumberKey = e.key >= "0" && e.key <= "9";
                   const isDot = e.key === ".";
-                  const isPaste =
-                    (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v";
-
-                  if (
-                    !isNumberKey &&
-                    !allowedKeys.includes(e.key) &&
-                    !isDot &&
-                    !isPaste
-                  ) {
+                  const isPaste = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "v";
+                  if (!isNumberKey && !allowedKeys.includes(e.key) && !isDot && !isPaste) {
                     e.preventDefault();
                   }
                 }}
@@ -431,17 +438,18 @@ const MerchantData = ({ detail, onDataChange }) => {
                 type="button"
                 onClick={() => toggleModal("map")}
                 className={`font-medium text-start rounded-md py-2 w-2/3 flex items-center justify-center gap-2 me-1 border-2 border-teal-700 ${
-                  detail?.merchantDetail?.location?.every(
-                    (item) => !isNaN(item)
-                  ) && detail?.merchantDetail?.location?.length === 2
+                  // ✅ Check both location and geoLocation
+                  (detail?.merchantDetail?.location?.length === 2 &&
+                    detail?.merchantDetail?.location?.every((item) => !isNaN(item) && item !== "")) ||
+                    detail?.merchantDetail?.geoLocation?.coordinates?.length === 2
                     ? "bg-teal-700 text-white"
                     : "text-teal-700"
-                }`}
+                  }`}
               >
                 <span>
-                  {detail?.merchantDetail?.location?.every(
-                    (item) => !isNaN(item)
-                  ) && detail?.merchantDetail?.location?.length === 2
+                  {(detail?.merchantDetail?.location?.length === 2 &&
+                    detail?.merchantDetail?.location?.every((item) => !isNaN(item) && item !== "")) ||
+                    detail?.merchantDetail?.geoLocation?.coordinates?.length === 2
                     ? "Location Marked"
                     : "Mark Location"}
                 </span>
@@ -500,7 +508,12 @@ const MerchantData = ({ detail, onDataChange }) => {
             },
           });
         }}
-        oldLocation={detail?.merchantDetail?.location}
+        // ✅ Fallback to geoLocation if location not yet set
+        oldLocation={
+          latitude && longitude
+            ? [latitude, longitude]
+            : null
+        }
       />
 
       <EnlargeImage

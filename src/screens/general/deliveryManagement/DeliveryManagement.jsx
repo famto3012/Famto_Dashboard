@@ -318,8 +318,8 @@ const DeliveryManagement = () => {
                   className="ml-2"
                   variant="solid"
                   colorPalette="teal"
-                  value={autoAllocationStatus}
-                  onChange={() => handleAutoAllocationStatusChange.mutate()}
+                  checked={autoAllocationStatus}
+                  onCheckedChange={() => handleAutoAllocationStatusChange.mutate()}
                 />
               </p>
             </div>

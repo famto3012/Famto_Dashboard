@@ -30,6 +30,9 @@ const AddCustomerSubPlan = ({ isOpen, onClose }) => {
     renewalReminder: "",
     noOfOrder: "",
     description: "",
+    deliveryBenefitType: "free",
+    deliveryBenefitValue: 0,
+    freeDeliveryUpToKm: 0,
   });
 
   const navigate = useNavigate();
@@ -68,6 +71,8 @@ const AddCustomerSubPlan = ({ isOpen, onClose }) => {
         renewalReminder: "",
         noOfOrder: "",
         description: "",
+        deliveryBenefitType: "free",
+        deliveryBenefitValue: 0,
       });
       onClose();
       toaster.create({
@@ -210,6 +215,63 @@ const AddCustomerSubPlan = ({ isOpen, onClose }) => {
                   onChange={handleInputChange}
                 />
               </div>
+
+              {/* Delivery Benefit Type */}
+              <div className="flex items-center">
+                <label className="w-1/3 text-gray-500" htmlFor="deliveryBenefitType">
+                  Delivery Benefit <span className="text-red-600">*</span>
+                </label>
+                <select
+                  className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none bg-white"
+                  value={formData.deliveryBenefitType}
+                  id="deliveryBenefitType"
+                  name="deliveryBenefitType"
+                  onChange={handleInputChange}
+                >
+                  <option value="free">Free Delivery</option>
+                  <option value="percentage">Percentage Off</option>
+                  <option value="fixed">Fixed Amount Off</option>
+                </select>
+              </div>
+
+              {/* Benefit Value — only shown when needed */}
+              {formData.deliveryBenefitType !== "free" && (
+                <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500" htmlFor="deliveryBenefitValue">
+                    {formData.deliveryBenefitType === "percentage"
+                      ? "Discount %"
+                      : "Discount Amount (₹)"}
+                  </label>
+                  <input
+                    className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                    type="number"
+                    value={formData.deliveryBenefitValue}
+                    id="deliveryBenefitValue"
+                    name="deliveryBenefitValue"
+                    min="0"
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
+
+              {/* Free delivery distance cap — only shown when benefit is "free" */}
+              {formData.deliveryBenefitType === "free" && (
+                <div className="flex items-center">
+                  <label className="w-1/3 text-gray-500" htmlFor="freeDeliveryUpToKm">
+                    Free up to (km)
+                  </label>
+                  <input
+                    className="border-2 border-gray-100 rounded p-2 w-2/3 focus:outline-none"
+                    type="number"
+                    value={formData.freeDeliveryUpToKm}
+                    id="freeDeliveryUpToKm"
+                    name="freeDeliveryUpToKm"
+                    min="0"
+                    placeholder="0 = any distance"
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
 
               <div className="flex items-center">
                 <label className="w-1/3 text-gray-500" htmlFor="description">

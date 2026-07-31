@@ -1,9 +1,10 @@
+/* eslint-disable react/prop-types */
 // export default ConversationItem;
 import DataContext from "@/context/DataContext";
 import RenderIcon from "@/icons/RenderIcon";
 import { useContext } from "react";
 
-const ConversationItem = ({ active, time, name, message, waId, received }) => {
+const ConversationItem = ({ time, name, message, waId, received }) => {
   const { setWaId, setName, waId: selectedWaId } = useContext(DataContext);
 
   const formattedWaId = (waId) => {

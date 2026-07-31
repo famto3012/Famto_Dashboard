@@ -83,6 +83,9 @@ import { FaMicrophone as MicroPhoneIcon } from "react-icons/fa6";
 import { RxPaperPlane as SendIcon } from "react-icons/rx";
 import { FaRegStopCircle as StopIcon } from "react-icons/fa";
 import { MdPermMedia as MediaIcon } from "react-icons/md";
+import { MdQrCode as QrCodeIcon } from "react-icons/md";
+import { FiLink as LinkIcon, FiShare2 as ShareIcon, FiCopy as CopyIcon } from "react-icons/fi";
+import { MdDownload as DownloadIcon2 } from "react-icons/md";
 
 export {
   AccountIcon,
@@ -146,4 +149,9 @@ export {
   UploadIcon,
   UsersIcon,
   WhatsappIcon,
+  QrCodeIcon,
+  LinkIcon,
+  ShareIcon,
+  CopyIcon,
+  DownloadIcon2,
 };

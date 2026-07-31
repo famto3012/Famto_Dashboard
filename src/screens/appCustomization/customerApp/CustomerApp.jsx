@@ -5,6 +5,7 @@ import Toggles from "@/components/customerAppCustomization/Toggles";
 import BusinessCategory from "@/components/customerAppCustomization/BusinessCategory";
 import CustomOrderBanner from "@/components/customerAppCustomization/CustomOrderBanner";
 import PickAndDropBanner from "@/components/customerAppCustomization/PickAndDropBanner";
+import OfferPopup from "@/components/customerAppCustomization/OfferPopup";
 
 const CustomerApp = () => {
   return (
@@ -12,6 +13,8 @@ const CustomerApp = () => {
       <GlobalSearch />
 
       <Toggles />
+
+      <OfferPopup />
 
       <Service />
 

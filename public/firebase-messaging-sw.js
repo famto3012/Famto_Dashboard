@@ -1,8 +1,5 @@
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.2.0/firebase-messaging.js");
-importScripts(
-  "https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"
-);
 
 // Initialize the Firebase app in the service worker by passing the generated config
 const firebaseConfig = {
@@ -19,18 +16,6 @@ firebase.initializeApp(firebaseConfig);
 
 // Retrieve firebase messaging
 const messaging = firebase.messaging();
-
-const notificationSound = new Howl({
-  src: [
-    "https://res.cloudinary.com/dajlabmrb/video/upload/v1724931165/46ffbafd-37e2-403e-92ed-b56edd5df42e-Notification_sound_gyz5ux.mp3",
-  ],
-  preload: true,
-  volume: 1.0,
-  loop: false, // Adjust volume as needed
-  onplayerror: function () {
-    console.log("Error playing sound.");
-  },
-});
 
 messaging.onBackgroundMessage((payload) => {
   console.log("Received background message ", payload);
@@ -55,13 +40,7 @@ messaging.onBackgroundMessage((payload) => {
     },
   };
 
-  self.registration
-    .showNotification(notificationTitle, notificationOptions)
-    .then(() => {
-      // Play notification sound after notification has been shown
-      console.log("Notification sound played");
-      notificationSound.play();
-    });
+  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 self.addEventListener("notificationclick", (event) => {

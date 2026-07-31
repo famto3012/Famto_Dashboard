@@ -2,6 +2,31 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .wa-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  .wa-scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .wa-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .wa-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+  }
+
+  .wa-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
 
 @layer components {
   .input {
@@ -67,4 +92,26 @@
 
 .form-control {
   border: none !important;
+}
+
+/* Sticky table headers —
+   Give every overflow-x-auto wrapper that contains a table a fixed
+   scroll viewport so position:sticky on thead actually has something
+   to stick inside. */
+.overflow-x-auto:has(table) {
+  overflow-y: auto;
+  max-height: 100vh;
+}
+
+thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Ensure Chakra/Ark toaster group container never blocks mouse events
+   on dropdowns when no toasts are visible */
+[data-scope="toast"][data-part="group"]:empty,
+[data-scope="toast"][data-part="group"]:not(:has([data-state="open"])) {
+  pointer-events: none !important;
 }

@@ -77,6 +77,7 @@ const DeleteProduct = ({ isOpen, onClose, merchantId }) => {
           <Button
             className="bg-red-500 p-2 text-white"
             onClick={() => handleDeleteProduct.mutate()}
+            disabled={handleDeleteProduct.isPending}
           >
             {handleDeleteProduct.isPending ? `Deleting...` : `Delete`}
           </Button>

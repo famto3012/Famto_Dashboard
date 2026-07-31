@@ -90,9 +90,9 @@ const PushNotification = () => {
     { label: "Select All", value: "selectAll" },
     ...(Array.isArray(allGeofence)
       ? allGeofence?.map((geofence) => ({
-          label: geofence.name,
-          value: geofence._id,
-        }))
+        label: geofence.name,
+        value: geofence._id,
+      }))
       : []),
   ];
 
@@ -142,7 +142,7 @@ const PushNotification = () => {
   const handleSave = () => {
     const formDataObject = new FormData();
 
-     function appendFormData(value, key) {
+    function appendFormData(value, key) {
       if (Array.isArray(value)) {
         value.forEach((item, index) => {
           appendFormData(item, `${key}[${index}]`);
@@ -155,7 +155,7 @@ const PushNotification = () => {
     Object.entries(pushNotification).forEach(([key, value]) => {
       appendFormData(value, key);
     });
-  
+
     croppedFile && formDataObject.append("pushNotificationImage", croppedFile);
 
     handleAddPushNotification.mutate({ pushNotification: formDataObject });
@@ -359,42 +359,42 @@ const PushNotification = () => {
               </label>
               <Select
                 options={geofenceOptions}
-                 value={geofenceOptions?.filter((option) =>
-                    pushNotification?.geofenceId?.includes(option.value)
-                  )}
-                  onChange={(selected) => {
-                    if (
-                      selected &&
-                      selected.some((option) => option.value === "selectAll")
-                    ) {
-                      setPushNotification({
-                        ...pushNotification,
-                        geofenceId: allGeofence.map((geofence) => geofence._id),
-                      });
-                    } else {
-                      setPushNotification({
-                        ...pushNotification,
-                        geofenceId: selected
-                          ? selected.map((option) => option.value)
-                          : [],
-                      });
-                    }
-                  }}
+                value={geofenceOptions?.filter((option) =>
+                  pushNotification?.geofenceId?.includes(option.value)
+                )}
+                onChange={(selected) => {
+                  if (
+                    selected &&
+                    selected.some((option) => option.value === "selectAll")
+                  ) {
+                    setPushNotification({
+                      ...pushNotification,
+                      geofenceId: allGeofence.map((geofence) => geofence._id),
+                    });
+                  } else {
+                    setPushNotification({
+                      ...pushNotification,
+                      geofenceId: selected
+                        ? selected.map((option) => option.value)
+                        : [],
+                    });
+                  }
+                }}
                 className="rounded mt-5 lg:mt-10 ml-5 lg:ml-52 w-full lg:w-96 focus:outline-none"
                 placeholder="Select geofence"
                 isSearchable
                 isMulti
                 menuPlacement="top"
-                  styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        paddingRight: "",
-                      }),
-                      dropdownIndicator: (provided) => ({
-                        ...provided,
-                        padding: "10px",
-                      }),
-                    }}
+                styles={{
+                  control: (provided) => ({
+                    ...provided,
+                    paddingRight: "",
+                  }),
+                  dropdownIndicator: (provided) => ({
+                    ...provided,
+                    padding: "10px",
+                  }),
+                }}
               />
             </div>
 
@@ -578,7 +578,7 @@ const PushNotification = () => {
             <Table.Header>
               <Table.Row className="bg-teal-700 h-[70px]">
                 {[
-                  "Type of User",
+                  "Title",
                   "Description",
                   "Image",
                   "Customer App",
@@ -618,20 +618,30 @@ const PushNotification = () => {
                 pushNotificationData?.map((data) => (
                   <Table.Row
                     key={data?._id}
-                    className="text-center h-20 even:bg-gray-200"
+                    className="text-center min-h-[80px] even:bg-gray-100 align-middle"
                   >
-                    <Table.Cell textAlign="center">
-                      {data?.customer && data?.driver && data?.merchant
-                        ? "All"
-                        : selectedFilter?.type}
-                    </Table.Cell>
-                    <Table.Cell textAlign="center">
-                      {" "}
-                      {data?.description.length > 30
-                        ? `${data?.description?.substring(0, 30)}...`
-                        : data?.description}
-                    </Table.Cell>
                     <Table.Cell
+                      textAlign="left"
+                      className="max-w-[220px] break-words whitespace-normal"
+                    >
+                      {data?.title}
+                    </Table.Cell>
+
+                    <Table.Cell
+                      textAlign="left"
+                      className="max-w-[320px] break-words whitespace-normal"
+                    >
+                      {data?.description}
+                    </Table.Cell>
+                 <Table.Cell className="align-middle">
+  <figure className="h-[60px] w-[90px] mx-auto">
+    <img
+      src={data?.imageUrl}
+      className="w-full h-full object-contain"
+    />
+  </figure>
+</Table.Cell>
+                    {/* <Table.Cell
                       textAlign="center"
                       display="flex"
                       justifyContent="center"
@@ -644,7 +654,7 @@ const PushNotification = () => {
                           className="w-full h-full object-contain"
                         />
                       </figure>
-                    </Table.Cell>
+                    </Table.Cell> */}
                     <Table.Cell textAlign="center">
                       <Switch
                         checked={data?.customer}
