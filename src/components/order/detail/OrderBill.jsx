@@ -40,12 +40,23 @@ const OrderBill = ({ data }) => {
                 {billDetail?.subTotal?.toFixed(2) || 0}
               </Table.Cell>
             </Table.Row>
-            <Table.Row className="h-[70px]">
-              <Table.Cell textAlign="left">Taxes & Fees</Table.Cell>
-              <Table.Cell textAlign="right">
-                {billDetail?.taxAmount?.toFixed(2) || 0}
-              </Table.Cell>
-            </Table.Row>
+            {billDetail?.taxComponents?.length > 0 ? (
+              billDetail.taxComponents.map((tax, index) => (
+                <Table.Row className="h-[70px]" key={index}>
+                  <Table.Cell textAlign="left">{tax.taxName}</Table.Cell>
+                  <Table.Cell textAlign="right">
+                    {(tax.amount ?? 0).toFixed(2)}
+                  </Table.Cell>
+                </Table.Row>
+              ))
+            ) : (
+              <Table.Row className="h-[70px]">
+                <Table.Cell textAlign="left">Taxes & Fees</Table.Cell>
+                <Table.Cell textAlign="right">
+                  {(billDetail?.taxAmount ?? 0).toFixed(2)}
+                </Table.Cell>
+              </Table.Row>
+            )}
             <Table.Row className="h-[70px]">
               <Table.Cell textAlign="left">Surge Price</Table.Cell>
               <Table.Cell textAlign="right">
