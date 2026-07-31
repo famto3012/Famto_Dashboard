@@ -110,7 +110,7 @@ const ShowBill = ({ data }) => {
         <Select
           options={paymentOptions}
           value={paymentOptions?.find(
-            (option) => option.value === formData.paymentMode
+            (option) => option.value === formData.paymentMode,
           )}
           onChange={(option) =>
             setFormData({ ...formData, paymentMode: option.value })
@@ -168,10 +168,24 @@ const ShowBill = ({ data }) => {
                     <td className="p-4">Surge charge</td>
                     <td className="p-4">{data?.billDetail?.surgePrice || 0}</td>
                   </tr>
-                  <tr key={data.index} className="text-left align-middle">
-                    <td className="p-4">Taxes & Fees</td>
-                    <td className="p-4">{data?.billDetail?.taxAmount || 0}</td>
-                  </tr>
+                  {data?.billDetail?.taxComponents?.length > 0 ? (
+                    data.billDetail.taxComponents.map((tax, index) => (
+                      <tr
+                        key={`tax-${index}`}
+                        className="text-left align-middle"
+                      >
+                        <td className="p-4">{tax.taxName}</td>
+                        <td className="p-4">{(tax.amount ?? 0).toFixed(2)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="text-left align-middle">
+                      <td className="p-4">Taxes & Fees</td>
+                      <td className="p-4">
+                        {(data?.billDetail?.taxAmount ?? 0)}
+                      </td>
+                    </tr>
+                  )}
                   <tr className="bg-teal-700 text-white font-semibold text-[18px]">
                     <td className="p-4">Net Payable Amount</td>
                     <td className="p-4">
