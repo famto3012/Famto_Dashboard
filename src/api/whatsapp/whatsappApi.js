@@ -157,6 +157,12 @@ export const whatsappApi = {
     return getPayload(response);
   },
 
+  async campaignEvents(navigate, campaignId) {
+    const api = createApiClient(navigate);
+    const response = await api.get(`/whatsapp/campaigns/${campaignId}/events`);
+    return getPayload(response);
+  },
+
   async templates(navigate, params = {}) {
     const api = createApiClient(navigate);
     const response = await api.get("/whatsapp/templates", { params });

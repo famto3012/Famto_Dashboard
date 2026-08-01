@@ -85,6 +85,18 @@ export const useSendWhatsappCampaign = () => {
   });
 };
 
+export const useWhatsappCampaignEvents = (campaignId, enabled = false) => {
+  const navigate = useNavigate();
+
+  return useQuery({
+    queryKey: [...WHATSAPP_QUERY_KEYS.campaigns, campaignId, "events"],
+    queryFn: () => whatsappApi.campaignEvents(navigate, campaignId),
+    enabled: !!campaignId && enabled,
+    staleTime: 30 * 1000,
+    refetchInterval: enabled ? 30 * 1000 : false,
+  });
+};
+
 export const useWhatsappTemplates = (filters = {}) => {
   const navigate = useNavigate();
 
