@@ -33,7 +33,7 @@ const EditTax = ({ isOpen, taxId, onClose }) => {
     tax: "",
     taxType: "",
     geofences: [],
-    assignToBusinessCategory: "",
+    assignToBusinessCategory: [],
   });
 
   const {
@@ -72,7 +72,7 @@ const EditTax = ({ isOpen, taxId, onClose }) => {
         tax: "",
         taxType: "",
         geofences: [],
-        assignToBusinessCategory: "",
+        assignToBusinessCategory: [],
       });
       onClose();
       toaster.create({
@@ -91,7 +91,18 @@ const EditTax = ({ isOpen, taxId, onClose }) => {
   });
 
   useEffect(() => {
-    taxData && setFormData(taxData);
+    if (taxData) {
+      const categories = taxData?.assignToBusinessCategory;
+      setFormData({
+        ...taxData,
+        // legacy docs store a single id; new docs store an array
+        assignToBusinessCategory: Array.isArray(categories)
+          ? categories
+          : categories
+            ? [categories]
+            : [],
+      });
+    }
   }, [taxData]);
 
   const geofenceOptions = allGeofence?.map((geofence) => ({
@@ -116,10 +127,10 @@ const EditTax = ({ isOpen, taxId, onClose }) => {
     });
   };
 
-  const handleSelectCategory = (option) => {
+  const handleSelectCategory = (selectedOptions) => {
     setFormData((prev) => ({
       ...prev,
-      assignToBusinessCategory: option ? option.value : "",
+      assignToBusinessCategory: selectedOptions.map((option) => option.value),
     }));
   };
 
@@ -214,16 +225,15 @@ const EditTax = ({ isOpen, taxId, onClose }) => {
 
                 <Select
                   className="w-2/3 outline-none focus:outline-none"
-                  value={categoryOptions?.find(
-                    (option) =>
-                      option.value === formData.assignToBusinessCategory
+                  value={categoryOptions?.filter((option) =>
+                    formData?.assignToBusinessCategory?.includes(option.value)
                   )}
-                  isMulti={false}
+                  isMulti={true}
                   isClearable={true}
                   isSearchable={true}
                   onChange={handleSelectCategory}
                   options={categoryOptions}
-                  placeholder="Select Business category"
+                  placeholder="Select Business categories"
                   components={animatedComponents}
                   menuShouldBlockScroll={true}
                 />
