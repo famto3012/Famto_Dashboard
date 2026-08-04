@@ -27,7 +27,7 @@ import LoadingRows from "../common/LoadingRows";
 import SectionPanel from "../common/SectionPanel";
 import StatCard from "../common/StatCard";
 import { useWhatsappAnalytics } from "@/hooks/whatsapp/useWhatsappResources";
-import { formatCompactNumber, formatCurrency } from "@/utils/whatsapp/formatters";
+import { formatCompactNumber } from "@/utils/whatsapp/formatters";
 
 const rangeOptions = [
   { label: "7 Days", value: "7d" },
@@ -213,6 +213,56 @@ const AnalyticsDashboard = () => {
             </div>
           ) : (
             <p className="py-8 text-center text-sm text-slate-400">No messages in this period.</p>
+          )}
+        </SectionPanel>
+
+        {/* Template type tracker — marketing / utility / auth / other */}
+        <SectionPanel
+          title="Template type tracker"
+          description="Outbound template sends by category with delivery health"
+        >
+          {analytics.templateCategories?.length > 0 ? (
+            <div className="space-y-3">
+              {analytics.templateCategories.map((cat) => (
+                <div key={cat.category} className="rounded-xl bg-slate-50 p-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-semibold capitalize text-slate-900">
+                      {cat.category}
+                    </span>
+                    <span className="text-sm font-semibold text-slate-700">{cat.sent.toLocaleString()} sent</span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-4 gap-2 text-center">
+                    <div className="rounded-lg bg-white p-2">
+                      <p className="text-sm font-bold text-blue-600">{cat.sent.toLocaleString()}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Sent</p>
+                    </div>
+                    <div className="rounded-lg bg-white p-2">
+                      <p className="text-sm font-bold text-emerald-600">{cat.delivered.toLocaleString()}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Delivered</p>
+                    </div>
+                    <div className="rounded-lg bg-white p-2">
+                      <p className="text-sm font-bold text-violet-600">{cat.read.toLocaleString()}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Read</p>
+                    </div>
+                    <div className="rounded-lg bg-white p-2">
+                      <p className="text-sm font-bold text-red-600">{cat.failed.toLocaleString()}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">Failed</p>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className="h-full rounded-full bg-emerald-500"
+                        style={{ width: `${cat.deliveryRate}%` }}
+                      />
+                    </div>
+                    <p className="mt-1 text-right text-[11px] text-slate-400">{cat.deliveryRate}% delivered</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="py-8 text-center text-sm text-slate-400">No template sends in this period.</p>
           )}
         </SectionPanel>
 

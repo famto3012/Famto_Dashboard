@@ -11,6 +11,7 @@ import LoadingRows from "../common/LoadingRows";
 import SectionPanel from "../common/SectionPanel";
 import StatCard from "../common/StatCard";
 import StatusBadge from "../common/StatusBadge";
+import CampaignDetailsDrawer from "./CampaignDetailsDrawer";
 import { useCreateWhatsappCampaign, useSendWhatsappCampaign, useWhatsappCampaigns, useWhatsappTemplates } from "@/hooks/whatsapp/useWhatsappResources";
 import { formatCompactNumber, formatCurrency, getRelativeTime } from "@/utils/whatsapp/formatters";
 import createApiClient from "@/api/apiClient";
@@ -35,6 +36,7 @@ const CampaignsPage = () => {
   const [audienceLoading, setAudienceLoading] = useState(false);
   const [createError, setCreateError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
+  const [selectedCampaign, setSelectedCampaign] = useState(null);
 
   // Fetch audience options (built-in + custom tags) on mount
   useEffect(() => {
@@ -148,7 +150,13 @@ const CampaignsPage = () => {
                   {campaigns.map((campaign) => (
                     <tr key={campaign.id} className="align-top">
                       <td className="py-4">
-                        <p className="font-semibold text-slate-950">{campaign.name}</p>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCampaign(campaign)}
+                          className="text-left font-semibold text-slate-950 transition hover:text-blue-600"
+                        >
+                          {campaign.name}
+                        </button>
                         <p className="mt-1 text-xs text-slate-500">
                           {campaign.templateName} · {getRelativeTime(campaign.createdAt)}
                         </p>
@@ -365,6 +373,11 @@ const CampaignsPage = () => {
           </form>
         </SectionPanel>
       </div>
+
+      <CampaignDetailsDrawer
+        campaign={selectedCampaign}
+        onClose={() => setSelectedCampaign(null)}
+      />
     </div>
   );
 };

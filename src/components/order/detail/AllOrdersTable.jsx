@@ -160,6 +160,7 @@ const AllOrdersTable = ({ filter }) => {
               "Customer Name",
               role === "Merchant" ? "Delivery Option" : "Assigned agent",
               "Delivery Mode",
+              "Source",
               "Order Time",
               "Delivery Time",
               "Payment Method",
@@ -325,6 +326,9 @@ const AllOrdersTable = ({ filter }) => {
                     : order?.assignedAgent}
                 </Table.Cell>
                 <Table.Cell textAlign="center">{order.deliveryMode}</Table.Cell>
+                <Table.Cell textAlign="center">
+                  {order.orderSource || "-"}
+                </Table.Cell>
                 <Table.Cell textAlign="center">
                   <p>{order.orderDate}</p>
                   <p>{order.orderTime}</p>

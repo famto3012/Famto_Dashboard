@@ -47,6 +47,12 @@ const deliveryModeOption = [
   { value: "Custom Order", label: "Custom Order" },
 ];
 
+const orderSourceOption = [
+  { value: "all", label: "All" },
+  { value: "Customer App", label: "Customer App" },
+  { value: "Order Manager", label: "Order Manager" },
+];
+
 const serviceableOptions = [
   { value: "all", label: "All" },
   { value: "true", label: "Open" },
@@ -630,6 +636,7 @@ export {
   orderStatusOption,
   paymentModeOption,
   deliveryModeOption,
+  orderSourceOption,
   serviceableOptions,
   agentStatusOptions,
   agentVehicleOptions,
