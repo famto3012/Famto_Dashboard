@@ -1,5 +1,9 @@
 import AuthContext from "@/context/AuthContext";
-import { orderStatusOption, paymentModeOption } from "@/utils/defaultData";
+import {
+  orderSourceOption,
+  orderStatusOption,
+  paymentModeOption,
+} from "@/utils/defaultData";
 import { useContext } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -63,6 +67,26 @@ const OrderFilter = ({
         onChange={(option) => onFilterChange("deliveryMode", option.value)}
         className=" bg-cyan-50 min-w-[10rem]"
         placeholder="Delivery mode"
+        styles={{
+          control: (provided) => ({
+            ...provided,
+            paddingRight: "",
+          }),
+          dropdownIndicator: (provided) => ({
+            ...provided,
+            padding: "10px",
+          }),
+        }}
+      />
+
+      <Select
+        options={orderSourceOption}
+        value={orderSourceOption.find(
+          (option) => option.value === currentValue.orderSource
+        )}
+        onChange={(option) => onFilterChange("orderSource", option.value)}
+        className=" bg-cyan-50 min-w-[10rem]"
+        placeholder="Source"
         styles={{
           control: (provided) => ({
             ...provided,
