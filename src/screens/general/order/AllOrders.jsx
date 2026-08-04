@@ -15,6 +15,7 @@ import { toaster } from "@/components/ui/toaster";
 
 import {
   deliveryModeOption,
+  orderSourceOption,
   orderStatusOption,
   paymentModeOption,
 } from "@/utils/defaultData";
@@ -35,6 +36,7 @@ const AllOrders = () => {
     status: null,
     paymentMode: null,
     deliveryMode: null,
+    orderSource: null,
     selectedMerchant: null,
     date: [null, null],
     orderId: "",
@@ -238,6 +240,28 @@ const AllOrders = () => {
             }
             className=" bg-cyan-50 min-w-[10rem]"
             placeholder="Delivery mode"
+            styles={{
+              control: (provided) => ({
+                ...provided,
+                paddingRight: "",
+              }),
+              dropdownIndicator: (provided) => ({
+                ...provided,
+                padding: "10px",
+              }),
+            }}
+          />
+
+          <Select
+            options={orderSourceOption}
+            value={orderSourceOption.find(
+              (option) => option.value === filter.orderSource
+            )}
+            onChange={(option) =>
+              setFilter({ ...filter, orderSource: option.value })
+            }
+            className=" bg-cyan-50 min-w-[10rem]"
+            placeholder="Source"
             styles={{
               control: (provided) => ({
                 ...provided,
