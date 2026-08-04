@@ -20,6 +20,7 @@ const Tax = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedTax, setSelectedTax] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [modal, setModal] = useState({
     add: false,
     edit: false,
@@ -74,6 +75,12 @@ const Tax = () => {
     setSelectedTax(null), setModal({ add: false, edit: false, delete: false });
   };
 
+  const filteredTax = searchQuery
+    ? allTax?.filter((tax) =>
+        tax?.taxName?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : allTax;
+
   if (isError) return <div>Error in fetching tax</div>;
 
   return (
@@ -91,13 +98,15 @@ const Tax = () => {
           <span>Add Tax</span>
         </button>
       </div>
-      <p className="ms-5 mt-8 text-gray-500">
-        Make sure that taxes aren't duplicated under the same name on the
-        platform.
-        <span className="text-red-700">
-          Two taxes under the same name cannot coexist.
-        </span>
-      </p>
+      <div className="ms-5 mt-8 flex items-center gap-4">
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by tax name"
+          className="bg-white border border-gray-300 rounded-lg p-2 ps-4 w-64 outline-none focus:outline-none text-sm"
+        />
+      </div>
       <div className="w-full overflow-x-auto">
         <table className="bg-white mt-[45px] text-center w-full">
           <thead className="sticky top-0 left-0 z-20">
@@ -129,7 +138,7 @@ const Tax = () => {
               </tr>
             )}
 
-            {!isLoading && allTax?.length === 0 && (
+            {!isLoading && filteredTax?.length === 0 && (
               <tr>
                 <td colSpan={6} className="text-center py-3">
                   No Data available
@@ -138,7 +147,7 @@ const Tax = () => {
             )}
 
             {!isLoading &&
-              allTax?.map((tax) => (
+              filteredTax?.map((tax) => (
                 <tr
                   key={tax?.taxId}
                   className="even:bg-gray-200 last:border-b max-h-[30rem] overflow-y-auto"
