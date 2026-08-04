@@ -33,7 +33,7 @@ const AddTax = ({ isOpen, onClose }) => {
     tax: "",
     taxType: "",
     geofences: [],
-    assignToBusinessCategory: "",
+    assignToBusinessCategory: [],
   });
 
   const {
@@ -65,7 +65,7 @@ const AddTax = ({ isOpen, onClose }) => {
         tax: "",
         taxType: "",
         geofences: [],
-        assignToBusinessCategory: "",
+        assignToBusinessCategory: [],
       });
       onClose();
       toaster.create({
@@ -105,10 +105,10 @@ const AddTax = ({ isOpen, onClose }) => {
     });
   };
 
-  const handleSelectCategory = (option) => {
+  const handleSelectCategory = (selectedOptions) => {
     setFormData((prev) => ({
       ...prev,
-      assignToBusinessCategory: option ? option.value : "",
+      assignToBusinessCategory: selectedOptions.map((option) => option.value),
     }));
   };
 
@@ -207,16 +207,15 @@ const AddTax = ({ isOpen, onClose }) => {
 
                 <Select
                   className="w-2/3 outline-none focus:outline-none"
-                  value={categoryOptions?.find(
-                    (option) =>
-                      option.value === formData.assignToBusinessCategory
+                  value={categoryOptions?.filter((option) =>
+                    formData?.assignToBusinessCategory?.includes(option.value)
                   )}
-                  isMulti={false}
+                  isMulti={true}
                   isClearable={true}
                   isSearchable={true}
                   onChange={handleSelectCategory}
                   options={categoryOptions}
-                  placeholder="Select Business category"
+                  placeholder="Select Business categories"
                   components={animatedComponents}
                   menuShouldBlockScroll={true}
                 />
