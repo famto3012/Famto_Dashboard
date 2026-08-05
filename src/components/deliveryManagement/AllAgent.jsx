@@ -38,7 +38,15 @@ const AllAgent = ({ showAgentLocationOnMap }) => {
   };
 
   useEffect(() => {
-    setAgentData(filteredAgentData);
+    setAgentData(
+      (filteredAgentData || []).filter(
+        (agent) =>
+          Array.isArray(agent.location) &&
+          agent.location.length === 2 &&
+          typeof agent.location[0] === "number" &&
+          typeof agent.location[1] === "number"
+      )
+    );
   }, [filteredAgentData]);
 
   const handleSearchInputChange = (e) => {

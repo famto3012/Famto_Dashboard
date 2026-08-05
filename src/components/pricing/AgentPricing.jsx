@@ -28,6 +28,7 @@ const AgentPricing = () => {
     delete: false,
   });
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: allPricing,
@@ -37,6 +38,10 @@ const AgentPricing = () => {
     queryKey: ["all-agent-pricing"],
     queryFn: () => fetchAllAgentPricing(navigate),
   });
+
+  const filteredPricing = allPricing?.filter((price) =>
+    price.ruleName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const toggleStatus = useMutation({
     mutationKey: ["toggleAgentPricing"],
@@ -77,13 +82,16 @@ const AgentPricing = () => {
 
   return (
     <>
-      <h1 className="px-9 mt-5 font-bold p-3 bg-gray-300 text-center sm:text-left sm:px-9 sm:py-3 sm:text-xl">
-        Agent
-      </h1>
-
-      <div className="flex items-center justify-between mx-9 mt-5 mb-[20px]">
-        <h1 className="text-md">Pricing</h1>
-        <div>
+      <div className="flex items-center justify-between mx-9 mt-5 mb-[20px] gap-4 flex-wrap">
+        <h1 className="text-xl font-bold">Agent Pricing</h1>
+        <div className="flex items-center gap-3">
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by rule name"
+            className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
+          />
           <button
             className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
             onClick={() => toggleModal("add")}
@@ -139,7 +147,7 @@ const AgentPricing = () => {
                 </Table.Cell>
               </Table.Row>
             ) : (
-              allPricing?.map((price) => (
+              filteredPricing?.map((price) => (
                 <Table.Row key={price._id} className={`h-[70px]`}>
                   <Table.Cell textAlign="center">{price.ruleName}</Table.Cell>
                   <Table.Cell textAlign="center">{price.baseFare}</Table.Cell>
