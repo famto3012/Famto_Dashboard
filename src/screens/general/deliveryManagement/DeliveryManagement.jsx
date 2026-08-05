@@ -131,6 +131,11 @@ const DeliveryManagement = () => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
 
+      if (!coordinates || !Array.isArray(coordinates) || coordinates.length < 2) {
+        console.warn("Invalid coordinates for shop marker:", coordinates);
+        return;
+      }
+
       try {
         const shopMarker = await mapplsClassObject.Marker({
           map: mapObject,
@@ -185,6 +190,11 @@ const DeliveryManagement = () => {
     agentGeoData.features.forEach(async (feature) => {
       const { coordinates } = feature.geometry;
       const { htmlPopup } = feature.properties;
+
+      if (!coordinates || !Array.isArray(coordinates) || coordinates.length < 2) {
+        console.warn("Invalid coordinates for agent marker:", coordinates);
+        return;
+      }
 
       try {
         const agentMarker = await mapplsClassObject.Marker({

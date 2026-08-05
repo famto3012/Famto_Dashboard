@@ -28,6 +28,7 @@ const AgentSurge = () => {
     delete: false,
   });
   const [selectedId, setSelectedId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     data: allSurge,
@@ -37,6 +38,10 @@ const AgentSurge = () => {
     queryKey: ["all-agent-surge"],
     queryFn: () => fetchAllAgentSurge(navigate),
   });
+
+  const filteredSurge = allSurge?.filter((surge) =>
+    surge.ruleName?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const toggleStatus = useMutation({
     mutationKey: ["toggleAgentSurge"],
@@ -77,9 +82,16 @@ const AgentSurge = () => {
 
   return (
     <>
-      <div className="flex items-center justify-between mx-9 mt-8">
-        <h1 className="text-md">Surge</h1>
-        <div>
+      <div className="flex items-center justify-between mx-9 mt-8 gap-4 flex-wrap">
+        <h1 className="text-xl font-bold">Agent Surge</h1>
+        <div className="flex items-center gap-3">
+          <input
+            type="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search by rule name"
+            className="bg-gray-100 p-3 rounded-3xl focus:outline-none outline-none text-[14px] ps-[20px]"
+          />
           <button
             className="bg-teal-700 text-white rounded-md flex items-center space-x-1 p-2"
             onClick={() => toggleModal("add")}
@@ -128,7 +140,7 @@ const AgentSurge = () => {
                 </Table.Cell>
               </Table.Row>
             ) : (
-              allSurge?.map((surge) => (
+              filteredSurge?.map((surge) => (
                 <Table.Row key={surge._id} className={`h-[70px]`}>
                   <Table.Cell textAlign="center">{surge.ruleName}</Table.Cell>
                   <Table.Cell textAlign="center">{surge.baseFare}</Table.Cell>
