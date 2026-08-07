@@ -194,7 +194,7 @@ const CustomerDetail = () => {
           <h1 className=" text-[16px] lg:text-lg font-bold">
             Customer ID <span className="text-red-600">#{customer._id}</span>
           </h1>
-          {!customer?.isBlocked && (
+          {role !== "Merchant" && !customer?.isBlocked && (
             <button
               className="bg-yellow-100 text-black rounded-md  px-3 py-1 gap-2 font-semibold flex items-center"
               onClick={() => toggleModal("block")}
@@ -330,7 +330,7 @@ const CustomerDetail = () => {
             </figure>
 
             <div className="mt-[30px] xl:mt-0">
-              {!editMode ? (
+              {role !== "Merchant" && (!editMode ? (
                 <button
                   type="button"
                   onClick={() => setEditMode(true)}
@@ -349,7 +349,7 @@ const CustomerDetail = () => {
                 >
                   {handleEditCustomer.isPending ? `Saving...` : `Save`}
                 </button>
-              )}
+              ))}
             </div>
           </div>
 

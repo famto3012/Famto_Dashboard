@@ -249,16 +249,12 @@ const AllCustomer = () => {
                 data?.data?.map((customer) => (
                   <Table.Row key={customer.customerId} className={`h-[70px]`}>
                     <Table.Cell textAlign="center">
-                      {role === "Merchant" ? (
-                        customer.customerId
-                      ) : (
-                        <Link
-                          to={`/customer/${customer.customerId}`}
-                          className=" underline underline-offset-2"
-                        >
-                          {customer.customerId}
-                        </Link>
-                      )}
+                      <Link
+                        to={`/customer/${customer.customerId}`}
+                        className=" underline underline-offset-2"
+                      >
+                        {customer.customerId}
+                      </Link>
                     </Table.Cell>
                     <Table.Cell textAlign="center">
                       {customer.fullName}
