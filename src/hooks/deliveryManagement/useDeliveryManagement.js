@@ -165,3 +165,63 @@ export const assignAgentToBatch = async (agentId, taskIds, navigate) => {
     );
   }
 };
+
+export const getMerchantOwnDelivery = async (navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/merchants/own-delivery`);
+
+    return res.status === 200 ? res.data : {};
+  } catch (err) {
+    console.error(`Error in fetching merchant own delivery: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant own delivery"
+    );
+  }
+};
+
+export const updateMerchantOwnDelivery = async (hasOwnDelivery, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.put(`/merchants/own-delivery`, { hasOwnDelivery });
+
+    return res.status === 200 ? res.data : {};
+  } catch (err) {
+    console.error(`Error in updating merchant own delivery: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to update merchant own delivery"
+    );
+  }
+};
+
+export const fetchMerchantTasks = async (navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(
+      `/admin/delivery-management/merchant/task-filter`
+    );
+
+    return res.status === 200 ? res.data.data : [];
+  } catch (err) {
+    console.error(`Error in fetching merchant tasks: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant tasks"
+    );
+  }
+};
+
+export const fetchMerchantDeliveryAgents = async (navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(
+      `/admin/delivery-management/merchant/agent-filter`
+    );
+
+    return res.status === 200 ? res.data.data : [];
+  } catch (err) {
+    console.error(`Error in fetching merchant delivery agents: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant delivery agents"
+    );
+  }
+};

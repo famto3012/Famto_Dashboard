@@ -6,11 +6,15 @@ import Loader from "../components/others/Loader";
 const AllAgents = lazy(() => import("../screens/general/agent/AllAgents"));
 const AgentPayout = lazy(() => import("../screens/general/agent/AgentPayout"));
 const AgentDetail = lazy(() => import("../screens/general/agent/AgentDetail"));
+const MerchantAgents = lazy(
+  () => import("../screens/general/agent/MerchantAgents")
+);
 
 const AgentRoutes = () => (
   <Suspense fallback={<Loader />}>
     <Routes>
       <Route path="" element={<AllAgents />} />
+      <Route path="merchant" element={<MerchantAgents />} />
       <Route path="payout" element={<AgentPayout />} />
       <Route path=":agentId" element={<AgentDetail />} />
     </Routes>

@@ -257,3 +257,108 @@ export const fetchAgentAppTimings = async (navigate) => {
     throw err.response?.data?.message || "Failed to fetch agent app timings";
   }
 };
+
+export const fetchMerchantAgents = async (filter, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/admin/agents/merchant/filter`, {
+      params: {
+        geofence: filter?.geofence,
+        status: filter?.status,
+        vehicleType: filter?.vehicleType,
+        name: filter?.name,
+      },
+    });
+
+    return res.status === 200 ? res.data : [];
+  } catch (err) {
+    console.error(`Error in fetching merchant agents: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant agents"
+    );
+  }
+};
+
+export const fetchSingleMerchantAgent = async (agentId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/admin/agents/merchant/${agentId}`);
+
+    return res.status === 200 ? res.data : null;
+  } catch (err) {
+    console.error(`Error in fetching merchant agent detail: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant agent detail"
+    );
+  }
+};
+
+export const createMerchantAgent = async (data, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(`/admin/agents/merchant/add-agents`, data, {
+      "Content-Type": "multipart/form-data",
+    });
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in creating merchant agent: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to create merchant agent"
+    );
+  }
+};
+
+export const updateMerchantAgent = async (agentId, agentData, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.put(
+      `/admin/agents/merchant/edit-agent/${agentId}`,
+      agentData,
+      {
+        "Content-Type": "multipart/form-data",
+      }
+    );
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in updating merchant agent: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to update merchant agent"
+    );
+  }
+};
+
+export const changeMerchantAgentStatus = async (agentId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.patch(
+      `/admin/agents/merchant/change-status/${agentId}`,
+      {}
+    );
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in changing merchant agent status: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to change merchant agent status"
+    );
+  }
+};
+
+export const blockMerchantAgent = async (agentId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.patch(
+      `/admin/agents/merchant/block-agent/${agentId}`,
+      {}
+    );
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in blocking merchant agent: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to block merchant agent"
+    );
+  }
+};
