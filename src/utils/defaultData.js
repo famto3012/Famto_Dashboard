@@ -346,6 +346,10 @@ const allowedMerchantRouteOptions = [
     label: "Settings",
     value: "/account/settings",
   },
+  {
+    label: "Reviews",
+    value: "/review",
+  },
 ];
 
 const mainSideBarMenuItems = [
@@ -381,6 +385,13 @@ const mainSideBarMenuItems = [
     to: "/customer",
     iconName: "UsersIcon",
     label: "Customers",
+    roles: ["Admin", "Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/review",
+    iconName: "ActivityIcon",
+    label: "Reviews",
     roles: ["Admin", "Merchant"],
     dropDown: false,
   },
@@ -599,6 +610,13 @@ const smallSideBarMenuItems = [
     to: "/customer",
     iconName: "UsersIcon",
     label: "Customers",
+    roles: ["Admin", "Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/review",
+    iconName: "ActivityIcon",
+    label: "Reviews",
     roles: ["Admin", "Merchant"],
     dropDown: false,
   },
