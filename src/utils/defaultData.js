@@ -323,8 +323,20 @@ const allowedMerchantRouteOptions = [
     value: "/customer",
   },
   {
+    label: "Agent",
+    value: "/agent",
+  },
+  {
+    label: "Delivery management",
+    value: "/delivery-management",
+  },
+  {
     label: "Commissions and Subscriptions",
     value: "/comm-and-subs",
+  },
+  {
+    label: "Promocode",
+    value: "/marketing/promo-code",
   },
   {
     label: "Notification log",
@@ -376,14 +388,14 @@ const mainSideBarMenuItems = [
     to: "/agent",
     iconName: "AgentIcon",
     label: "Delivery Agents",
-    roles: ["Admin"],
+    roles: ["Admin", "Merchant"],
     dropDown: false,
   },
   {
     to: "/delivery-management",
     iconName: "BikeIcon",
     label: "Delivery Management",
-    roles: ["Admin"],
+    roles: ["Admin", "Merchant"],
     dropDown: false,
   },
   {
@@ -428,7 +440,7 @@ const mainSideBarMenuItems = [
     to: "/marketing/promo-code",
     iconName: "PromoCodeIcon",
     label: "Promo code",
-    roles: ["Admin"],
+    roles: ["Admin", "Merchant"],
     dropDown: true,
     dropLabel: "Marketing",
   },
@@ -594,14 +606,14 @@ const smallSideBarMenuItems = [
     to: "/agent",
     iconName: "AgentIcon",
     label: "Delivery Agents",
-    roles: ["Admin"],
+    roles: ["Admin", "Merchant"],
     dropDown: false,
   },
   {
     to: "/delivery-management",
     iconName: "BikeIcon",
     label: "Delivery Management",
-    roles: ["Admin"],
+    roles: ["Admin", "Merchant"],
     dropDown: false,
   },
   {

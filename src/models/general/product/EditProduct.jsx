@@ -31,6 +31,8 @@ import {
 } from "@/hooks/product/useProduct";
 import CropImage from "@/components/others/CropImage";
 
+const EMPTY_ARRAY = [];
+
 const EditProduct = ({ isOpen, onClose, merchantId }) => {
   const [formData, setFormData] = useState({
     productName: "",
@@ -89,7 +91,7 @@ const EditProduct = ({ isOpen, onClose, merchantId }) => {
   //   enabled: isOpen,
   // });
 
-  const { data: allProducts = [] } = useQuery({
+  const { data: allProducts = EMPTY_ARRAY } = useQuery({
     queryKey: ["all-products-of-merchant", merchantId],
     queryFn: () => fetchAllProductsOfMerchant(merchantId, navigate),
     enabled: isOpen && !!merchantId,
