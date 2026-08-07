@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Select from "react-select";
@@ -23,6 +23,7 @@ import ModalLoader from "@/components/others/ModalLoader";
 import Error from "@/components/others/Error";
 import CropImage from "@/components/others/CropImage";
 
+import AuthContext from "@/context/AuthContext";
 import RenderIcon from "@/icons/RenderIcon";
 
 import { getAllGeofence } from "@/hooks/geofence/useGeofence";

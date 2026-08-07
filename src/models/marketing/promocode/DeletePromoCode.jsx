@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@chakra-ui/react";
@@ -13,15 +14,25 @@ import {
 } from "@/components/ui/dialog";
 import { toaster } from "@/components/ui/toaster";
 
-import { deletePromoCodes } from "@/hooks/promocode/usePromocode";
+import AuthContext from "@/context/AuthContext";
+
+import {
+  deleteMerchantPromoCodes,
+  deletePromoCodes,
+} from "@/hooks/promocode/usePromocode";
 
 const DeletePromoCode = ({ isOpen, onClose, promoCodeId }) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { role } = useContext(AuthContext);
+  const isMerchant = role === "Merchant";
 
   const handleDeletePromoCode = useMutation({
     mutationKey: ["delete-promo=code", promoCodeId],
-    mutationFn: (promoCodeId) => deletePromoCodes(promoCodeId, navigate),
+    mutationFn: (promoCodeId) =>
+      isMerchant
+        ? deleteMerchantPromoCodes(promoCodeId, navigate)
+        : deletePromoCodes(promoCodeId, navigate),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-promo-codes"]);
       onClose();

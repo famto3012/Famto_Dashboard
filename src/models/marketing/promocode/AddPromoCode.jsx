@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Select from "react-select";
@@ -23,11 +23,15 @@ import ModalLoader from "@/components/others/ModalLoader";
 import CropImage from "@/components/others/CropImage";
 import Error from "@/components/others/Error";
 
+import AuthContext from "@/context/AuthContext";
 import RenderIcon from "@/icons/RenderIcon";
 
 import { getAllGeofence } from "@/hooks/geofence/useGeofence";
 import { fetchMerchantsForDropDown } from "@/hooks/merchant/useMerchant";
-import { createNewPromoCode } from "@/hooks/promocode/usePromocode";
+import {
+  createMerchantPromoCode,
+  createNewPromoCode,
+} from "@/hooks/promocode/usePromocode";
 
 import { promoCodeModeOptions } from "@/utils/defaultData";
 
@@ -56,6 +60,8 @@ const AddPromoCode = ({ isOpen, onClose }) => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { role } = useContext(AuthContext);
+  const isMerchant = role === "Merchant";
 
   const {
     data: allMerchants,
@@ -64,7 +70,7 @@ const AddPromoCode = ({ isOpen, onClose }) => {
   } = useQuery({
     queryKey: ["merchant-dropdown"],
     queryFn: () => fetchMerchantsForDropDown(navigate),
-    enabled: isOpen,
+    enabled: isOpen && !isMerchant,
   });
 
   const {
@@ -79,7 +85,10 @@ const AddPromoCode = ({ isOpen, onClose }) => {
 
   const handleAddPromoCode = useMutation({
     mutationKey: ["add-promo-code"],
-    mutationFn: (promoData) => createNewPromoCode(promoData, navigate),
+    mutationFn: (promoData) =>
+      isMerchant
+        ? createMerchantPromoCode(promoData, navigate)
+        : createNewPromoCode(promoData, navigate),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-promo-codes"]);
       onClose();
@@ -175,8 +184,8 @@ const AddPromoCode = ({ isOpen, onClose }) => {
         }))
       : []),
   ];
-  const showLoading = merchantLoading || geofenceLoading;
-  const showError = merchantError || geofenceError;
+  const showLoading = isMerchant ? geofenceLoading : merchantLoading || geofenceLoading;
+  const showError = isMerchant ? geofenceError : merchantError || geofenceError;
 
   return (
     <DialogRoot
@@ -492,35 +501,37 @@ const AddPromoCode = ({ isOpen, onClose }) => {
                 </RadioGroup>
               </div>
 
-              {(formData.deliveryMode === "Take Away" ||
-                formData.deliveryMode === "Home Delivery") && (
-                <div className="flex items-center">
-                  <label className="w-1/2 text-gray-500">
-                    Assign Merchant <span className="text-red-600 ml-2">*</span>
-                  </label>
+              {!isMerchant &&
+                (formData.deliveryMode === "Take Away" ||
+                  formData.deliveryMode === "Home Delivery") && (
+                  <div className="flex items-center">
+                    <label className="w-1/2 text-gray-500">
+                      Assign Merchant{" "}
+                      <span className="text-red-600 ml-2">*</span>
+                    </label>
 
-                  <Select
-                    options={merchantOptions}
-                    value={merchantOptions?.filter((option) =>
-                      formData.merchantId?.includes(option.value)
-                    )}
-                    onChange={(selectedOptions) =>
-                      setFormData({
-                        ...formData,
-                        merchantId: selectedOptions.map(
-                          (option) => option.value
-                        ),
-                      })
-                    }
-                    className="border-gray-100 rounded focus:outline-none w-2/3"
-                    placeholder="Select merchants"
-                    isSearchable
-                    isMulti
-                    isClearable
-                    menuPlacement="top"
-                  />
-                </div>
-              )}
+                    <Select
+                      options={merchantOptions}
+                      value={merchantOptions?.filter((option) =>
+                        formData.merchantId?.includes(option.value)
+                      )}
+                      onChange={(selectedOptions) =>
+                        setFormData({
+                          ...formData,
+                          merchantId: selectedOptions.map(
+                            (option) => option.value
+                          ),
+                        })
+                      }
+                      className="border-gray-100 rounded focus:outline-none w-2/3"
+                      placeholder="Select merchants"
+                      isSearchable
+                      isMulti
+                      isClearable
+                      menuPlacement="top"
+                    />
+                  </div>
+                )}
 
               <div className="flex items-center">
                 <label className=" w-1/2 text-gray-500">

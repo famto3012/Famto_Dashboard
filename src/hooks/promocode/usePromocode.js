@@ -98,3 +98,66 @@ export const deletePromoCodes = async (promocodeId, navigate) => {
     );
   }
 };
+
+export const fetchMerchantPromoCodes = async (navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.get(`/admin/promocode/merchant/get-promocode`);
+
+    return res.status === 200 ? res.data : [];
+  } catch (err) {
+    console.error(`Error in fetching merchant promo codes: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to fetch merchant promo codes."
+    );
+  }
+};
+
+export const createMerchantPromoCode = async (data, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.post(`/admin/promocode/merchant/add-promocode`, data, {
+      "Content-Type": "multipart/form-data",
+    });
+
+    return res.status === 201 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in creating merchant promo code: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to create merchant promo code."
+    );
+  }
+};
+
+export const updateMerchantPromoCodeStatus = async (promocodeId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.put(
+      `/admin/promocode/merchant/edit-promocode-status/${promocodeId}`,
+      {}
+    );
+
+    return res.status === 200 ? res.data.message : null;
+  } catch (err) {
+    console.error(`Error in updating merchant promo code status: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to update merchant promo code status."
+    );
+  }
+};
+
+export const deleteMerchantPromoCodes = async (promocodeId, navigate) => {
+  try {
+    const api = useApiClient(navigate);
+    const res = await api.delete(
+      `/admin/promocode/merchant/delete-promocode/${promocodeId}`
+    );
+
+    return res.status === 200 ? res.data.data : [];
+  } catch (err) {
+    console.error(`Error in deleting merchant promo codes: ${err}`);
+    throw new Error(
+      err.response?.data?.message || "Failed to delete merchant promo codes."
+    );
+  }
+};

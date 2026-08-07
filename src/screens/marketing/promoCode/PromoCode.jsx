@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { HStack, Table } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { Switch } from "@/components/ui/switch";
 import { toaster } from "@/components/ui/toaster";
+
+import AuthContext from "@/context/AuthContext";
 
 import RenderIcon from "@/icons/RenderIcon";
 
@@ -13,6 +15,8 @@ import GlobalSearch from "@/components/others/GlobalSearch";
 
 import {
   fetchAllPromoCodes,
+  fetchMerchantPromoCodes,
+  updateMerchantPromoCodeStatus,
   updatePromoCodeStatus,
 } from "@/hooks/promocode/usePromocode";
 
@@ -31,15 +35,23 @@ const PromoCode = () => {
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { role } = useContext(AuthContext);
+  const isMerchant = role === "Merchant";
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["all-promo-codes"],
-    queryFn: () => fetchAllPromoCodes(navigate),
+    queryFn: () =>
+      isMerchant
+        ? fetchMerchantPromoCodes(navigate)
+        : fetchAllPromoCodes(navigate),
   });
 
   const toggleStatus = useMutation({
     mutationKey: ["update-promo-status", selectedId],
-    mutationFn: (selectedId) => updatePromoCodeStatus(selectedId, navigate),
+    mutationFn: (selectedId) =>
+      isMerchant
+        ? updateMerchantPromoCodeStatus(selectedId, navigate)
+        : updatePromoCodeStatus(selectedId, navigate),
     onSuccess: () => {
       queryClient.invalidateQueries(["all-promo-codes"]);
       setSelectedId(null);
@@ -182,12 +194,20 @@ const PromoCode = () => {
                         />
                       )}
 
-                      <span
-                        onClick={() => toggleModal("edit", item.promoCodeId)}
-                        className="text-gray-600"
-                      >
-                        <RenderIcon iconName="EditIcon" size={20} loading={6} />
-                      </span>
+                      {!isMerchant && (
+                        <span
+                          onClick={() =>
+                            toggleModal("edit", item.promoCodeId)
+                          }
+                          className="text-gray-600"
+                        >
+                          <RenderIcon
+                            iconName="EditIcon"
+                            size={20}
+                            loading={6}
+                          />
+                        </span>
+                      )}
 
                       <span
                         onClick={() => toggleModal("delete", item.promoCodeId)}
