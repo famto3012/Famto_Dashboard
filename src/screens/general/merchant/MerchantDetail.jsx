@@ -277,6 +277,7 @@ const MerchantDetail = () => {
         merchantId={formData?._id}
         businessCategoryId={formData?.merchantDetail?.businessCategoryId}
         merchantName={formData?.merchantDetail?.merchantName}
+        qrUrl={formData?.merchantDetail?.qrUrl}
       />
     </div>
   );

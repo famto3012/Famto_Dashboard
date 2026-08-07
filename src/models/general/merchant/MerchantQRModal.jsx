@@ -19,11 +19,14 @@ const MerchantQRModal = ({
   merchantId,
   businessCategoryId,
   merchantName,
+  qrUrl,
 }) => {
   const [activeTab, setActiveTab] = useState("qr");
   const qrRef = useRef(null);
 
-  const orderLink = `https://order.famto.in/merchant/${merchantId}/${businessCategoryId}/products`;
+  const orderLink =
+    qrUrl ||
+    `https://order.famto.in/merchant/${merchantId}/${businessCategoryId}/products`;
 
   // ─── Build a branded download card on an offscreen canvas ───────────────────
   const buildDownloadCard = () => {

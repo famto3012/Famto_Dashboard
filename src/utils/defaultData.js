@@ -350,6 +350,10 @@ const allowedMerchantRouteOptions = [
     label: "Reviews",
     value: "/review",
   },
+  {
+    label: "QR",
+    value: "/qr",
+  },
 ];
 
 const mainSideBarMenuItems = [
@@ -393,6 +397,13 @@ const mainSideBarMenuItems = [
     iconName: "ActivityIcon",
     label: "Reviews",
     roles: ["Admin", "Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/qr",
+    iconName: "QrCodeIcon",
+    label: "QR Code",
+    roles: ["Merchant"],
     dropDown: false,
   },
   {
@@ -618,6 +629,13 @@ const smallSideBarMenuItems = [
     iconName: "ActivityIcon",
     label: "Reviews",
     roles: ["Admin", "Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/qr",
+    iconName: "QrCodeIcon",
+    label: "QR Code",
+    roles: ["Merchant"],
     dropDown: false,
   },
   {

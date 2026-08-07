@@ -169,6 +169,7 @@ const ConfigureRoutes = lazy(() => import("./ConfigureRoute"));
 const CustomizeRoutes = lazy(() => import("./CustomizeRoute"));
 const AccountRoutes = lazy(() => import("./AccountRoute"));
 const ReviewRoutes = lazy(() => import("./ReviewRoute"));
+const QrRoutes = lazy(() => import("./QrRoute"));
 
 const Routers = () => {
   const { token, role } = useContext(AuthContext);
@@ -216,6 +217,7 @@ const Routers = () => {
     { path: "/customize/*", element: <CustomizeRoutes /> },
     { path: "/account/*", element: <AccountRoutes /> },
     { path: "/review/*", element: <ReviewRoutes /> },
+    { path: "/qr/*", element: <QrRoutes /> },
   ];
 
   // Filter routes based on allowedRoutes
