@@ -284,6 +284,10 @@ const allowedRoutesOption = [
     value: "/configure/geofence",
   },
   {
+    label: "Feature Configuration",
+    value: "/configure/feature-config",
+  },
+  {
     label: "Customer app customization",
     value: "/customize/customer-app",
   },
@@ -567,6 +571,14 @@ const mainSideBarMenuItems = [
     to: "/configure/geofence",
     iconName: "GeofenceIcon",
     label: "Geofence",
+    roles: ["Admin"],
+    dropDown: true,
+    dropLabel: "Configure",
+  },
+  {
+    to: "/configure/feature-config",
+    iconName: "SettingsIcon",
+    label: "Feature Configuration",
     roles: ["Admin"],
     dropDown: true,
     dropLabel: "Configure",

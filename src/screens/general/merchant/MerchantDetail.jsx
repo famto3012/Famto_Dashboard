@@ -18,6 +18,7 @@ import MerchantDocument from "@/components/merchant/MerchantDocument";
 import ConfigureMerchant from "@/components/merchant/ConfigureMerchant";
 import SponsorshipDetail from "@/components/merchant/SponsorshipDetail";
 import MerchantAvailability from "@/components/merchant/MerchantAvailability";
+import MerchantFeatureAccess from "@/components/merchant/MerchantFeatureAccess";
 
 import {
   fetchSingleMerchantDetail,
@@ -259,6 +260,12 @@ const MerchantDetail = () => {
           </button>
         </div>
       </div>
+
+      {role !== "Merchant" && (
+        <div className="bg-white rounded-lg p-5 mt-5">
+          <MerchantFeatureAccess merchantId={merchantId} />
+        </div>
+      )}
 
       <EditMerchant isOpen={modal.edit} onClose={closeModal} data={formData} />
       <BlockMerchant

@@ -8,6 +8,9 @@ const AllManager = lazy(
 );
 const Pricing = lazy(() => import("../screens/configure/pricing/Pricing"));
 const Tax = lazy(() => import("../screens/configure/tax/Tax"));
+const FeatureConfig = lazy(
+  () => import("../screens/configure/featureConfig/FeatureConfig")
+);
 const AllGeofence = lazy(
   () => import("../screens/configure/geofence/AllGeofence")
 );
@@ -24,6 +27,7 @@ const ConfigureRoutes = () => (
       <Route path="managers" element={<AllManager />} />
       <Route path="pricing" element={<Pricing />} />
       <Route path="tax" element={<Tax />} />
+      <Route path="feature-config" element={<FeatureConfig />} />
       <Route path="geofence" element={<AllGeofence />} />
       <Route path="geofence/add" element={<AddGeofence />} />
       <Route path="geofence/:geofenceId" element={<EditGeofence />} />

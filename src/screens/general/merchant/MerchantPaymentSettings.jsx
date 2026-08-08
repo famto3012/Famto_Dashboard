@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { WalletIcon } from "@heroicons/react/24/outline";
+import { WalletIcon, CreditCardIcon, DevicePhoneMobileIcon } from "@heroicons/react/24/outline";
 
 import { toaster } from "@/components/ui/toaster";
 import GlobalSearch from "@/components/others/GlobalSearch";
 import ShowSpinner from "@/components/others/ShowSpinner";
 
 import EmptyState from "@/components/whatsapp/common/EmptyState";
-import ErrorState from "@/components/whatsapp/common/ErrorState";
 import SectionPanel from "@/components/whatsapp/common/SectionPanel";
 import StatusBadge from "@/components/whatsapp/common/StatusBadge";
 
@@ -21,16 +20,48 @@ import {
   requestPayout,
 } from "@/hooks/merchant/useMerchantPayment";
 
+import { fetchMerchantFeatureConfig } from "@/hooks/merchant/useMerchantFeatureConfig";
+
 import { formatCurrency, getRelativeTime } from "@/utils/whatsapp/formatters";
+
+const GATEWAY_LABELS = { razorpay: "Razorpay", cashfree: "Cashfree", phonepe: "PhonePe" };
+const GATEWAY_ICONS = { razorpay: WalletIcon, cashfree: CreditCardIcon, phonepe: DevicePhoneMobileIcon };
+
+// Required credential fields per gateway (mirrors backend GATEWAY_REQUIRED_CREDS)
+const GATEWAY_FIELDS = {
+  razorpay: [
+    { key: "keyId", label: "Key ID", placeholder: "rzp_live_…", type: "text" },
+    { key: "keySecret", label: "Key Secret", placeholder: "Encrypted, never shown again", type: "password" },
+  ],
+  cashfree: [
+    { key: "clientId", label: "Client ID (App ID)", placeholder: "Your Cashfree app ID", type: "text" },
+    { key: "clientSecret", label: "Client Secret", placeholder: "Encrypted, never shown again", type: "password" },
+  ],
+  phonepe: [
+    { key: "merchantId", label: "Merchant ID", placeholder: "Merchant ID from PhonePe", type: "text" },
+    { key: "saltKey", label: "Salt Key", placeholder: "Encrypted, never shown again", type: "password" },
+    { key: "saltIndex", label: "Salt Index", placeholder: "e.g. 1", type: "text" },
+  ],
+};
 
 const MerchantPaymentSettings = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const [mode, setMode] = useState("Platform");
+  const [gateway, setGateway] = useState("razorpay");
   const [form, setForm] = useState({
+    // razorpay
     keyId: "",
     keySecret: "",
+    // cashfree
+    clientId: "",
+    clientSecret: "",
+    // phonepe
+    merchantId: "",
+    saltKey: "",
+    saltIndex: "",
+    // bank
     accountName: "",
     accountNumber: "",
     ifsc: "",
@@ -41,20 +72,42 @@ const MerchantPaymentSettings = () => {
     queryFn: () => fetchPaymentConfig(navigate),
   });
 
+  const featureQuery = useQuery({
+    queryKey: ["merchant-feature-config"],
+    queryFn: () => fetchMerchantFeatureConfig(navigate),
+  });
+
   const walletQuery = useQuery({
     queryKey: ["merchant-wallet"],
     queryFn: () => fetchMerchantWallet(navigate),
   });
 
   const config = configQuery.data;
+  const featureConfig = featureQuery.data;
+
+  // Effective self-payment + gateway availability from feature config
+  const selfPaymentEnabled = featureConfig?.selfPaymentOption ?? true;
+  const availableGateways = useMemo(
+    () =>
+      (featureConfig?.gateways || [])
+        .filter((g) => g.enabled)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [featureConfig]
+  );
 
   // Pre-fill once loaded (don't clobber typing)
   useEffect(() => {
     if (config && !form.keyId && !form.accountName) {
       setMode(config.mode || "Platform");
+      setGateway(config.gateway || "razorpay");
       setForm({
-        keyId: config.keyId || "",
+        keyId: config.gatewayCredentials?.razorpay?.keyId || config.keyId || "",
         keySecret: "",
+        clientId: config.gatewayCredentials?.cashfree?.clientId || "",
+        clientSecret: "",
+        merchantId: config.gatewayCredentials?.phonepe?.merchantId || "",
+        saltKey: "",
+        saltIndex: config.gatewayCredentials?.phonepe?.saltIndex || "",
         accountName: config.bankDetails?.accountName || "",
         accountNumber: config.bankDetails?.accountNumber || "",
         ifsc: config.bankDetails?.ifsc || "",
@@ -95,7 +148,7 @@ const MerchantPaymentSettings = () => {
       invalidate();
       toaster.create({
         title: "Success",
-        description: data?.message || "Razorpay credentials validated",
+        description: data?.message || "Gateway credentials validated",
         type: "success",
       });
     },
@@ -149,13 +202,17 @@ const MerchantPaymentSettings = () => {
   });
 
   const handleSave = () => {
-    if (!form.keyId || !form.keySecret) {
-      toaster.create({
-        title: "Missing fields",
-        description: "Razorpay keyId and keySecret are required.",
-        type: "error",
-      });
-      return;
+    // Validate per-gateway credential fields
+    const gwFields = GATEWAY_FIELDS[gateway] || [];
+    for (const field of gwFields) {
+      if (!form[field.key]) {
+        toaster.create({
+          title: "Missing fields",
+          description: `${GATEWAY_LABELS[gateway]} ${field.label} is required.`,
+          type: "error",
+        });
+        return;
+      }
     }
     if (mode === "Own" && (!form.accountName || !form.accountNumber || !form.ifsc)) {
       toaster.create({
@@ -165,10 +222,18 @@ const MerchantPaymentSettings = () => {
       });
       return;
     }
+
+    // Build the credentials subdoc for the selected gateway only
+    const credentials = {};
+    credentials[gateway] = {};
+    for (const field of gwFields) {
+      credentials[gateway][field.key] = form[field.key];
+    }
+
     saveMutation.mutate({
-      keyId: form.keyId,
-      keySecret: form.keySecret,
+      gateway,
       mode,
+      credentials,
       bankDetails:
         mode === "Own"
           ? {
@@ -180,7 +245,9 @@ const MerchantPaymentSettings = () => {
     });
   };
 
-  if (configQuery.isLoading || walletQuery.isLoading) return <ShowSpinner />;
+  if (configQuery.isLoading || walletQuery.isLoading || featureQuery.isLoading) {
+    return <ShowSpinner />;
+  }
 
   const isOwn = mode === "Own" || config?.mode === "Own";
 
@@ -194,8 +261,12 @@ const MerchantPaymentSettings = () => {
       <div className="mx-8 my-6 grid gap-5 xl:grid-cols-[minmax(0,1fr)_390px]">
         {/* Config form */}
         <SectionPanel
-          title="Razorpay account"
-          description="Accept customer payments through your own Razorpay account, or keep platform Razorpay."
+          title={selfPaymentEnabled ? "Payment gateway" : "Payment gateway (platform only)"}
+          description={
+            selfPaymentEnabled
+              ? "Accept customer payments through your own gateway, or keep platform Razorpay."
+              : "Self payment is disabled by the platform. Payments use platform Razorpay."
+          }
           action={
             config?.mode === "Own" ? (
               <StatusBadge>{config.status}</StatusBadge>
@@ -221,45 +292,79 @@ const MerchantPaymentSettings = () => {
             <button
               type="button"
               onClick={() => setMode("Own")}
+              disabled={!selfPaymentEnabled}
               className={`rounded-2xl border p-4 text-left transition ${
                 mode === "Own"
                   ? "border-emerald-500 bg-emerald-50"
                   : "border-slate-200 hover:border-slate-300"
-              }`}
+              } ${!selfPaymentEnabled ? "opacity-40 cursor-not-allowed" : ""}`}
             >
-              <p className="text-sm font-semibold text-slate-800">Own Razorpay</p>
+              <p className="text-sm font-semibold text-slate-800">Self payment</p>
               <p className="mt-1 text-xs text-slate-500">
-                Customers pay directly to your Razorpay account.
+                Customers pay directly to your own gateway account.
+                {!selfPaymentEnabled && " Disabled by platform."}
               </p>
             </button>
           </div>
 
           {mode === "Own" && (
             <div className="space-y-4">
+              {/* Gateway selector (only admin-enabled gateways) */}
+              <div>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                  Payment gateway
+                </span>
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {availableGateways.map((g) => {
+                    const Icon = GATEWAY_ICONS[g.name];
+                    const active = gateway === g.name;
+                    return (
+                      <button
+                        key={g.name}
+                        type="button"
+                        onClick={() => setGateway(g.name)}
+                        className={`rounded-2xl border p-3 text-left transition ${
+                          active
+                            ? "border-emerald-500 bg-emerald-50"
+                            : "border-slate-200 hover:border-slate-300"
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 mb-1 text-slate-600" />
+                        <p className="text-sm font-semibold text-slate-800">
+                          {GATEWAY_LABELS[g.name]}
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-500">
+                          {g.name === "razorpay"
+                            ? "Inline SDK"
+                            : "Hosted payment page"}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+                {availableGateways.length === 0 && (
+                  <p className="mt-2 text-xs text-rose-600">
+                    No gateways available. Contact the platform.
+                  </p>
+                )}
+              </div>
+
+              {/* Gateway credential fields */}
               <div className="grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                    Razorpay Key ID
-                  </span>
-                  <input
-                    value={form.keyId}
-                    onChange={(e) => setValue("keyId", e.target.value)}
-                    placeholder="rzp_live_…"
-                    className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </label>
-                <label className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                    Razorpay Key Secret
-                  </span>
-                  <input
-                    type="password"
-                    value={form.keySecret}
-                    onChange={(e) => setValue("keySecret", e.target.value)}
-                    placeholder="Encrypted, never shown again"
-                    className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
-                  />
-                </label>
+                {GATEWAY_FIELDS[gateway]?.map((field) => (
+                  <label key={field.key} className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                      {GATEWAY_LABELS[gateway]} {field.label}
+                    </span>
+                    <input
+                      type={field.type}
+                      value={form[field.key]}
+                      onChange={(e) => setValue(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="mt-2 h-11 w-full rounded-2xl border border-slate-200 px-3 text-sm outline-none focus:border-emerald-300 focus:ring-4 focus:ring-emerald-100"
+                    />
+                  </label>
+                ))}
                 <label className="block">
                   <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                     Bank account name
@@ -306,7 +411,7 @@ const MerchantPaymentSettings = () => {
                   onClick={handleSave}
                   className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-50"
                 >
-                  {saveMutation.isPending ? "Saving…" : "Save keys"}
+                  {saveMutation.isPending ? "Saving…" : "Save credentials"}
                 </button>
                 <button
                   type="button"
@@ -323,7 +428,7 @@ const MerchantPaymentSettings = () => {
           {isOwn && (
             <div className="mt-5 flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3">
               <div>
-                <p className="text-sm font-semibold text-slate-800">Disable own Razorpay</p>
+                <p className="text-sm font-semibold text-slate-800">Disable self payment</p>
                 <p className="text-xs text-slate-500">
                   Switch back to platform Razorpay + wallet payouts.
                 </p>

@@ -1,7 +1,7 @@
 import useApiClient from "@/api/apiClient";
 
-// Merchant Razorpay payment config + wallet. Endpoints under /merchants/*
-// (payment-config, wallet). Token/secret never returned by the backend.
+// Merchant Razorpay/Cashfree/PhonePe payment config + wallet.
+// Endpoints under /merchants/* (payment-config, wallet). Secrets never returned.
 
 export const fetchPaymentConfig = async (navigate) => {
   try {
