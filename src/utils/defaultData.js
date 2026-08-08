@@ -358,6 +358,14 @@ const allowedMerchantRouteOptions = [
     label: "Analytics",
     value: "/analytics",
   },
+  {
+    label: "WhatsApp",
+    value: "/whatsapp",
+  },
+  {
+    label: "Payment Settings",
+    value: "/payment-settings",
+  },
 ];
 
 const mainSideBarMenuItems = [
@@ -414,6 +422,20 @@ const mainSideBarMenuItems = [
     to: "/analytics",
     iconName: "AnalyticsIcon",
     label: "Analytics",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/whatsapp",
+    iconName: "WhatsappIcon",
+    label: "WhatsApp",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/payment-settings",
+    iconName: "WalletIcon",
+    label: "Payment Settings",
     roles: ["Merchant"],
     dropDown: false,
   },
@@ -653,6 +675,20 @@ const smallSideBarMenuItems = [
     to: "/analytics",
     iconName: "AnalyticsIcon",
     label: "Analytics",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/whatsapp",
+    iconName: "WhatsappIcon",
+    label: "WhatsApp",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/payment-settings",
+    iconName: "WalletIcon",
+    label: "Payment Settings",
     roles: ["Merchant"],
     dropDown: false,
   },

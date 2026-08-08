@@ -87,6 +87,7 @@ import { MdQrCode as QrCodeIcon } from "react-icons/md";
 import { FiLink as LinkIcon, FiShare2 as ShareIcon, FiCopy as CopyIcon } from "react-icons/fi";
 import { MdDownload as DownloadIcon2 } from "react-icons/md";
 import { MdInsights as AnalyticsIcon } from "react-icons/md";
+import { MdOutlineAccountBalanceWallet as WalletIcon } from "react-icons/md";
 
 export {
   AccountIcon,
@@ -156,4 +157,5 @@ export {
   ShareIcon,
   CopyIcon,
   DownloadIcon2,
+  WalletIcon,
 };

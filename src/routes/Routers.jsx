@@ -171,6 +171,8 @@ const AccountRoutes = lazy(() => import("./AccountRoute"));
 const ReviewRoutes = lazy(() => import("./ReviewRoute"));
 const QrRoutes = lazy(() => import("./QrRoute"));
 const AnalyticsRoutes = lazy(() => import("./AnalyticsRoute"));
+const MerchantWhatsappRoutes = lazy(() => import("./MerchantWhatsappRoute"));
+const MerchantPaymentRoutes = lazy(() => import("./MerchantPaymentRoute"));
 
 const Routers = () => {
   const { token, role } = useContext(AuthContext);
@@ -220,6 +222,8 @@ const Routers = () => {
     { path: "/review/*", element: <ReviewRoutes /> },
     { path: "/qr/*", element: <QrRoutes /> },
     { path: "/analytics/*", element: <AnalyticsRoutes /> },
+    { path: "/whatsapp/*", element: <MerchantWhatsappRoutes /> },
+    { path: "/payment-settings/*", element: <MerchantPaymentRoutes /> },
   ];
 
   // Filter routes based on allowedRoutes
