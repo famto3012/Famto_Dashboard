@@ -86,10 +86,12 @@ import { MdPermMedia as MediaIcon } from "react-icons/md";
 import { MdQrCode as QrCodeIcon } from "react-icons/md";
 import { FiLink as LinkIcon, FiShare2 as ShareIcon, FiCopy as CopyIcon } from "react-icons/fi";
 import { MdDownload as DownloadIcon2 } from "react-icons/md";
+import { MdInsights as AnalyticsIcon } from "react-icons/md";
 
 export {
   AccountIcon,
   ActivityIcon,
+  AnalyticsIcon,
   AdBannerIcon,
   AgentIcon,
   AlertNotificationIcon,

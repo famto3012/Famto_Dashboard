@@ -354,6 +354,10 @@ const allowedMerchantRouteOptions = [
     label: "QR",
     value: "/qr",
   },
+  {
+    label: "Analytics",
+    value: "/analytics",
+  },
 ];
 
 const mainSideBarMenuItems = [
@@ -403,6 +407,13 @@ const mainSideBarMenuItems = [
     to: "/qr",
     iconName: "QrCodeIcon",
     label: "QR Code",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/analytics",
+    iconName: "AnalyticsIcon",
+    label: "Analytics",
     roles: ["Merchant"],
     dropDown: false,
   },
@@ -635,6 +646,13 @@ const smallSideBarMenuItems = [
     to: "/qr",
     iconName: "QrCodeIcon",
     label: "QR Code",
+    roles: ["Merchant"],
+    dropDown: false,
+  },
+  {
+    to: "/analytics",
+    iconName: "AnalyticsIcon",
+    label: "Analytics",
     roles: ["Merchant"],
     dropDown: false,
   },
